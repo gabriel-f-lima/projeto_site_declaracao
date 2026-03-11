@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Envie uma homenagem para quem você quer ama</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header id="topo">
+        <div class="logo">
+            Logo<span>Aqui</span>
+        </div>
+        <div style="display: flex; gap: 15px;">
+            <a href="#planos" class="btn-outline" style="padding: 8px 20px; font-size: 14px; border-radius: 8px;">Entrar</a>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-text">
+                <div class="tag-promessa">✨ O presente perfeito em 10 minutos</div>
+                
+                <h1>
+                    Mais do que um presente:
+                    <span>Uma prova de amor.</span>
+                </h1>
+                
+                <p>Crie um site exclusivo com a história de vocês: contador de tempo, suas melhores fotos e a música que marcou a relação. O presente digital mais emocionante que existe.</p>
+                
+                <div class="hero-buttons">
+                    <a href="#planos" class="btn-verde">Criar Minha Página ➔</a>
+                    <a href="#planos" class="btn-outline">Ver Planos</a>
+                </div>
+            </div>
+
+            <div class="hero-visual">
+                <div class="mockup-celular">
+                    <div class="mockup-conteudo">
+                        <span style="font-size: 40px;">🤍</span><br>
+                        Sua foto e música<br>aparecerão aqui
+                    </div>
+                </div>
+                <div style="position: absolute; top: 10%; right: 10%; width: 40px; height: 40px; background: var(--roxo-marca); border-radius: 50%; filter: blur(20px); opacity: 0.6;"></div>
+                <div style="position: absolute; bottom: 20%; left: 0; width: 60px; height: 60px; background: var(--verde-acao); border-radius: 50%; filter: blur(30px); opacity: 0.3;"></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="planos" class="planos-section">
+        <h2>Escolha o plano ideal</h2>
+        <p style="color: var(--texto-cinza);">Pagamento único, sem assinatura. Crie seu presente agora.</p>
+
+        <div class="cards-container">
+            <div class="card">
+                <h3>Acesso por 1 semana</h3>
+                <div class="preco-antigo">R$ 29,90</div>
+                <div class="preco-atual">R$ 19,90</div>
+                <span class="desconto-tag">❤️ 33% de Desconto aplicado</span>
+                </span> <ul class="beneficios">
+                    <li>Página disponível por 1 semana</li>
+                    <li>Fotos e textos ilimitados</li>
+                    <li>Música de fundo</li>
+                </ul>
+                <a href="/criar?plano=diario" class="btn-outline btn-full">Escolher Econômico</a>
+            </div>
+
+            <div class="card destaque">
+                <div class="badge-destaque">MELHOR CUSTO-BENEFÍCIO</div>
+                <h3>Para Sempre (Vitalício)</h3>
+                
+                <div class="preco-antigo">De R$ 39,90</div>
+                <div class="preco-atual">R$ 26,90</div>
+                <span class="desconto-tag">❤️ 33% de Desconto aplicado</span>
+                
+                <ul class="beneficios">
+                    <li>Página guardada para sempre</li>
+                    <li>Fotos e textos ilimitados</li>
+                    <li>Música de fundo</li>
+                    <li>Sem prazo de expiração</li>
+                </ul>
+                <a href="/criar?plano=vitalicio" class="btn-verde btn-full">Garantir Vitalício</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-container">
+            <div>
+                <div class="footer-logo">Logo<span>Aqui</span></div>
+                <p style="color: var(--texto-cinza); font-size: 14px; margin: 5px 0 0 0;">O presente que emociona.</p>
+            </div>
+            
+            <div class="footer-links">
+                <a href="#">Como Funciona</a>
+                <a href="#">Termos de Uso</a>
+                <a href="#">Política de Privacidade</a>
+            </div>
+        </div>
+        <div class="footer-copy">
+            &copy; 2026 LogoAqui. Todos os direitos reservados.
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+</body>
+</html>
