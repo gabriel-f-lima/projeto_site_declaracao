@@ -1,11 +1,20 @@
+/* =========================================================
+   1. VARIÁVEIS GERAIS E CORES
+   ========================================================= */
 :root {
+    /* Cores de Fundo */
     --fundo-preto: #0a0a0a;
     --fundo-secundario: #141414;
+    
+    /* Cores de Destaque */
     --roxo-marca: #8A2BE2;
     --roxo-brilho: rgba(138, 43, 226, 0.15);
+    
+    /* Cores de Ação (Verde App de Música) */
     --verde-acao: #10B981;
-    --verde-hover: #0ea5e9;
-    /* Um tom levemente diferente no hover, ou mantemos verde claro */
+    --verde-hover: #0ea875;
+    
+    /* Cores de Texto */
     --texto-branco: #F9FAFB;
     --texto-cinza: #A1A1AA;
 }
@@ -15,15 +24,126 @@ html {
 }
 
 body {
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Inter', sans-serif;
     margin: 0;
     padding: 0;
     background-color: var(--fundo-preto);
     color: var(--texto-branco);
     overflow-x: hidden;
+    
 }
 
-/* --- CABEÇALHO --- */
+body::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    /* Cria uma sombra roxa nas bordas da tela (efeito vinheta) */
+    box-shadow: inset 0 0 180px rgba(138, 43, 226, 0.15);
+    /* Se quiser um brilho no meio também, descomente a linha abaixo tirando as barras e asteriscos */
+    background: radial-gradient(circle at 50% 50%, rgba(138, 43, 226, 0.05) 0%, transparent 80%);
+    pointer-events: none; /* Super importante: garante que você ainda consiga clicar nos botões por baixo do brilho */
+    z-index: 9999; /* Mantém o efeito por cima de tudo */
+}
+/* =========================================================
+   2. COMPONENTES GERAIS (Botões, Badges e Animações)
+   ========================================================= */
+
+/* Botões - Base unificada para evitar repetição */
+.btn-verde, .btn-outline {
+    display: inline-block;
+    text-decoration: none;
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.btn-verde {
+    background-color: var(--verde-acao);
+    color: #000;
+    box-shadow: 0 0 25px rgba(16, 185, 129, 0.3);
+}
+
+.btn-verde:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 35px rgba(16, 185, 129, 0.5);
+    background-color: var(--verde-hover);
+}
+
+.btn-outline {
+    background-color: transparent;
+    color: var(--texto-branco);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-outline:hover {
+    border-color: var(--roxo-marca);
+    background-color: rgba(138, 43, 226, 0.05);
+}
+
+/* Classe auxiliar para botões que ocupam 100% da largura (ex: nos cartões de planos) */
+.btn-full {
+    width: 100%;
+    display: block;
+}
+
+/* Badge de Destaque Unificado */
+.badge-magia, .badge-destaque {
+    display: inline-block;
+    color: var(--verde-acao);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 24px;
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+}
+
+.badge-magia { background-color: rgba(16, 185, 129, 0.15); }
+.badge-destaque { background-color: var(--roxo-marca); color: var(--texto-branco); }
+
+/* Animações Globais */
+@keyframes flutuar {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+.fade-element {
+    opacity: 0;
+    transform: translateY(60px) scale(0.8);
+    transition: opacity 0.8s ease-out, transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.fade-element.visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+/* Delays para efeitos staggered */
+.delay-1 { transition-delay: 0.1s; }
+.delay-2 { transition-delay: 0.2s; }
+.delay-3 { transition-delay: 0.3s; }
+
+/* Classe para inverter cor de ícones pretos em PNG para branco */
+.icone-invertido {
+    filter: invert(1);
+}
+
+/* =========================================================
+   3. CABEÇALHO (HEADER)
+   ========================================================= */
 header {
     display: flex;
     justify-content: space-between;
@@ -49,7 +169,9 @@ header {
     color: var(--roxo-marca);
 }
 
-/* --- SESSÃO HERO (TOPO) --- */
+/* =========================================================
+   4. HERO SECTION (Topo principal)
+   ========================================================= */
 .hero {
     padding: 140px 5% 80px 5%;
     position: relative;
@@ -66,26 +188,11 @@ header {
     gap: 50px;
 }
 
-/* Configuração do Texto no Hero */
 .hero-text {
     flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-}
-
-.tag-promessa {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background-color: rgba(138, 43, 226, 0.1);
-    color: #d8b4fe;
-    border: 1px solid rgba(138, 43, 226, 0.3);
-    padding: 6px 16px;
-    border-radius: 50px;
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 24px;
 }
 
 .hero h1 {
@@ -96,7 +203,6 @@ header {
     letter-spacing: -1px;
 }
 
-/* Fonte romântica/elegante para o destaque */
 .hero h1 span {
     font-family: 'Playfair Display', serif;
     color: var(--roxo-marca);
@@ -115,7 +221,6 @@ header {
     font-weight: 300;
 }
 
-/* Botões do Hero */
 .hero-buttons {
     display: flex;
     flex-direction: column;
@@ -124,144 +229,362 @@ header {
     max-width: 300px;
 }
 
-.btn-verde {
-    display: inline-block;
-    background-color: var(--verde-acao);
-    color: #000;
-    text-decoration: none;
-    padding: 16px 32px;
-    border-radius: 12px;
-    font-weight: 800;
-    font-size: 16px;
-    transition: all 0.3s ease;
-    box-shadow: 0 0 25px rgba(16, 185, 129, 0.3);
-    text-align: center;
-}
-
-.btn-verde:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 0 35px rgba(16, 185, 129, 0.5);
-    background-color: #0ea875;
-}
-
-.btn-outline {
-    display: inline-block;
-    background-color: transparent;
-    color: var(--texto-branco);
-    text-decoration: none;
-    padding: 16px 32px;
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    font-weight: 600;
-    font-size: 16px;
-    transition: 0.3s;
-    text-align: center;
-}
-
-.btn-outline:hover {
-    border-color: var(--roxo-marca);
-    background-color: rgba(138, 43, 226, 0.05);
-}
-
-/* Celular Mockup Feito em CSS (Imagem Visual) */
-.hero-visual {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-}
-
-.mockup-celular {
-    width: 260px;
-    height: 540px;
-    background-color: var(--fundo-secundario);
-    border: 10px solid #222;
-    border-radius: 40px;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 60px var(--roxo-brilho);
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
-.mockup-celular::before {
-    /* Notch do celular */
-    content: '';
-    position: absolute;
-    top: 0;
-    width: 120px;
-    height: 25px;
-    background-color: #222;
-    border-bottom-left-radius: 15px;
-    border-bottom-right-radius: 15px;
-}
-
-.mockup-conteudo {
-    text-align: center;
-    color: var(--roxo-marca);
-    opacity: 0.5;
-    font-size: 14px;
-}
-
-/* --- RESPONSIVIDADE (Telas Grandes: Notebooks e PCs) --- */
 @media (min-width: 992px) {
     .hero-container {
         flex-direction: row;
         text-align: left;
         justify-content: space-between;
     }
-
     .hero-text {
         align-items: flex-start;
         padding-right: 50px;
     }
-
-    .hero h1 {
-        font-size: 58px;
-    }
-
-    .hero h1 span {
-        display: inline;
-        /* Coloca na mesma linha ou ajusta conforme texto */
-    }
-
-    .hero p {
-        margin: 0 0 40px 0;
-        font-size: 20px;
-    }
-
-    .hero-buttons {
-        flex-direction: row;
-        max-width: 100%;
-    }
-
-    .mockup-celular {
-        width: 300px;
-        height: 600px;
-        transform: rotate(2deg);
-        /* Dá um charme na inclinação */
-        transition: transform 0.5s ease;
-    }
-
-    .mockup-celular:hover {
-        transform: rotate(0deg) translateY(-10px);
-    }
+    .hero h1 { font-size: 58px; }
+    .hero h1 span { display: inline; }
+    .hero p { margin: 0 0 40px 0; font-size: 20px; }
+    .hero-buttons { flex-direction: row; max-width: 100%; }
 }
 
-/* --- SESSÃO DE PLANOS (Mantida a mesma lógica, ajustada às fontes) --- */
+/* Mockup Estilo App de Música */
+.hero-visual {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    perspective: 1000px;
+    width: 100%;
+}
+
+/* === CORAÇÕES VERDES NO FUNDO (Criação de novos elementos para evitar plágio) === */
+.hero-visual::before,
+.hero-visual::after {
+    content: "💚"; /* Agora sim, um coração de verdade! */
+    font-size: 80px; /* Define o tamanho do coração */
+    position: absolute;
+    opacity: 0.15;
+    filter: blur(2px);
+    z-index: 1;
+    animation: flutuarLento 6s ease-in-out infinite alternate;
+    /* Removemos o background-color, width e height que formavam o quadrado */
+}
+
+
+.hero-visual::before {
+    top: 5%;
+    left: 10%;
+    transform: rotate(15deg);
+    animation-delay: -1s;
+}
+
+.hero-visual::after {
+    bottom: 10%;
+    right: 5%;
+    transform: rotate(-20deg);
+}
+
+@keyframes flutuarLento {
+    0% { transform: translateY(0px) rotate(-10deg); }
+    100% { transform: translateY(-30px) rotate(10deg); }
+}
+
+/* Aura verde brilhante atrás do celular */
+.luz-fundo-app {
+    position: absolute;
+    width: 250px;
+    height: 400px;
+    background: rgba(30, 215, 96, 0.25); /* Verde Spotify */
+    filter: blur(80px);
+    border-radius: 50%;
+    z-index: 0;
+    animation: pulsarLuz 4s infinite alternate;
+}
+
+@keyframes pulsarLuz {
+    0% { transform: scale(1); opacity: 0.5; }
+    100% { transform: scale(1.2); opacity: 1; }
+}
+
+.mockup-celular {
+    width: 310px;
+    height: 640px;
+    background: #121212;
+    border: 14px solid #000;
+    border-radius: 45px;
+    position: relative;
+    z-index: 2;
+    overflow: hidden;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.8), inset 0 0 10px rgba(255,255,255,0.05), 0 0 0 2px #222;
+    transform: rotateY(-8deg) rotateX(4deg);
+    animation: flutuarCelularHero 6s ease-in-out infinite;
+}
+
+@keyframes flutuarCelularHero {
+    0% { transform: translateY(0px) rotateY(-8deg) rotateX(4deg); }
+    50% { transform: translateY(-15px) rotateY(-4deg) rotateX(2deg); }
+    100% { transform: translateY(0px) rotateY(-8deg) rotateX(4deg); }
+}
+
+/* Interface Interna do App de Música */
+.app-musica-ui {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 45px 25px 25px;
+    color: #fff;
+    background: linear-gradient(180deg, #2a2a2a 0%, #121212 40%);
+    box-sizing: border-box;
+}
+
+.app-top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+.app-playlist-name { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-align: center; }
+.icone-fino { font-size: 18px; opacity: 0.7; }
+
+.app-capa-container { width: 100%; aspect-ratio: 1 / 1; border-radius: 8px; overflow: hidden; margin-bottom: 35px; box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
+.app-capa-foto { width: 100%; height: 100%; object-fit: cover; animation: zoomFotoApp 25s linear infinite alternate; }
+@keyframes zoomFotoApp { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
+
+.app-info-musica { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+.app-textos h2 { font-size: 22px; font-weight: 700; margin: 0 0 5px 0; }
+.app-textos p { font-size: 14px; color: #b3b3b3; margin: 0; }
+.app-coracao-verde { font-size: 24px; filter: drop-shadow(0 0 8px rgba(30, 215, 96, 0.6)); }
+.pulse-anim { animation: batidaCoracao 1.5s infinite; }
+@keyframes batidaCoracao { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+
+.app-progresso { margin-bottom: 25px; }
+.app-barra-fundo { width: 100%; height: 4px; background: #4d4d4d; border-radius: 2px; position: relative; margin-bottom: 10px; }
+.app-barra-verde { height: 100%; background: #1ed760; border-radius: 2px; width: 0%; animation: tocarMusicaApp 20s linear infinite; }
+.app-bolinha { width: 12px; height: 12px; background: #fff; border-radius: 50%; position: absolute; top: -4px; left: 0%; box-shadow: 0 2px 4px rgba(0,0,0,0.5); animation: moverPontoApp 20s linear infinite; }
+@keyframes tocarMusicaApp { 0% { width: 0%; } 100% { width: 100%; } }
+@keyframes moverPontoApp { 0% { left: 0%; } 100% { left: 100%; } }
+
+.app-tempo { display: flex; justify-content: space-between; font-size: 11px; color: #b3b3b3; }
+.app-controles { display: flex; justify-content: space-between; align-items: center; }
+.icone-secundario { font-size: 18px; color: #b3b3b3; }
+.icone-primario { font-size: 28px; color: #fff; }
+.app-btn-play { width: 60px; height: 60px; background: #1ed760; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #000; transition: transform 0.2s; }
+.app-btn-play:hover { transform: scale(1.05); }
+.icone-pause { font-size: 20px; font-weight: 900; }
+
+@media (max-width: 768px) {
+    .mockup-celular { width: 280px; height: 580px; transform: none; animation: flutuarMobile 4s ease-in-out infinite; }
+}
+
+@keyframes flutuarMobile {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+/* =========================================================
+   5. SEÇÃO MAGIA / RECURSOS
+   ========================================================= */
+.magia-section {
+    padding: 80px 20px;
+    background-color: #050505;
+    overflow: hidden;
+}
+
+.magia-container { max-width: 1100px; margin: 0 auto; }
+.magia-header { text-align: center; margin-bottom: 60px; }
+.magia-header h2 { font-size: 36px; margin: 20px 0 15px; font-weight: 800; }
+.magia-header p { color: #9ca3af; font-size: 18px; max-width: 600px; margin: 0 auto; }
+
+.magia-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+}
+
+.magia-card {
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 20px;
+    padding: 40px 30px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.icone-magia {
+    width: 40px; /* Tamanho do ícone. Pode aumentar ou diminuir se achar necessário */
+    height: 40px;
+    object-fit: contain; /* Garante que a imagem não fique esticada ou achatada */
+    display: block;
+    margin: 0 auto; /* Centraliza a imagem certinho no meio */
+}
+
+.magia-card:hover {
+    transform: translateY(-15px) scale(1.03);
+    border-color: var(--verde-acao);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.6), 0 0 30px rgba(16, 185, 129, 0.15), inset 0 0 20px rgba(16, 185, 129, 0.05);
+}
+
+.magia-card::after {
+    content: "";
+    position: absolute;
+    top: 0; left: -150%;
+    width: 50%; height: 100%;
+    background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0) 100%);
+    transform: skewX(-25deg);
+    transition: all 0.75s ease;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.magia-card:hover::after { left: 200%; transition: all 0.7s ease-in-out; }
+
+.card-icon {
+    font-size: 48px;
+    margin-bottom: 20px;
+    display: inline-block;
+    filter: drop-shadow(0 0 15px rgba(16, 185, 129, 0.5));
+    animation: flutuar 3.5s ease-in-out infinite;
+    transition: transform 0.3s ease;
+}
+
+.magia-card:nth-child(odd) .card-icon { animation-delay: 0s; }
+.magia-card:nth-child(even) .card-icon { animation-delay: 1.7s; }
+.magia-card:hover .card-icon { animation: none; transform: scale(1.3) rotate(10deg); }
+
+@media (max-width: 768px) {
+    .magia-header h2 { font-size: 28px; }
+    .magia-grid { grid-template-columns: 1fr; }
+}
+
+/* =========================================================
+   6. SEÇÃO COMO FUNCIONA (Passos)
+   ========================================================= */
+.passos-section {
+    padding: 80px 20px;
+    background-color: #080808;
+    text-align: center;
+}
+
+.passos-container { max-width: 1100px; margin: 0 auto; }
+.passos-header h2 { font-size: 36px; margin: 20px 0 15px; font-weight: 800; }
+.passos-header p { color: #9ca3af; font-size: 18px; max-width: 600px; margin: 0 auto 50px; }
+
+.passos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 30px;
+    position: relative;
+}
+
+.passo-card {
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 20px;
+    padding: 40px 20px;
+    transition: all 0.4s ease;
+    position: relative;
+}
+
+.passo-card:hover { transform: translateY(-10px); border-color: rgba(16, 185, 129, 0.4); box-shadow: 0 10px 30px rgba(16, 185, 129, 0.1); }
+.passo-card h3 { font-size: 18px; margin-bottom: 10px; color: #fff; }
+.passo-card p { color: #9ca3af; font-size: 14px; line-height: 1.5; }
+
+.passo-numero {
+    width: 50px; height: 50px;
+    background: var(--verde-acao); color: #000;
+    font-size: 24px; font-weight: 900;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%; margin: 0 auto 20px;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
+}
+
+/* =========================================================
+   7. SEÇÃO PREVIEW NO CELULAR
+   ========================================================= */
+.preview-section { padding: 100px 20px; background-color: #050505; overflow: hidden; position: relative; }
+
+/* === CORAÇÕES SIMPLES NO FUNDO (Criação de novos elementos para evitar plágio) === */
+.preview-section::before,
+.preview-section::after {
+    content: "❤️";
+    position: absolute;
+    font-size: 60px;
+    opacity: 0.1;
+    z-index: 1;
+    animation: flutuarLento 5s ease-in-out infinite alternate;
+}
+
+.preview-section::before {
+    top: 15%;
+    right: 15%;
+    animation-delay: -1.5s;
+}
+
+.preview-section::after {
+    bottom: 15%;
+    left: 10%;
+}
+
+.icone-lista {
+    width: 24px;
+    height: 24px;
+    object-fit: contain; /* Evita que o ícone fique esticado */
+}
+
+
+.preview-container { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 60px; flex-wrap: wrap; z-index: 2; position: relative; }
+.preview-text { flex: 1; min-width: 300px; }
+.preview-text h2 { font-size: 42px; margin: 20px 0; font-weight: 800; line-height: 1.1; }
+.preview-text p { color: #9ca3af; font-size: 18px; margin-bottom: 30px; line-height: 1.6; }
+
+.preview-lista { list-style: none; padding: 0; }
+.preview-lista li { font-size: 16px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.03); padding: 12px 20px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); }
+
+.preview-visual { flex: 1; display: flex; justify-content: center; position: relative; min-width: 300px; }
+
+@keyframes flutuarCelular { 0% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-15px) rotate(2deg); } 100% { transform: translateY(0px) rotate(0deg); } }
+
+.celular-mockup {
+    width: 280px; height: 580px; background-color: #0a0a0a; border: 12px solid #222; border-radius: 40px; position: relative; z-index: 2;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.8), inset 0 0 10px rgba(255,255,255,0.1);
+    animation: flutuarCelular 6s ease-in-out infinite; overflow: hidden;
+}
+
+.celular-notch { width: 100px; height: 25px; background-color: #222; position: absolute; top: -2px; left: 50%; transform: translateX(-50%); border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; z-index: 3; }
+.celular-tela { padding: 50px 20px 20px; height: 100%; display: flex; flex-direction: column; align-items: center; background: linear-gradient(180deg, #111 0%, #050505 100%); box-sizing: border-box; }
+
+.tela-header { text-align: center; margin-bottom: 20px; }
+.coracao-pulsante { font-size: 30px; animation: flutuar 1s infinite alternate; }
+.tela-header h4 { font-size: 20px; margin: 10px 0 5px; color: #fff; }
+.tela-data { font-size: 12px; color: var(--verde-acao); }
+
+.tela-foto { width: 100%; height: 200px; background: #1a1a1a; border-radius: 15px; display: flex; align-items: center; justify-content: center; border: 1px dashed #333; margin-bottom: 30px; }
+.foto-placeholder { color: #555; font-size: 14px; }
+
+.tela-player { width: 100%; background: #1a1a1a; padding: 15px; border-radius: 15px; box-sizing: border-box; }
+.player-info h5 { margin: 0; font-size: 14px; color: #fff; }
+.player-info p { margin: 5px 0 10px; font-size: 11px; color: #888; }
+.player-controles { display: flex; justify-content: space-around; font-size: 18px; color: #fff; margin-bottom: 15px; }
+.play-btn { color: var(--verde-acao); }
+.player-barra { height: 4px; background: #333; border-radius: 2px; position: relative; }
+.player-barra::after { content: ""; position: absolute; left: 0; top: 0; height: 100%; width: 40%; background: var(--verde-acao); border-radius: 2px; }
+
+.celular-glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 200px; height: 400px; background: rgba(16, 185, 129, 0.3); filter: blur(80px); z-index: 1; border-radius: 50%; }
+
+@media (max-width: 900px) {
+    .preview-container { flex-direction: column; text-align: center; }
+    .preview-lista li { justify-content: center; }
+    .preview-text h2 { font-size: 32px; }
+}
+
+/* =========================================================
+   8. SEÇÃO DE PLANOS
+   ========================================================= */
 .planos-section {
     padding: 80px 5% 100px 5%;
     text-align: center;
     background-color: var(--fundo-preto);
 }
 
-.planos-section h2 {
-    font-size: 36px;
-    margin-bottom: 10px;
-}
+.planos-section h2 { font-size: 36px; margin-bottom: 10px; }
 
 .cards-container {
     display: flex;
@@ -272,15 +595,8 @@ header {
 }
 
 @media (min-width: 768px) {
-    .cards-container {
-        flex-direction: row;
-        justify-content: center;
-    }
-
-    .card {
-        flex: 1;
-        max-width: 400px;
-    }
+    .cards-container { flex-direction: row; justify-content: center; }
+    .card { flex: 1; max-width: 400px; }
 }
 
 .card {
@@ -297,174 +613,152 @@ header {
     background: linear-gradient(180deg, var(--fundo-secundario) 0%, rgba(138, 43, 226, 0.05) 100%);
 }
 
-.badge-destaque {
+.card.destaque .badge-destaque {
     position: absolute;
-    top: -15px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: var(--roxo-marca);
-    color: var(--texto-branco);
-    padding: 8px 20px;
-    border-radius: 30px;
-    font-size: 13px;
-    font-weight: 800;
+    top: -15px; left: 50%; transform: translateX(-50%);
+    margin-bottom: 0;
 }
 
-.card h3 {
-    margin: 0 0 10px 0;
-    font-size: 24px;
+.card h3 { margin: 0 0 10px 0; font-size: 24px; }
+.preco-atual { font-size: 48px; font-weight: 800; color: var(--texto-branco); margin: 10px 0; letter-spacing: -1px; }
+.preco-atual span { font-size: 20px; color: var(--texto-cinza); font-weight: 400; }
+.desconto-tag { color: var(--verde-acao); font-weight: 600; font-size: 14px; margin-bottom: 25px; display: inline-block; background-color: rgba(16, 185, 129, 0.1); padding: 4px 12px; border-radius: 6px; }
+
+ul.beneficios { list-style: none; padding: 0; margin: 0 0 35px 0; }
+ul.beneficios li { margin-bottom: 15px; color: var(--texto-cinza); font-size: 16px; display: flex; align-items: center; }
+ul.beneficios li::before { content: "✓"; color: var(--roxo-marca); font-weight: bold; font-size: 18px; margin-right: 12px; background: rgba(138, 43, 226, 0.1); width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+ul.beneficios li.sem-beneficios { opacity: 0.5; }
+ul.beneficios li.sem-beneficios::before { content: "✕"; color: #ef4444; background: rgba(239, 68, 68, 0.1); font-size: 14px; }
+
+/* =========================================================
+   9. RODAPÉ (FOOTER)
+   ========================================================= */
+.site-footer {
+    background-color: #0a0a0a;
+    padding: 60px 20px 20px;
+    border-top: 1px solid #1f2937;
 }
 
-.preco-atual {
-    font-size: 48px;
-    font-weight: 800;
-    color: var(--texto-branco);
-    margin: 10px 0;
-    letter-spacing: -1px;
+.footer-container { max-width: 1100px; margin: 0 auto; }
+.footer-top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 40px; margin-bottom: 40px; }
+.footer-brand { flex: 1; min-width: 250px; max-width: 350px; }
+.footer-brand h3 { font-size: 24px; margin-bottom: 15px; color: var(--verde-acao); }
+.footer-brand p { font-size: 14px; color: #9ca3af; line-height: 1.6; }
+
+.footer-columns { display: flex; flex: 2; flex-wrap: wrap; gap: 40px; justify-content: space-between; }
+.footer-col { min-width: 120px; }
+.footer-col h4 { font-size: 16px; margin-bottom: 20px; color: #ffffff; font-weight: 600; }
+.footer-col ul { list-style: none; padding: 0; margin: 0; }
+.footer-col ul li { margin-bottom: 12px; }
+.footer-col ul li a { color: #9ca3af; text-decoration: none; font-size: 14px; transition: color 0.3s ease; }
+.footer-col ul li a:hover { color: var(--verde-acao); }
+
+.footer-divider { border: 0; height: 1px; background-color: #1f2937; margin: 30px 0; }
+
+.footer-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px; font-size: 12px; color: #6b7280; }
+.footer-copy p { margin: 5px 0; }
+.footer-social a { color: #9ca3af; text-decoration: none; margin: 0 10px; font-weight: bold; transition: color 0.3s ease; }
+.footer-social a:hover { color: #ffffff; }
+
+@media (max-width: 768px) {
+    .footer-columns { gap: 30px; }
+    .footer-col { width: calc(50% - 15px); }
+    .footer-bottom { flex-direction: column; text-align: center; }
 }
 
-.preco-atual span {
-    font-size: 20px;
-    color: var(--texto-cinza);
-    font-weight: 400;
-}
 
-.desconto-tag {
-    color: var(--verde-acao);
-    font-weight: 600;
-    font-size: 14px;
-    margin-bottom: 25px;
-    display: inline-block;
-    background-color: rgba(16, 185, 129, 0.1);
-    padding: 4px 12px;
-    border-radius: 6px;
-}
 
-ul.beneficios {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 35px 0;
+/* BAGUNCA */
+.icone-transparente {
+    mix-blend-mode: multiply;
 }
-
-ul.beneficios li {
-    margin-bottom: 15px;
-    color: var(--texto-cinza);
-    font-size: 16px;
-    display: flex;
-    align-items: center;
+.icone-roxo {
+    /* Essa matemática de filtros transforma a cor preta em um roxo moderno */
+    filter: invert(43%) sepia(87%) saturate(4646%) hue-rotate(242deg) brightness(98%) contrast(92%);
+    width: 18px; /* Ajuste o tamanho se precisar */
+    height: 18px;
 }
-
-ul.beneficios li::before {
-    content: "✓";
-    color: var(--roxo-marca);
-    font-weight: bold;
-    font-size: 18px;
-    margin-right: 12px;
-    background: rgba(138, 43, 226, 0.1);
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-}
-
-.btn-full {
-    display: block;
+.tela-player {
     width: 100%;
-    text-align: center;
+    background: #1a1a1a;
+    padding: 18px 15px 15px;
+    border-radius: 15px;
     box-sizing: border-box;
+    margin-bottom: 12px;
 }
 
-/* --- FOOTER (RODAPÉ) --- */
-footer {
-    background-color: #050505;
-    padding: 60px 5% 30px 5%;
-    border-top: 1px solid #222;
+.player-info {
+    text-align: center;
+    margin-bottom: 16px;
 }
 
-.footer-container {
-    max-width: 1200px;
-    margin: 0 auto;
+.player-info h5 { margin: 0; font-size: 14px; font-weight: 600; color: #fff; }
+.player-info p { margin: 4px 0 0; font-size: 11px; color: #888; }
+
+/* CONTROLES */
+.player-controles {
     display: flex;
-    flex-direction: column;
+    justify-content: space-around;
     align-items: center;
-    gap: 20px;
-    text-align: center;
+    gap: 32px;
+    margin-bottom: 12px;
 }
 
-@media (min-width: 768px) {
-    .footer-container {
-        flex-direction: row;
-        justify-content: space-between;
-        text-align: left;
-    }
+/* Ícones base (só escala no hover - filtro roxo é INSTANTÂNEO) */
+.icone-player {
+    width: 26px;
+    height: 26px;
+    transition: transform 0.25s ease;   /* ← só escala, filtro não transita */
+    cursor: pointer;
 }
 
-.footer-logo {
-    font-size: 20px;
-    font-weight: 800;
-    margin-bottom: 10px;
+/* HOVER: roxo direto (mesmo filtro do seu foguete roxo) */
+.icone-player:hover {
+    transform: scale(1.18);
+    filter: 
+        invert(43%) 
+        sepia(87%) 
+        saturate(4646%) 
+        hue-rotate(242deg) 
+        brightness(98%) 
+        contrast(92%) 
+        drop-shadow(0 0 12px var(--roxo-marca));
 }
 
-.footer-logo span {
-    color: var(--roxo-marca);
+/* Botão PLAY maior + brilho roxo mais forte */
+.play-btn {
+    width: 38px;
+    height: 38px;
+    /* ← REMOVEMOS qualquer filtro verde aqui (era a causa do flash!) */
 }
 
-.footer-links a {
-    color: var(--texto-cinza);
-    text-decoration: none;
-    margin: 0 15px;
-    font-size: 14px;
-    transition: color 0.3s;
+.play-btn:hover {
+    transform: scale(1.15);
+    filter: invert(43%) sepia(87%) saturate(4646%) hue-rotate(242deg) brightness(98%) contrast(92%);
 }
 
-.footer-links a:hover {
-    color: var(--roxo-marca);
+/* Barra de progresso (mantida) */
+.player-barra {
+    height: 4px;
+    background: #333;
+    border-radius: 2px;
+    position: relative;
+    margin: 0 4px;
 }
 
-.footer-copy {
-    color: #555;
-    font-size: 14px;
-    margin-top: 30px;
-    text-align: center;
-    width: 100%;
+.player-barra::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 68%;
+    background: var(--verde-acao);
+    border-radius: 2px;
+    animation: progresso 4s linear infinite alternate;
 }
 
-.planos-section .cards-container .card .btn-outline,
-.planos-section .cards-container .card .btn-verde {
-    /* 1. Correção do Alinhamento (Centralizado e Full-width) */
-    display: block;
-    /* Ocupa a largura do cartão, corrigindo o disnivelamento */
-    width: 100%;
-    /* Garante que ocupe 100% da largura do pai */
-    text-align: center;
-    /* Centraliza o texto dentro do botão */
-    box-sizing: border-box;
-    /* Garante que padding não quebre a largura */
-
-    /* 2. Estilo Verde de Conversão (Aplicado a ambos) */
-    background-color: var(--verde-acao);
-    /* Fundo Verde */
-    color: #000;
-    /* Texto Preto */
-    text-decoration: none;
-    padding: 16px 32px;
-    border-radius: 12px;
-    font-weight: 800;
-    font-size: 16px;
-    transition: all 0.3s ease;
-    /* Para animação suave */
-    box-shadow: 0 0 25px rgba(16, 185, 129, 0.3);
-    /* Brilho sutil */
-}
-
-/* Hover e Animação unificados para os botões dos planos */
-.planos-section .cards-container .card .btn-outline:hover,
-.planos-section .cards-container .card .btn-verde:hover {
-    /* Animação: Sobe 3px e brilha mais */
-    transform: translateY(-3px);
-    box-shadow: 0 0 35px rgba(16, 185, 129, 0.5);
-    background-color: #0ea875;
-    /* Um verde ligeiramente diferente no hover */
+@keyframes progresso {
+    0%   { width: 35%; }
+    100% { width: 82%; }
 }
