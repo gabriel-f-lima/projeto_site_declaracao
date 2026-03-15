@@ -631,6 +631,212 @@ ul.beneficios li.sem-beneficios { opacity: 0.5; }
 ul.beneficios li.sem-beneficios::before { content: "✕"; color: #ef4444; background: rgba(239, 68, 68, 0.1); font-size: 14px; }
 
 /* =========================================================
+   9. FAQ (ACCORDION)
+   ========================================================= */
+.faq-secao-moderna {
+    max-width: 1100px;
+    margin: 80px auto;
+    padding: 0 20px;
+    font-family: 'Inter', sans-serif; /* Sugestão de fonte mais séria */
+}
+
+.faq-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.8fr; /* Divide em colunas */
+    gap: 60px;
+}
+
+/* Coluna Esquerda */
+.faq-tag {
+    color: var(--cor-tema);
+    text-transform: uppercase;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+.faq-principal-titulo {
+    color: #fff;
+    font-size: 38px;
+    margin: 15px 0;
+    line-height: 1.1;
+}
+
+.faq-descricao {
+    color: #a0a0a0;
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+.faq-contatos {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 35px;
+}
+
+.faq-contato-link {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: #1a1a1a;
+    padding: 15px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: 0.3s;
+    border: 1px solid #2a2a2a;
+}
+
+.faq-contato-link:hover {
+    border-color: var(--cor-tema);
+}
+
+.faq-icon-box {
+    width: 40px;
+    height: 40px;
+    background: #252525;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    color: var(--cor-tema);
+}
+
+.faq-info span {
+    display: block;
+    color: #666;
+    font-size: 12px;
+}
+
+.faq-info strong {
+    color: #fff;
+    font-size: 14px;
+}
+
+.faq-cta-principal {
+    width: 100%;
+    background-color: #7c3aed;
+    box-shadow: 0 0 25px rgba(81, 16, 185, 0.3);
+    color: #fff;
+    border: none;
+    padding: 18px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.faq-cta-principal:hover {
+    background-color: #6d28d9;
+    box-shadow: 0 0 35px rgba(109, 40, 217, 0.5);
+    transform: translateY(-3px);
+}
+
+/* Coluna Direita (Accordions) */
+.faq-modulo {
+    border-bottom: 1px solid #222;
+}
+
+.faq-pergunta {
+    padding: 25px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    color: #fff;
+    font-weight: 600;
+    font-size: 17px;
+    transition: 0.3s;
+}
+
+.faq-pergunta:hover {
+    color: var(--cor-tema);
+}
+
+.faq-pergunta i {
+    font-size: 14px;
+    transition: 0.4s;
+}
+
+.faq-resposta {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s cubic-bezier(0, 1, 0, 1);
+}
+
+.faq-modulo.aberto .faq-resposta {
+    max-height: 1000px;
+    transition: max-height 1s ease-in-out;
+    padding-bottom: 25px;
+}
+
+.faq-modulo.aberto .faq-pergunta i {
+    transform: rotate(45deg); /* Transforma o + em um X */
+    color: var(--cor-tema);
+}
+
+.faq-resposta ul {
+    list-style: none;
+    padding: 0;
+}
+
+.faq-resposta li {
+    color: #888;
+    margin-bottom: 12px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.faq-resposta li strong {
+    color: #bbb;
+}
+
+/* Responsividade */
+@media (max-width: 900px) {
+    .faq-grid { grid-template-columns: 1fr; }
+    .faq-sidebar { text-align: center; }
+    .faq-contato-link { text-align: left; }
+}
+.faq-icon-box {
+    width: 44px;
+    height: 44px;
+    background: #252525; /* Fundo cinza escuro do box */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+}
+
+.faq-img-icon {
+    width: 22px; /* Ajuste o tamanho conforme sua preferência */
+    height: auto;
+    object-fit: contain;
+    
+    /* Se os ícones forem pretos e você quiser deixá-los brancos: */
+    filter: brightness(0) invert(1);
+    
+    /* Se quiser que eles sigam a cor do seu tema: */
+    /* filter: brightness(0) saturate(100%) invert(45%) sepia(85%) saturate(1500%) hue-rotate(240deg); */
+}
+
+.faq-contato-link {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: #1a1a1a;
+    padding: 18px;
+    border-radius: 12px;
+    text-decoration: none;
+    border: 1px solid #2a2a2a;
+    transition: all 0.3s ease;
+}
+
+.faq-contato-link:hover {
+    border-color: var(--cor-tema);
+    background: #222;
+}
+
+/* =========================================================
    9. RODAPÉ (FOOTER)
    ========================================================= */
 .site-footer {
@@ -666,7 +872,154 @@ ul.beneficios li.sem-beneficios::before { content: "✕"; color: #ef4444; backgr
     .footer-bottom { flex-direction: column; text-align: center; }
 }
 
+/* =========================================================
+   PÁGINA DE PRESENTES (ACCORDION)
+   ========================================================= */
 
+.secao-presentes {
+    max-width: 700px; /* Diminuí um pouco a largura máxima para a fileira não ficar "esticada" demais no PC */
+    margin: 60px auto;
+    padding: 0 20px;
+    text-align: center;
+}
+
+.secao-presentes h2 {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.secao-presentes p {
+    color: var(--texto-cinza);
+    margin-bottom: 40px;
+}
+
+/* Agora o grid sempre terá 1 coluna, seja no PC ou no celular */
+.presentes-grid {
+    display: grid;
+    grid-template-columns: 1fr; 
+    gap: 16px;
+    text-align: left;
+}
+
+/* --- ESTILO DO CARTÃO --- */
+.presente-card {
+    background-color: var(--fundo-secundario);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.presente-card:hover {
+    border-color: rgba(138, 43, 226, 0.5); /* Borda fica roxa ao passar o mouse */
+    box-shadow: 0 4px 20px rgba(138, 43, 226, 0.1);
+}
+
+/* Quando o cartão é clicado (Aberto) */
+.presente-card.ativo {
+    background-color: rgba(138, 43, 226, 0.05); /* Fundo levemente roxo */
+    border-color: #8b5cf6; /* Roxo marca */
+}
+
+.presente-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+}
+
+.presente-info-titulo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Fundo do Ícone */
+.presente-icone {
+    background-color: #2a1f3d; /* Roxo escuro de fundo para destacar o ícone */
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+}
+
+.presente-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #ffffff;
+}
+
+/* --- IMAGENS (Ícone e Seta) --- */
+.icone-simples {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+.presente-seta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.seta-simples {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+    transition: transform 0.4s ease;
+    /* Truque mágico: Força a imagem a ficar cinza clarinha para aparecer no fundo escuro */
+    filter: brightness(0) invert(0.7); 
+}
+
+/* Gira a setinha para cima quando o cartão abre e pinta ela de roxo */
+.presente-card.ativo .seta-simples {
+    transform: rotate(180deg); 
+    /* Truque para pintar a imagem PNG de roxo usando filtros */
+    filter: brightness(0) saturate(100%) invert(43%) sepia(87%) saturate(2289%) hue-rotate(242deg) brightness(98%) contrast(93%);
+}
+
+/* --- CONTEÚDO OCULTO (A mágica do clique acontece aqui) --- */
+.presente-conteudo {
+    max-height: 0; /* Escondido por padrão */
+    opacity: 0;
+    overflow: hidden;
+    padding: 0 20px 0 75px; /* Alinhado com o texto, ignorando o espaço do ícone */
+    transition: all 0.4s ease; /* Animação de deslizar para baixo */
+}
+
+.presente-conteudo p {
+    font-size: 14px;
+    color: var(--texto-cinza);
+    margin-bottom: 15px;
+    margin-top: 0;
+}
+
+/* Quando o JS adiciona a classe .ativo, ele revela o conteúdo */
+.presente-card.ativo .presente-conteudo {
+    max-height: 200px; /* Altura suficiente para mostrar o texto e o botão */
+    opacity: 1;
+    padding-bottom: 20px; /* Adiciona o respiro no final do cartão */
+}
+
+/* --- ESTILO DO BOTÃO --- */
+.btn-acao {
+    background-color: #8b5cf6;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+}
+
+.btn-acao:hover {
+    background-color: #7c3aed;
+}
 
 /* BAGUNCA */
 .icone-transparente {
@@ -675,6 +1028,12 @@ ul.beneficios li.sem-beneficios::before { content: "✕"; color: #ef4444; backgr
 .icone-roxo {
     /* Essa matemática de filtros transforma a cor preta em um roxo moderno */
     filter: invert(43%) sepia(87%) saturate(4646%) hue-rotate(242deg) brightness(98%) contrast(92%);
+    width: 18px; /* Ajuste o tamanho se precisar */
+    height: 18px;
+}
+.icone-verde {
+    /* Essa matemática de filtros transforma a cor preta em um verde moderno, mudando principalmente o hue-rotate para a região do verde (cerca de 120deg) */
+    filter: invert(43%) sepia(87%) saturate(3500%) hue-rotate(120deg) brightness(98%) contrast(92%);
     width: 18px; /* Ajuste o tamanho se precisar */
     height: 18px;
 }

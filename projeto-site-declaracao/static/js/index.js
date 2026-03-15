@@ -25,3 +25,14 @@ const fadeElements = document.querySelectorAll('.fade-element');
     fadeElements.forEach(element => {
         observer.observe(element);
     });
+
+function toggleFaq(elemento) {
+    const pai = elemento.parentElement;
+    
+    // Opcional: Fecha todos os outros antes de abrir o novo
+    document.querySelectorAll('.faq-modulo').forEach(item => {
+        if (item !== pai) item.classList.remove('aberto');
+    });
+
+    pai.classList.toggle('aberto');
+}

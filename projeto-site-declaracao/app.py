@@ -24,7 +24,15 @@ def create_app():
     @app.route('/')
     def home():
         return render_template('index.html')
-
+    
+    @app.route('/presentes')
+    def presentes():
+        return render_template('presente.html')
+    
+    @app.route('/criar')
+    def criar_homenagem():
+        return render_template('criar_homenagem.html')
+    
     return app
 
 if __name__ == '__main__':
