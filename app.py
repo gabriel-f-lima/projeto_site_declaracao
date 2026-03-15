@@ -7,7 +7,11 @@ load_dotenv()
 
 def create_app():
     app = Flask(__name__) 
-    db_url = os.getenv("DB_URL", "")
+    
+    # LINHA MUDADA AQUI:
+    db_url = os.getenv("DB_URL", "sqlite:///test.db")
+    if db_url.startswith("postgres://"):
+        db_url = db_url.replace("postgres://", "postgresql://", 1)
     
     app.config['SQLALCHEMY_DATABASE_URI'] = db_url
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -20,7 +24,15 @@ def create_app():
     @app.route('/')
     def home():
         return render_template('index.html')
-
+    
+    @app.route('/presentes')
+    def presentes():
+        return render_template('presente.html')
+    
+    @app.route('/criar')
+    def criar_homenagem():
+        return render_template('criar_homenagem.html')
+    
     return app
 
 if __name__ == '__main__':
