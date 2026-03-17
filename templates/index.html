@@ -13,14 +13,14 @@
 <body>
 
     <header id="topo">
-        <div class="logo">
-            Logo<span>Aqui</span>
-        </div>
-        <div style="display: flex; gap: 15px;">
-            <a href="#planos" class="btn-outline"
-                style="padding: 8px 20px; font-size: 14px; border-radius: 8px;">Entrar</a>
-        </div>
-    </header>
+    <div class="logo">
+        L<img src="{{ url_for('static', filename='img/coracao-lovyc.png') }}" alt="Coração" class="logo-img-icon">v<span>yc</span>
+    </div>
+    <div style="display: flex; gap: 15px;">
+        <a href="#planos" class="btn-outline"
+            style="padding: 8px 20px; font-size: 14px; border-radius: 8px;">Entrar</a>
+    </div>
+</header>
 
     <section class="hero" id="hero">
         <div class="hero-container">
@@ -114,8 +114,8 @@
             <div class="magia-grid">
                 <div class="magia-card fade-element">
                     <div class="card-icon">
-                        <img src="{{ url_for('static', filename='img/filme.png') }}" class="icone-magia icone-invertido"
-                            alt="Vídeo">
+                        <img src="{{ url_for('static', filename='img/filme.png') }}"
+                            class="icone-magia icone-roxo-grande" alt="Vídeo">
                     </div>
                     <h3>Retrospectiva Animada</h3>
                     <p>Uma linha do tempo imersiva relembrando os melhores momentos de vocês, com animações suaves e
@@ -125,7 +125,7 @@
                 <div class="magia-card fade-element delay-1">
                     <div class="card-icon">
                         <img src="{{ url_for('static', filename='img/musica.png') }}"
-                            class="icone-magia icone-invertido" alt="Música">
+                            class="icone-magia icone-roxo-grande" alt="Música">
                     </div>
                     <h3>A Música de Vocês</h3>
                     <p>A trilha sonora perfeita tocando de fundo enquanto a pessoa rola a página e revive a história de
@@ -134,8 +134,8 @@
 
                 <div class="magia-card fade-element delay-2">
                     <div class="card-icon">
-                        <img src="{{ url_for('static', filename='img/jogos.png') }}" class="icone-magia icone-invertido"
-                            alt="Jogos">
+                        <img src="{{ url_for('static', filename='img/jogos.png') }}"
+                            class="icone-magia icone-roxo-grande" alt="Jogos">
                     </div>
                     <h3>Jogos e Interação</h3>
                     <p>Quizzes divertidos, raspadinhas virtuais e surpresas escondidas para deixar o presente ainda mais
@@ -144,8 +144,8 @@
 
                 <div class="magia-card fade-element delay-3">
                     <div class="card-icon">
-                        <img src="{{ url_for('static', filename='img/nuvem.png') }}" class="icone-magia icone-invertido"
-                            alt="Nuvem">
+                        <img src="{{ url_for('static', filename='img/nuvem.png') }}"
+                            class="icone-magia icone-roxo-grande" alt="Nuvem">
                     </div>
                     <h3>Para Sempre no Ar</h3>
                     <p>Seu presente guardado em nuvem. Um link especial que pode ser acessado de qualquer celular, a
@@ -434,9 +434,9 @@
         <div class="footer-container">
             <div class="footer-top">
                 <div class="footer-brand">
-                    <h3>💌 NomeDoSeuSite</h3>
-                    <p>Criando experiências únicas para eternizar momentos especiais com presentes virtuais e
-                        personalizados.</p>
+                    <h3>💌 Lov<span>yc</span></h3>
+                    <p>Surpreenda quem você ama com uma página exclusiva. A maneira mais moderna e criativa de eternizar
+                        seus momentos especiais.</p>
                 </div>
 
                 <div class="footer-columns">
@@ -454,7 +454,6 @@
                         <h4>Presentes</h4>
                         <ul>
                             <li><a href="{{ url_for('presentes') }}">Para Namorado(a)</a></li>
-                            <li><a href="{{ url_for('presentes') }}">Para Amigo(a)</a></li>
                             <li><a href="{{ url_for('presentes') }}">Para Mãe</a></li>
                             <li><a href="{{ url_for('presentes') }}">Ver opções</a></li>
                         </ul>
@@ -463,37 +462,50 @@
                     <div class="footer-col">
                         <h4>Sobre</h4>
                         <ul>
-                            <li><a href="#">Sobre Nós</a></li>
-                            <li><a href="#">Contato</a></li>
+                            <li><a href="javascript:void(0)" onclick="abrirModalOverlay('sobre')">Sobre Nós</a></li>
+                            <li><a href="javascript:void(0)" onclick="abrirModalOverlay('contato')">Contato</a></li>
                         </ul>
                     </div>
 
                     <div class="footer-col">
                         <h4>Legal</h4>
                         <ul>
-                            <li><a href="#">Termos de Uso</a></li>
-                            <li><a href="#">Política de Privacidade</a></li>
+                            <li><a href="javascript:void(0)" onclick="abrirModalOverlay('termos')">Termos de Uso</a>
+                            </li>
+                            <li><a href="javascript:void(0)" onclick="abrirModalOverlay('privacidade')">Política de
+                                    Privacidade</a></li>
                         </ul>
                     </div>
-                </div>
-            </div>
 
-            <hr class="footer-divider">
+                    <div id="modal-overlay" class="modal-overlay-fundo">
+                        <div class="modal-box">
+                            <button class="modal-btn-fechar" onclick="fecharModalOverlay()">
+                                <img src="{{ url_for('static', filename='img/fechar.png') }}" alt="Fechar"
+                                    class="modal-img-fechar">
+                            </button>
 
-            <div class="footer-bottom">
-                <div class="footer-copy">
-                    <p>© 2026 Logo. Todos os direitos reservados.</p>
-                    <p>Desenvolvido de forma independente com 💡</p>
+                            <h2 id="modal-overlay-titulo">Título Aqui</h2>
+                            <div id="modal-overlay-conteudo" class="modal-texto-interno">
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="footer-divider">
+
+                    <div class="footer-bottom">
+                        <div class="footer-copy">
+                            <p>© 2026 Logo. Todos os direitos reservados.</p>
+                            <p>Desenvolvido de forma independente com 💡</p>
+                        </div>
+                        <div class="footer-social">
+                            <a href="#">Instagram</a>
+                            <a href="#">TikTok</a>
+                        </div>
+                        <div class="footer-made-in">
+                            <p>Feito no Brasil 💚</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="footer-social">
-                    <a href="#">Instagram</a>
-                    <a href="#">TikTok</a>
-                </div>
-                <div class="footer-made-in">
-                    <p>Feito no Brasil 💚</p>
-                </div>
-            </div>
-        </div>
     </footer>
     <!-- <script src="/static/js/index.js"></script> -->
     <script src="{{ url_for('static', filename='js/index.js') }}"></script>
