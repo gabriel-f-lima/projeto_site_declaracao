@@ -177,65 +177,6 @@ function gerarMensagemAleatoria() {
 }
 
 // ==========================================================================
-// 3. BUSCA DE MÚSICA (iTunes API)
-// ==========================================================================
-let timerBusca;
-function buscarMusica() {
-    const termo = document.getElementById('nome_musica').value;
-    const lista = document.getElementById('lista-resultados');
-
-    if (termo.length < 2) {
-        lista.style.display = 'none';
-        return;
-    }
-
-    clearTimeout(timerBusca);
-    timerBusca = setTimeout(async () => {
-        try {
-            const resposta = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(termo)}&entity=song&limit=5`);
-            const dados = await resposta.json();
-            lista.innerHTML = '';
-
-            if (dados.results.length > 0) {
-                lista.style.display = 'block';
-                dados.results.forEach(musica => {
-                    const li = document.createElement('li');
-                    const capaAlta = musica.artworkUrl100.replace('100x100bb', '300x300bb');
-                    li.innerHTML = `
-                        <img src="${capaAlta}">
-                        <div class="info-musica-busca">
-                            <span class="titulo-busca">${musica.trackName}</span>
-                            <span class="artista-busca">${musica.artistName}</span>
-                        </div>`;
-                    li.onclick = () => selecionarMusica(musica.trackName, musica.artistName, capaAlta);
-                    lista.appendChild(li);
-                });
-            } else {
-                lista.style.display = 'none';
-            }
-        } catch (e) { console.error(e); }
-    }, 500);
-}
-
-function selecionarMusica(nome, artista, urlCapa) {
-    document.getElementById('nome_musica').value = nome;
-    
-    // Atualiza Mockup
-    const previewFoto = document.getElementById('preview-foto');
-    const placeholder = document.getElementById('placeholder-texto');
-    const previewTitulo = document.getElementById('preview-titulo');
-
-    if(previewFoto) {
-        previewFoto.src = urlCapa;
-        previewFoto.style.display = 'block';
-    }
-    if(placeholder) placeholder.style.display = 'none';
-    if(previewTitulo) previewTitulo.innerText = nome;
-
-    document.getElementById('lista-resultados').style.display = 'none';
-}
-
-// ==========================================================================
 // 4. INICIALIZAÇÃO E EVENTOS
 // ==========================================================================
 
@@ -349,4 +290,354 @@ function mudarTema(corHex, elementoClicado) {
     if (elementoClicado) {
         elementoClicado.classList.add('ativo');
     }
+}
+
+// ==========================================================================
+// 5. NAVEGAÇÃO ENTRE PASSOS (TROCA A TELA DO CELULAR)
+// ==========================================================================
+function mudarPasso(atual, proximo) {
+    // Esconde o passo atual no formulário da esquerda e mostra o próximo
+    document.getElementById(`passo-${atual}`).classList.remove('ativo');
+    document.getElementById(`passo-${proximo}`).classList.add('ativo');
+
+    // Atualiza o progresso das bolinhas em cima
+    const bolinhaAtual = document.getElementById(`bolinha-${atual}`);
+    const bolinhaProxima = document.getElementById(`bolinha-${proximo}`);
+    if(bolinhaAtual) bolinhaAtual.classList.remove('ativo');
+    if(bolinhaProxima) bolinhaProxima.classList.add('ativo');
+
+    // MÁGICA DO MOCKUP: Troca a interface do celular
+    const uiMusica = document.querySelector('.app-musica-ui');
+    const uiTimeline = document.querySelector('.app-timeline-ui');
+    
+    if (uiMusica && uiTimeline) {
+        if (proximo === 3) {
+            // Se foi para o passo 3, mostra a linha do tempo!
+            uiMusica.style.display = 'none';
+            uiTimeline.style.display = 'flex';
+        } else {
+            // Se voltou para 1 ou 2, mostra o Spotify de novo
+            uiMusica.style.display = 'block'; 
+            uiTimeline.style.display = 'none';
+        }
+    }
+}
+
+
+// ==========================================================================
+// 6. FUNÇÕES DA GALERIA / LINHA DO TEMPO EM TEMPO REAL (COM LIMITE DE 6 FOTOS)
+// ==========================================================================
+
+let contadorFotos = 0; // Usado apenas para dar um ID único (nunca diminui)
+let fotosAtivas = 0;   // Controla quantas fotos existem na tela agora
+const MAX_FOTOS = 6;   // O seu limite máximo
+
+function adicionarNovaFoto() {
+    // Trava de segurança: impede de passar de 6
+    if (fotosAtivas >= MAX_FOTOS) {
+        alert("Você atingiu o limite máximo de 6 fotos!");
+        return;
+    }
+
+    contadorFotos++;
+    fotosAtivas++;
+    const id = contadorFotos;
+    
+    // 1. ADICIONA O CARD NO FORMULÁRIO (ESQUERDA)
+    const containerForm = document.getElementById('container-fotos');
+    const divForm = document.createElement('div');
+    divForm.className = 'foto-item';
+    divForm.id = `foto-item-${id}`;
+    
+    divForm.innerHTML = `
+        <label class="foto-preview-box" for="input-foto-${id}" title="Clique para escolher uma foto">
+            <span id="icone-foto-${id}">📷</span>
+            <img id="img-preview-${id}" src="">
+        </label>
+        <input type="file" id="input-foto-${id}" accept="image/*" style="display: none;" onchange="previewFotoLinhaTempo(event, ${id})">
+        
+        <div class="foto-info">
+            <input type="text" placeholder="Data marcante" class="input-data" oninput="atualizarMockupTimeline(${id}, 'data', this.value)">
+            <input type="text" placeholder="Escreva uma mensagem especial..." class="input-legenda" maxlength="100" oninput="atualizarMockupTimeline(${id}, 'texto', this.value)">
+        </div>
+        
+        <button type="button" class="btn-remover-foto" onclick="removerFoto(${id})" title="Apagar foto">✖</button>
+    `;
+    containerForm.appendChild(divForm);
+
+    // 2. ADICIONA O ESPELHO NO MOCKUP DO CELULAR (DIREITA)
+    const containerMockup = document.getElementById('preview-timeline');
+    if(containerMockup) {
+        const divMockup = document.createElement('div');
+        divMockup.className = 'timeline-mockup-item';
+        divMockup.id = `mockup-item-${id}`;
+        divMockup.innerHTML = `
+            <div class="timeline-mockup-date" id="mockup-data-${id}">Sua data...</div>
+            <div class="timeline-mockup-img-container">
+                <span id="mockup-placeholder-${id}">Sem foto</span>
+                <img id="mockup-img-${id}" src="">
+            </div>
+            <div class="timeline-mockup-text" id="mockup-texto-${id}">Sua mensagem aparecerá aqui...</div>
+        `;
+        containerMockup.appendChild(divMockup);
+    }
+
+    verificarLimiteFotos(); // Verifica se precisa esconder o botão
+}
+
+// Pega a foto do PC/Celular e joga no Formulário E no Mockup
+function previewFotoLinhaTempo(event, id) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const imgForm = document.getElementById(`img-preview-${id}`);
+            const iconeForm = document.getElementById(`icone-foto-${id}`);
+            if(imgForm) { imgForm.src = e.target.result; imgForm.style.display = 'block'; }
+            if(iconeForm) iconeForm.style.display = 'none';
+
+            const imgMockup = document.getElementById(`mockup-img-${id}`);
+            const placeholderMockup = document.getElementById(`mockup-placeholder-${id}`);
+            if(imgMockup) { imgMockup.src = e.target.result; imgMockup.style.display = 'block'; }
+            if(placeholderMockup) placeholderMockup.style.display = 'none';
+        }
+        reader.readAsDataURL(file);
+    }
+}
+
+// Quando a pessoa digita, o texto vai pro celular na mesma hora
+function atualizarMockupTimeline(id, campo, valor) {
+    const elementoMockup = document.getElementById(`mockup-${campo}-${id}`);
+    if(elementoMockup) {
+        const placeholder = campo === 'data' ? 'Sua data...' : 'Sua mensagem aparecerá aqui...';
+        elementoMockup.innerText = valor || placeholder;
+    }
+}
+
+// Remove do Form e do Celular ao mesmo tempo
+function removerFoto(id) {
+    const itemForm = document.getElementById(`foto-item-${id}`);
+    const itemMockup = document.getElementById(`mockup-item-${id}`);
+    if(itemForm) itemForm.remove();
+    if(itemMockup) itemMockup.remove();
+    
+    fotosAtivas--; // Diminui a contagem
+    verificarLimiteFotos(); // Verifica se o botão pode voltar a aparecer
+}
+
+// Esconde ou mostra o botão de adicionar fotos dependendo do limite
+function verificarLimiteFotos() {
+    const btnAdicionar = document.querySelector('.btn-adicionar-foto');
+    if (btnAdicionar) {
+        if (fotosAtivas >= MAX_FOTOS) {
+            btnAdicionar.style.display = 'none'; // Esconde o botão se chegou a 6
+        } else {
+            btnAdicionar.style.display = 'block'; // Mostra novamente se for menor que 6
+        }
+    }
+}
+
+// Função temporária apenas para não dar erro ao clicar em "Finalizar"
+function finalizarHomenagem() {
+    alert("Incrível! Tudo pronto para capturar os dados e salvar no servidor. 🚀");
+}
+
+// ==========================================================================
+// 7. APIS DE BUSCA E CÁLCULO DE DIAS
+// ==========================================================================
+
+let timerBusca; // Evita que a API seja chamada a cada letra digitada instantaneamente
+
+function buscarCidade(termo) {
+    const dropdown = document.getElementById('resultado-cidades');
+    if (termo.length < 3) { dropdown.style.display = 'none'; return; }
+
+    clearTimeout(timerBusca);
+    timerBusca = setTimeout(async () => {
+        try {
+            // Busca cidades no Brasil. Aumentei o limit para 10 para ter mais chance de achar cidades diferentes após filtrar
+            const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${termo}&format=json&addressdetails=1&countrycodes=br&limit=10`);
+            const dados = await res.json();
+            
+            dropdown.innerHTML = '';
+            
+            if (dados.length > 0) {
+                // Cria um "caderninho" para anotar as cidades que já mostramos
+                const cidadesVistas = new Set(); 
+
+                dados.forEach(local => {
+                    const cidade = local.address.city || local.address.town || local.address.village;
+                    const estado = local.address.state;
+                    
+                    if (cidade && estado) {
+                        const textoLugar = `${cidade} - ${estado}`;
+                        
+                        // Só cria a opção na lista SE a cidade ainda não estiver no nosso caderninho
+                        if (!cidadesVistas.has(textoLugar)) {
+                            cidadesVistas.add(textoLugar); // Anota no caderninho
+                            
+                            const div = document.createElement('div');
+                            div.className = 'autocomplete-item';
+                            div.innerText = textoLugar;
+                            div.onclick = () => selecionarCidade(cidade, estado);
+                            dropdown.appendChild(div);
+                        }
+                    }
+                });
+                
+                // Só mostra a lista se sobrou alguma coisa depois de filtrar as repetições
+                if (cidadesVistas.size > 0) {
+                    dropdown.style.display = 'block';
+                }
+            }
+        } catch (erro) { console.error("Erro na API de cidades:", erro); }
+    }, 500); 
+}
+
+function selecionarCidade(cidade, estado) {
+    const texto = `${cidade} - ${estado}`;
+    document.getElementById('cidade').value = texto;
+    document.getElementById('mockup-cidade-estado').innerText = texto;
+    document.getElementById('resultado-cidades').style.display = 'none';
+}
+
+function buscarMusica(termo) {
+    const dropdown = document.getElementById('resultado-musicas');
+    
+    // Se o usuário apagar o texto ou tiver menos de 3 letras, esconde a lista
+    if (termo.trim().length < 3) { 
+        dropdown.style.display = 'none'; 
+        return; 
+    }
+
+    // Limpa o timer anterior se a pessoa continuar digitando rápido
+    clearTimeout(timerBusca);
+    
+    timerBusca = setTimeout(async () => {
+        try {
+            // encodeURIComponent: formata o texto para a API não quebrar com espaços (ex: "shape of you" vira "shape%20of%20you")
+            const termoFormatado = encodeURIComponent(termo);
+            // URL oficial da Apple/iTunes
+            const url = `https://itunes.apple.com/search?term=${termoFormatado}&entity=song&limit=5`;
+            
+            const res = await fetch(url);
+            
+            if (!res.ok) throw new Error("Falha ao comunicar com a API de músicas");
+            
+            const dados = await res.json();
+            dropdown.innerHTML = ''; 
+            
+            if (dados.results && dados.results.length > 0) {
+                dados.results.forEach(musica => {
+                    const div = document.createElement('div');
+                    div.className = 'autocomplete-item';
+                    
+                    // O iTunes manda uma imagem 100x100 por padrão. Nós trocamos o texto da URL para 300x300 para qualidade HD!
+                    const capaAltaQualidade = musica.artworkUrl100.replace('100x100bb', '300x300bb');
+                    const nomeMusica = musica.trackName;
+                    const nomeArtista = musica.artistName;
+                    
+                    // Montando o visual da lista. Mantive a cor do título verde (#1ed760) para dar aquele "ar" de Spotify
+                    div.innerHTML = `
+                        <img src="${capaAltaQualidade}" style="width: 40px; height: 40px; border-radius: 4px; object-fit: cover; flex-shrink: 0;">
+                        <div style="display: flex; flex-direction: column; overflow: hidden;">
+                            <span style="font-weight: bold; font-size: 14px; color: #1ed760; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${nomeMusica}</span>
+                            <span style="font-size: 12px; color: #a8b2d1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${nomeArtista}</span>
+                        </div>
+                    `;
+                    
+                    div.onclick = () => selecionarMusica(nomeMusica, nomeArtista, capaAltaQualidade);
+                    dropdown.appendChild(div);
+                });
+                dropdown.style.display = 'block';
+            } else {
+                dropdown.style.display = 'none'; // Não achou nada, esconde a lista
+            }
+        } catch (erro) { 
+            console.error("Erro na busca de músicas:", erro); 
+        }
+    }, 500); // Espera meio segundo (500ms) após a pessoa parar de digitar para gastar a pesquisa
+}
+
+// Função que joga os dados pra tela e pros inputs invisíveis quando a pessoa clica na música
+function selecionarMusica(nome, artista, capa) {
+    document.getElementById('busca_musica').value = `${nome} - ${artista}`;
+    document.getElementById('resultado-musicas').style.display = 'none';
+    
+    // Atualiza os campos ocultos que vão ser enviados pro servidor Python depois
+    document.getElementById('musica_nome').value = nome;
+    document.getElementById('musica_artista').value = artista;
+    document.getElementById('musica_capa').value = capa;
+
+    // Atualiza o Mockup do Celular que você criou!
+    const containerMusicaApi = document.getElementById('mockup-musica-container');
+    const mockTituloApi = document.getElementById('mockup-musica-titulo-api');
+    const mockArtistaApi = document.getElementById('mockup-musica-artista-api');
+    const mockCapaApi = document.getElementById('mockup-musica-capa-api');
+    
+    if(containerMusicaApi) containerMusicaApi.style.display = 'flex'; 
+    if(mockTituloApi) mockTituloApi.innerText = nome;
+    if(mockArtistaApi) mockArtistaApi.innerText = artista;
+    if(mockCapaApi) mockCapaApi.src = capa;
+}
+
+let intervaloContador; // Variável global para limpar o relógio se a pessoa trocar a data
+
+document.getElementById('data_conheceram').addEventListener('change', function() {
+    const dataInput = this.value;
+    const display = document.getElementById('mockup-contador-dias');
+    
+    if (!dataInput || !display) return;
+
+    // Se já existir um relógio rodando (porque a pessoa escolheu outra data antes), nós paramos ele
+    if (intervaloContador) clearInterval(intervaloContador);
+
+    // Pega a data inicial (vamos assumir que o "dia 1" começou à meia-noite)
+    const dataInicio = new Date(dataInput + 'T00:00:00').getTime();
+
+    // Cria o loop que vai rodar e atualizar a tela a cada 1 segundo (1000ms)
+    intervaloContador = setInterval(function() {
+        const agora = new Date().getTime();
+        const diferencaTempo = agora - dataInicio;
+        
+        if (diferencaTempo >= 0) {
+            // A matemática para extrair cada parte do tempo
+            const dias = Math.floor(diferencaTempo / (1000 * 60 * 60 * 24));
+            const horas = Math.floor((diferencaTempo % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutos = Math.floor((diferencaTempo % (1000 * 60 * 60)) / (1000 * 60));
+            const segundos = Math.floor((diferencaTempo % (1000 * 60)) / 1000);
+            
+            // Adiciona um "0" na frente se o número for menor que 10 (ex: 05h 09m)
+            const hFormatado = horas.toString().padStart(2, '0');
+            const mFormatado = minutos.toString().padStart(2, '0');
+            const sFormatado = segundos.toString().padStart(2, '0');
+            
+            // Atualiza o Mockup do celular na hora!
+            display.innerText = `${dias} dias, ${hFormatado}h ${mFormatado}m ${sFormatado}s ❤️`;
+        } else {
+            display.innerText = `A data ainda vai chegar!`;
+            clearInterval(intervaloContador); // Para o relógio se a data for no futuro
+        }
+    }, 1000);
+});
+
+function selecionarMusica(nome, artista, capa) {
+    document.getElementById('busca_musica').value = `${nome} - ${artista}`;
+    document.getElementById('resultado-musicas').style.display = 'none';
+    
+    // Atualiza os campos ocultos pro servidor
+    document.getElementById('musica_nome').value = nome;
+    document.getElementById('musica_artista').value = artista;
+    document.getElementById('musica_capa').value = capa;
+
+    // Atualiza a NOVA div no Mockup do Celular
+    const containerMusicaApi = document.getElementById('mockup-musica-container');
+    const mockTituloApi = document.getElementById('mockup-musica-titulo-api');
+    const mockArtistaApi = document.getElementById('mockup-musica-artista-api');
+    const mockCapaApi = document.getElementById('mockup-musica-capa-api');
+    
+    if(containerMusicaApi) containerMusicaApi.style.display = 'flex'; // Torna a div visível
+    if(mockTituloApi) mockTituloApi.innerText = nome;
+    if(mockArtistaApi) mockArtistaApi.innerText = artista;
+    if(mockCapaApi) mockCapaApi.src = capa;
 }

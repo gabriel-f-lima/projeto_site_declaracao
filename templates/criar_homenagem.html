@@ -90,6 +90,21 @@
                     </div>
 
                     <div class="input-group">
+                        <label for="data_conheceram">Dia em que se conheceram:</label>
+                        <input type="date" id="data_conheceram" onchange="atualizarPreview()"
+                            onkeyup="atualizarPreview()">
+                    </div>
+
+                    <div class="input-group">
+                        <div class="input-group" style="position: relative;">
+                            <label for="cidade">Cidade <span
+                                    style="font-size: 0.85em; color: #a8b2d1;">(Opcional)</span>:</label>
+                            <input type="text" id="cidade" placeholder="" oninput="buscarCidade(this.value)"
+                                autocomplete="off">
+                            <div id="resultado-cidades" class="autocomplete-dropdown"></div>
+                        </div>
+                    </div>
+                    <div class="input-group">
                         <label for="titulo" id="label-titulo">Título da Página:</label>
                         <input type="text" id="titulo" maxlength="30" placeholder="Ex: Nosso 1º Ano"
                             onkeyup="atualizarPreview()">
@@ -113,9 +128,16 @@
                         <p>Escolha a trilha sonora perfeita para este momento.</p>
                     </div>
 
-                    <div class="input-group">
-                        <label for="nome_musica">Nome da Música:</label>
-                        <input type="text" id="nome_musica" placeholder="Ex: Perfect" onkeyup="atualizarPreview()">
+                    <div class="input-group" style="position: relative;">
+                        <label for="busca_musica">Nome da Música:</label>
+                        <input type="text" id="busca_musica" placeholder="Pesquise por música ou artista..."
+                            onkeyup="buscarMusica(this.value); atualizarPreview()" autocomplete="off">
+
+                        <div id="resultado-musicas" class="autocomplete-dropdown"></div>
+
+                        <input type="hidden" name="musica_nome" id="musica_nome">
+                        <input type="hidden" name="musica_artista" id="musica_artista">
+                        <input type="hidden" name="musica_capa" id="musica_capa">
                     </div>
 
                     <div class="input-group">
@@ -161,11 +183,21 @@
 
                 <div class="passo-container" id="passo-3">
                     <div class="form-header">
-                        <h2>Linha do Tempo</h2>
-                        <p>Em breve colocaremos as fotos aqui!</p>
+                        <h2>Nossas Memórias 📸</h2>
+                        <p>Adicione fotos e crie uma linha do tempo com seus melhores momentos.</p>
                     </div>
-                    <div class="botoes-navegacao duplo">
-                        <button type="button" class="btn-secundario mt-20" onclick="mudarPasso(3, 2)">Voltar</button>
+
+                    <div id="container-fotos" class="lista-fotos-timeline">
+                    </div>
+
+                    <button type="button" class="btn-adicionar-foto mt-10" onclick="adicionarNovaFoto()">
+                        + Adicionar Nova Foto
+                    </button>
+
+                    <div class="botoes-navegacao duplo mt-20">
+                        <button type="button" class="btn-secundario" onclick="mudarPasso(3, 2)">Voltar</button>
+                        <button type="button" class="btn-acao" onclick="finalizarHomenagem()">Finalizar e Ver Homenagem
+                            ✨</button>
                     </div>
                 </div>
 
@@ -231,6 +263,24 @@
                         </div>
                         <div class="app-letra-texto" id="preview-letra">Sua mensagem aparecerá aqui...</div>
                         <button class="app-letra-btn">Mostrar mensagem</button>
+                    </div>
+                    <div class="mockup-musica-info" style="display: none;" id="mockup-musica-container">
+                        <img src="" id="mockup-musica-capa-api" alt="Capa da Música">
+                        <div class="mockup-musica-detalhes">
+                            <div class="mockup-musica-titulo" id="mockup-musica-titulo-api">Nome da Música</div>
+                            <div class="mockup-musica-artista" id="mockup-musica-artista-api">Nome do Artista</div>
+                        </div>
+                    </div>
+                    <div class="mockup-infos-finais">
+                        <div id="mockup-contador-dias">Tempo juntos: 0 dias</div>
+                        <div id="mockup-cidade-estado">Sua cidade</div>
+                    </div>
+                </div>
+                <div class="app-timeline-ui" style="display: none;">
+                    <div class="app-timeline-header">
+                        <h3 id="mockup-timeline-titulo">Nossas Memórias</h3>
+                    </div>
+                    <div class="app-timeline-content" id="preview-timeline">
                     </div>
                 </div>
             </div>

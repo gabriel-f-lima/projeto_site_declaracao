@@ -870,3 +870,344 @@
     box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25);
     background: rgba(0, 0, 0, 0.6);
 }
+
+/* ==========================================================================
+   CSS DO PASSO 3 - LINHA DO TEMPO (FOTOS)
+   ========================================================================== */
+
+.lista-fotos-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.foto-item {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 15px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    position: relative;
+    animation: fadeIn 0.3s ease;
+}
+
+/* Quadrado onde a foto aparece (Thumbnail) */
+.foto-preview-box {
+    width: 80px;
+    height: 80px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    cursor: pointer;
+    border: 1px dashed rgba(255, 255, 255, 0.3);
+    flex-shrink: 0;
+    transition: 0.3s;
+}
+
+.foto-preview-box:hover {
+    border-color: var(--cor-tema, #7c5dfa);
+    background: rgba(124, 93, 250, 0.1);
+}
+
+.foto-preview-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none; /* Fica oculta até o usuário subir a foto */
+}
+
+/* Inputs de Data e Legenda */
+.foto-info {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-right: 25px; /* Espaço para o botão de apagar não sobrepor o texto */
+}
+
+.foto-info input {
+    width: 100%;
+    padding: 8px 12px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    color: white;
+    font-size: 13px;
+}
+
+/* Botão de Apagar (X) */
+.btn-remover-foto {
+    background: transparent;
+    color: rgba(255, 255, 255, 0.4);
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    transition: 0.3s;
+}
+
+.btn-remover-foto:hover {
+    color: #ff3b30; /* Fica vermelho ao passar o mouse */
+}
+
+/* Botão de Adicionar Mais Fotos */
+.btn-adicionar-foto {
+    width: 100%;
+    padding: 15px;
+    background: transparent;
+    border: 2px dashed var(--cor-tema, #7c5dfa);
+    color: var(--cor-tema, #7c5dfa);
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-adicionar-foto:hover {
+    background: rgba(124, 93, 250, 0.1);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.app-timeline-ui {
+    width: 100%;
+    height: 100%;
+    /* Fundo alterado para o padrão Dark Mode do Spotify */
+    background: linear-gradient(180deg, #1e1e1e 0%, #121212 100%);
+    display: flex; 
+    flex-direction: column;
+    overflow-y: auto; 
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* Deixa a barra de rolagem do celular invisível/fininha */
+.app-timeline-ui::-webkit-scrollbar { width: 4px; }
+.app-timeline-ui::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+
+.app-timeline-header {
+    text-align: center;
+    margin-bottom: 25px;
+    color: var(--cor-tema, #7c5dfa);
+    font-size: 16px;
+    font-weight: 700;
+}
+
+/* O container de cada foto na linha do tempo */
+.timeline-mockup-item {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 30px;
+    border-left: 2px solid var(--cor-tema, #7c5dfa);
+    padding-left: 15px;
+    position: relative;
+    animation: fadeIn 0.4s ease;
+}
+
+/* O pontinho na linha */
+.timeline-mockup-item::before {
+    content: '';
+    position: absolute;
+    left: -6px;
+    top: 0;
+    width: 10px;
+    height: 10px;
+    background: var(--cor-tema, #7c5dfa);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--cor-tema, #7c5dfa);
+}
+
+.timeline-mockup-date {
+    font-size: 12px;
+    color: #a8b2d1;
+    font-weight: 600;
+}
+
+.timeline-mockup-img-container {
+    width: 100%;
+    height: 160px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+.timeline-mockup-img-container span {
+    color: #666;
+    font-size: 12px;
+}
+
+.timeline-mockup-img-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none; /* Só aparece quando sobe a foto */
+}
+
+.timeline-mockup-text {
+    font-size: 13px;
+    color: #e2e8f0;
+    line-height: 1.5;
+    font-style: italic;
+}
+/* ==========================================================================
+   AUTOCOMPLETE (Cidades e Músicas)
+   ========================================================================== */
+.autocomplete-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: #1a1a2e;
+    border: 1px solid #7c5dfa;
+    border-radius: 8px;
+    z-index: 10;
+    max-height: 200px;
+    overflow-y: auto;
+    display: none; /* Escondido por padrão */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+.autocomplete-item {
+    padding: 10px 15px;
+    cursor: pointer;
+    color: #e2e8f0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.autocomplete-item:hover {
+    background: rgba(124, 93, 250, 0.2);
+}
+
+.autocomplete-item img {
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+}
+
+/* ==========================================================================
+   NOVOS ITENS MOCKUP (DIAS E CIDADE)
+   ========================================================================== */
+.mockup-infos-finais {
+    margin-top: 20px;
+    text-align: center;
+    animation: fadeIn 0.5s ease;
+}
+
+#mockup-contador-dias {
+    font-size: 18px;
+    font-weight: bold;
+    color: #1ed760; /* Verde Spotify */
+    margin-bottom: 5px;
+}
+
+#mockup-cidade-estado {
+    font-size: 12px;
+    color: #b3b3b3; /* Cinza Spotify */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+#mockup-contador-dias {
+    font-size: 15px; /* Diminuí um pouquinho para caber dias, horas, min e seg */
+    font-weight: bold;
+    color: #1ed760; 
+    margin-bottom: 5px;
+    font-variant-numeric: tabular-nums; /* Isso faz os números não ficarem "dançando" enquanto mudam */
+}
+/* ==========================================================================
+   MOCKUP - INFO DA MÚSICA DA API (ABAIXO DA LETRA)
+   ========================================================================== */
+.mockup-musica-info {
+    display: flex; /* O JS vai alterar para flex quando encontrar a música */
+    align-items: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 10px;
+    margin-top: 20px;
+    margin-bottom: 15px; /* Espaço antes do contador */
+    gap: 15px;
+}
+
+.mockup-musica-info img {
+    width: 50px;
+    height: 50px;
+    border-radius: 4px;
+    object-fit: cover;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+.mockup-musica-detalhes {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Evita que nomes gigantes quebrem o layout */
+}
+
+.mockup-musica-titulo {
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Adiciona "..." se o nome for grande */
+}
+
+.mockup-musica-artista {
+    color: #b3b3b3;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.autocomplete-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #1e1e2e; /* Fundo escuro elegante */
+    border: 1px solid #333;
+    border-radius: 8px;
+    max-height: 250px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none; /* Fica escondida até a API achar algo */
+    margin-top: 5px;
+    box-shadow: 0 10px 15px rgba(0,0,0,0.5);
+}
+
+.autocomplete-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    cursor: pointer;
+    gap: 12px;
+    border-bottom: 1px solid #2a2a3a;
+    transition: background 0.2s;
+}
+
+.autocomplete-item:hover {
+    background: #2a2a3a;
+}
+
+.autocomplete-item:last-child {
+    border-bottom: none;
+}
