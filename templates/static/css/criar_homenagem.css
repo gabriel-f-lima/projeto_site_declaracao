@@ -1,0 +1,1639 @@
+/* =========================================================
+   PÁGINA DE CRIAÇÃO (SPLIT LAYOUT & MOCKUP)
+   ========================================================= */
+
+/* Divide a tela em duas partes no PC */
+.editor-container {
+    display: flex;
+    flex-direction: column-reverse; /* No celular, o preview vai pro fundo */
+    overflow: hidden;
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+    gap: 40px;
+}
+
+@media (min-width: 992px) {
+    .editor-container {
+        flex-direction: row; /* Lado a lado no PC */
+        align-items: flex-start;
+    }
+}
+
+/* LADO ESQUERDO: Formulário */
+.editor-form-panel {
+    flex: 1; /* Ocupa o espaço que sobrar */
+    background-color: var(--fundo-secundario);
+    padding: 30px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.form-header {
+    margin-bottom: 30px;
+}
+
+.form-header h2 {
+    font-size: 24px;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    min-height: 28px; /* Evita que a tela pule durante a animação de digitação */
+}
+
+.form-header p {
+    min-height: 40px; /* Evita pulos na animação */
+}
+
+/* 1. ADICIONE ISTO BEM NO TOPO DO SEU ARQUIVO CSS */
+:root {
+    --cor-tema: #8b5cf6; /* Cor base (Roxo padrão) */
+    --cor-tema-rgb: 139, 92, 246; /* Versão RGB para podermos usar transparência no gradiente */
+}
+
+/* 2. ATUALIZE A CLASSE DO CELULAR PARA USAR A VARIÁVEL */
+.app-musica-ui {
+    /* O gradiente agora usa a cor escolhida com 30% de opacidade no topo */
+    background: linear-gradient(180deg, rgba(var(--cor-tema-rgb), 0.3) 0%, #222222 20%, #121212 100%) !important;
+    height: 100%;
+    border-radius: 30px;
+    padding: 50px 20px 80px; 
+    display: flex;
+    flex-direction: column;
+    color: #fff;
+    box-sizing: border-box;
+    overflow-y: auto; 
+    overflow-x: hidden; 
+    scrollbar-width: none; 
+}
+.app-musica-ui > * { flex-shrink: 0; }
+
+/* 3. SUBSTITUA O ESTILO DO SEU CARD DE LETRAS POR ESTE AQUI (Estilo Spotify) */
+.app-letra-card {
+    background-color: var(--cor-tema); /* A cor de fundo muda com o tema */
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.app-letra-header {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 15px;
+}
+
+.app-letra-texto {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.4;
+    color: #ffffff;
+    
+    /* ADICIONE ESTA LINHA: Criará uma borda invisível que protege a leitura */
+    text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
+    
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    white-space: pre-wrap;
+    transition: all 0.3s;
+}
+
+/* Ajuste no botão "Mostrar letra" para ele não sumir no fundo */
+.app-letra-btn {
+    background: #ffffff;
+    color: #000000;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15); /* Sombra para dar profundidade */
+    border: none;
+    border-radius: 20px;
+    padding: 8px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    margin-top: 15px;
+    cursor: pointer;
+}
+/* Quando o usuário clica e a classe 'expandido' é adicionada */
+.app-letra-card.expandido .app-letra-texto {
+    -webkit-line-clamp: unset; /* Remove o limite de linhas */
+}
+.app-letra-card.expandido .app-letra-btn {
+    display: none; /* Esconde o botão "Mostrar letra" quando já está aberto */
+}
+
+/* 4. ESTILO PARA AS BOLINHAS DO SELETOR DE COR */
+/* ESTILO PARA AS BOLINHAS DE TEMA */
+.seletor-cores {
+    display: flex;
+    gap: 15px; /* Espaço entre as bolinhas */
+    margin-top: 10px;
+}
+
+.cor-opcao {
+    width: 36px; 
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 3px solid transparent; /* Borda invisível por padrão */
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3); /* Sombreado de leve */
+    padding: 0;
+}
+
+.cor-opcao:hover { 
+    transform: scale(1.1); 
+}
+
+/* Quando a bolinha é clicada, ela ganha a classe 'ativo' e fica com borda branca */
+.cor-opcao.ativo {
+    border-color: #ffffff;
+    transform: scale(1.15); /* Fica um pouquinho maior */
+}
+.cor-input::-webkit-color-swatch { border: none; border-radius: 50%; }
+
+
+/* =========================================================
+   PASSO 0: GRID DE CARDS (Opções de Presente)
+   ========================================================= */
+.grid-tipos {
+    display: grid;
+    /* Cards se ajustam automaticamente */
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); 
+    gap: 15px;
+    width: 100%;
+    margin-top: 30px;
+}
+
+.btn-tipo {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 20px 15px;
+    color: #ffffff;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column; /* Ícone em cima, texto embaixo */
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-align: center;
+}
+
+.btn-tipo span {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.btn-tipo:hover {
+    background: rgba(139, 92, 246, 0.15);
+    border-color: #8b5cf6;
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.2);
+}
+
+.btn-tipo img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    /* Deixa o ícone roxo neon */
+    filter: brightness(0) invert(1) sepia(1) saturate(5000%) hue-rotate(250deg);
+}
+
+/* =========================================================
+   PASSO 1: CAMPOS DE TEXTO PREMIUM
+   ========================================================= */
+.campo-grupo {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: left;
+}
+
+.campo-grupo label {
+    font-size: 14px;
+    color: #b3b3b3;
+    font-weight: 500;
+}
+
+.campo-grupo input {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 14px 16px;
+    color: #fff;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.campo-grupo input:focus {
+    border-color: #8b5cf6;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25);
+    background: rgba(0, 0, 0, 0.6);
+}
+
+/* Input com botão "Sugerir" ao lado */
+.input-com-botao {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.btn-sugerir {
+    background: rgba(139, 92, 246, 0.2);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    color: #fff;
+    padding: 0 20px;
+    height: 48px; /* Mesma altura do input */
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 14px;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+}
+
+.btn-sugerir:hover {
+    background: #8b5cf6;
+    transform: scale(1.05);
+}
+.input-group {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: left;
+    width: 100%;
+}
+
+.input-group label {
+    font-size: 14px;
+    color: #b3b3b3;
+    font-weight: 500;
+}
+
+.input-group input {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 14px 16px;
+    color: #fff;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.input-group input:focus {
+    border-color: #8b5cf6;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25);
+    background: rgba(0, 0, 0, 0.6);
+}
+
+/* Estilo do botão principal roxo (Próximo) */
+.btn-acao {
+    background-color: #8b5cf6;
+    color: white;
+    border: none;
+    padding: 14px 24px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.3s;
+}
+
+.btn-acao:hover {
+    background-color: #7c3aed;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(139, 92, 246, 0.3);
+}
+
+/* =========================================================
+   SISTEMA DE PASSOS (Navegação)
+   ========================================================= */
+.passo-container {
+    display: none;
+    animation: fadeIn 0.4s ease;
+}
+
+.passo-container.ativo {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.botoes-navegacao.duplo {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.btn-secundario {
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    width: 100%;
+    transition: all 0.3s;
+}
+
+.btn-secundario:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Barra de Progresso (Bolinhas) */
+.progresso-passos {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.passo-bolinha {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--texto-cinza, #888);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+.passo-bolinha.ativo {
+    background-color: #8b5cf6;
+    color: white;
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
+}
+
+.passo-linha {
+    height: 2px;
+    width: 40px;
+    background-color: rgba(255, 255, 255, 0.1);
+    margin: 0 10px;
+}
+
+
+/* =========================================================
+   LADO DIREITO: MOCKUP DO CELULAR & SPOTIFY UI
+   ========================================================= */
+.editor-preview-panel {
+    width: 100%;
+    max-width: 350px;
+    margin: 0 auto;
+    position: sticky;
+    top: 40px; 
+}
+
+.mockup-celular {
+    --cor-tema: #8b5cf6; 
+    --cor-tema-rgb: 139, 92, 246;
+    background-color: #111;
+    border-radius: 40px;
+    padding: 12px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 0 0 2px #333;
+    position: relative;
+    height: 700px;
+    overflow: hidden;
+}
+
+.mockup-camera {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 25px;
+    background-color: #111;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    z-index: 10;
+}
+
+
+/* Interface Sombria do Spotify */
+.app-musica-ui {
+    /* 1. MUDANÇA: Gradiente Roxo no Topo. Começa com roxo suave e vai para o escuro */
+    background: linear-gradient(180deg, rgba(var(--cor-tema-rgb), 0.3) 0%, #222222 20%, #121212 100%) !important;
+    
+    height: 100%;
+    border-radius: 30px;
+    
+    /* 2. MUDANÇA: Consolidando o padding para dar mais espaço no final da rolagem */
+    padding: 50px 20px 80px; 
+    
+    display: flex;
+    flex-direction: column;
+    color: #fff;
+    box-sizing: border-box;
+    overflow-y: auto; /* Permite rolar para baixo */
+    overflow-x: hidden; /* Impede rolagem para os lados */
+    scrollbar-width: none; /* Esconde a barra de rolagem no Firefox */
+}
+
+/* 3. MUDANÇA: Impede que os elementos encolham para caber na tela.
+   Esta regra diz: todos os filhos diretos da app-musica-ui não podem encolher */
+.app-musica-ui > * {
+    flex-shrink: 0;
+}
+
+/* Esconde a barra de rolagem no Chrome, Safari e Edge */
+.app-musica-ui::-webkit-scrollbar {
+    width: 0px; 
+    background: transparent;
+}
+
+#preview-titulo {
+    color: #ffffff;
+    letter-spacing: -0.5px;
+    font-size: 22px;
+    margin-bottom: 5px;
+}
+
+#preview-de {
+    color: #b3b3b3;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.app-coracao-verde {
+    font-size: 24px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.app-barra-fundo {
+    background: rgba(255, 255, 255, 0.2); /* Um cinza/branco translúcido fica mais moderno */
+    height: 4px;
+    border-radius: 2px;
+    margin-bottom: 8px;
+    position: relative;
+}
+
+.app-barra-verde {
+    /* MUDANÇA AQUI: Trocamos o verde fixo pela variável do tema */
+    background: var(--cor-tema) !important; 
+    
+    height: 100%;
+    border-radius: 2px;
+    width: 35%; 
+    transition: background 0.3s ease; /* Para a cor mudar suavemente */
+}
+.app-bolinha {
+    width: 12px;
+    height: 12px;
+    background: #fff;
+    border-radius: 50%;
+    position: absolute;
+    top: -4px;
+    left: 35%;
+}
+
+/* =========================================================
+   ELEMENTOS INTERNOS DO MOCKUP (ESTILO SPOTIFY)
+   ========================================================= */
+
+/* Topo do App */
+.app-top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    color: #fff;
+}
+
+.app-playlist-name {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: #fff;
+    text-transform: uppercase;
+}
+
+.icone-fino {
+    font-weight: 300;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+/* Container da Foto Quadrada */
+.app-capa-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1/1; /* Garante que seja um quadrado perfeito */
+    background-color: #282828; /* Cor de fundo enquanto não tem foto */
+    border-radius: 8px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5); /* Sombra pesada estilo spotify */
+    overflow: hidden;
+}
+
+.app-capa-foto {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Faz a foto preencher o quadrado sem distorcer */
+    display: none; /* Começa escondida até o usuário enviar uma foto */
+}
+
+/* Textos (Título e Nome) */
+.app-info-musica {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start; /* MUDEI AQUI: Mantém o coração lá no topo mesmo se o texto tiver 3 linhas */
+    margin-bottom: 20px;
+    text-align: left;
+    gap: 15px; 
+}
+
+/* Caixa onde fica os textos (Título e De:) */
+.app-textos {
+    flex: 1; 
+    min-width: 0; 
+}
+
+/* O título do preview */
+#preview-titulo {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 5px 0;
+    color: #ffffff;
+    word-wrap: break-word; /* Permite que o texto desça para a linha de baixo */
+    line-height: 1.2; /* Dá um espacinho bonito entre as linhas pra não ficar grudado */
+}
+
+#preview-de {
+    font-size: 14px;
+    color: #b3b3b3;
+    margin: 0;
+}
+
+/* Tempo da Música (1:15 ------- -2:30) */
+.app-tempo {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #a7a7a7;
+    margin-top: 5px;
+    font-weight: 500;
+}
+
+/* Botões de Controle (Play, Voltar, Avançar) */
+.app-controles {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    margin-top: 15px;
+}
+
+/* Botão Play/Pause Branco */
+.app-btn-play {
+    width: 55px;
+    height: 55px;
+    background-color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.1s ease;
+    cursor: pointer;
+}
+
+.app-btn-play:hover {
+    transform: scale(1.05);
+}
+
+/* Ajuste das cores das imagens (ícones) */
+.icone-invertido {
+    filter: invert(1); /* Deixa a imagem branca */
+    opacity: 0.7;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.icone-invertido:hover {
+    opacity: 1;
+}
+
+.icone-transparente {
+    filter: brightness(0); /* Deixa a imagem totalmente preta (pro botão de play branco) */
+}
+.app-letra-btn {
+    background: #ffffff; /* Fundo branco sólido */
+    color: #000000;      /* Texto preto para contraste */
+    border: none;
+    border-radius: 20px; /* Formato de pílula */
+    padding: 6px 16px;
+    font-size: 12px;
+    font-weight: 700;    /* Negrito bem marcado */
+    margin-top: 15px;
+    cursor: pointer;
+    display: inline-block;
+    transition: transform 0.2s ease, opacity 0.2s;
+}
+
+/* Efeito de clique no botão */
+.app-letra-btn:active {
+    transform: scale(0.95);
+    opacity: 0.9;
+}
+
+/* Lógica de Expansão: Quando o card recebe a classe 'expandido' via JS */
+.app-letra-card.expandido .app-letra-btn {
+    display: none; /* O botão desaparece ao abrir a mensagem */
+}
+
+/* Ajuste no Texto quando expandido */
+.app-letra-card.expandido .app-letra-texto {
+    -webkit-line-clamp: unset; /* Remove o limite de 2 ou 3 linhas */
+    display: block;            /* Garante que o texto ocupe o espaço necessário */
+}
+
+/* Estilo do Header (Prévia da letra) */
+.app-letra-header {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase; /* Deixa em caixa alta como no App */
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+    color: #ffffff;
+}
+.app-coracao-tema {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+}
+
+/* Faz a transição de cor do coração ser suave quando o usuário clica na bolinha do tema */
+.app-coracao-tema svg path {
+    transition: fill 0.3s ease;
+}
+/* =========================================================
+   MODO CELULAR (ESPIADINHA)
+   ========================================================= */
+
+/* Botão flutuante que aparece só no celular */
+.btn-espiadinha {
+    position: fixed;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #1ed760; /* Verde Spotify pra chamar atenção */
+    color: #000;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: 700;
+    box-shadow: 0 5px 20px rgba(30, 215, 96, 0.4);
+    z-index: 99;
+    cursor: pointer;
+    display: block; /* Fica visível no mobile */
+    white-space: nowrap;
+}
+
+/* Modal Escuro (Quando clica na espiadinha) */
+.editor-preview-panel.modo-modal {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.95); /* Fundo quase preto */
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    max-width: none;
+}
+
+/* Botão de Fechar a Espiadinha (Escondido por padrão) */
+.btn-fechar-espiadinha {
+    display: none; 
+}
+
+/* Mostra o botão de fechar só quando o modal estiver aberto */
+.editor-preview-panel.modo-modal .btn-fechar-espiadinha {
+    display: block;
+    margin-bottom: 20px;
+    background: #333;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* =========================================================
+   RESPONSIVIDADE (Ajustes para Mobile vs PC)
+   ========================================================= */
+
+/* Por padrão (telas pequenas/celular), escondemos o mockup normal */
+@media (max-width: 991px) {
+    .editor-preview-panel {
+        display: none; 
+    }
+}
+
+/* No PC (telas grandes), mostramos o mockup lado a lado e escondemos o botão espiadinha */
+@media (min-width: 992px) {
+    .editor-preview-panel {
+        display: block; 
+        position: sticky;
+        top: 40px;
+    }
+    
+    .btn-espiadinha {
+        display: none; /* SOME NO PC */
+    }
+
+    /* Se o usuário abrir no celular e virar a tela pro PC, desativamos o modal */
+    .editor-preview-panel.modo-modal {
+        position: sticky;
+        background: transparent;
+        width: 100%;
+        height: auto;
+        max-width: 350px;
+        z-index: 1;
+        display: block;
+    }
+    
+    .editor-preview-panel.modo-modal .btn-fechar-espiadinha {
+        display: none; /* SOME NO PC */
+    }
+}
+/* =========================================================
+   ESTILOS DA CAPA DO ÁLBUM
+   ========================================================= */
+#placeholder-texto {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #777;
+    font-size: 14px;
+    text-align: center;
+    width: 80%;
+}
+
+.app-capa-foto {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Garante que a foto preencha o quadrado sem achatar */
+    display: none; /* Começa escondida, só aparece quando a foto é enviada */
+    position: relative;
+    z-index: 2;
+}
+/* =========================================================
+   CARD DE LETRA/MENSAGEM (SPOTIFY)
+   ========================================================= */
+.app-letra-card {
+    background-color: var(--cor-tema);
+    border-radius: 12px;
+    padding: 15px;
+    margin-top: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.app-letra-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.icone-expandir {
+    font-size: 16px;
+    transition: transform 0.3s ease;
+}
+
+.app-letra-texto {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #d1d1d1;
+    /* Faz o texto ficar com "..." na 2ª linha por padrão (modo fechado) */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    white-space: pre-wrap; /* Respeita os "Enters" que o usuário der no texto */
+}
+
+/* Quando o JS adiciona a classe 'expandido', a caixa abre! */
+.app-letra-card.expandido .app-letra-texto {
+    -webkit-line-clamp: unset; /* Tira o limite de linhas */
+    display: block;
+}
+
+.app-letra-card.expandido .icone-expandir {
+    transform: rotate(180deg); /* Vira a setinha pra indicar que pode fechar */
+}
+
+/* Estilo do novo campo de texto (Textarea) do formulário */
+.input-group textarea {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 14px 16px;
+    color: #fff;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+    resize: vertical;
+    font-family: inherit;
+}
+
+.input-group textarea:focus {
+    border-color: #8b5cf6;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25);
+    background: rgba(0, 0, 0, 0.6);
+}
+
+/* ==========================================================================
+   CSS DO PASSO 3 - LINHA DO TEMPO (FOTOS)
+   ========================================================================== */
+
+.lista-fotos-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.foto-item {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 15px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    position: relative;
+    animation: fadeIn 0.3s ease;
+}
+
+/* Quadrado onde a foto aparece (Thumbnail) */
+.foto-preview-box {
+    width: 80px;
+    height: 80px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    cursor: pointer;
+    border: 1px dashed rgba(255, 255, 255, 0.3);
+    flex-shrink: 0;
+    transition: 0.3s;
+}
+
+.foto-preview-box:hover {
+    border-color: var(--cor-tema, #7c5dfa);
+    background: rgba(124, 93, 250, 0.1);
+}
+
+.foto-preview-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none; /* Fica oculta até o usuário subir a foto */
+}
+
+/* Inputs de Data e Legenda */
+.foto-info {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-right: 25px; /* Espaço para o botão de apagar não sobrepor o texto */
+}
+
+.foto-info input {
+    width: 100%;
+    padding: 8px 12px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    color: white;
+    font-size: 13px;
+}
+
+/* Botão de Apagar (X) */
+.btn-remover-foto {
+    background: transparent;
+    color: rgba(255, 255, 255, 0.4);
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    transition: 0.3s;
+}
+
+.btn-remover-foto:hover {
+    color: #ff3b30; /* Fica vermelho ao passar o mouse */
+}
+
+/* Botão de Adicionar Mais Fotos */
+.btn-adicionar-foto {
+    width: 100%;
+    padding: 15px;
+    background: transparent;
+    border: 2px dashed var(--cor-tema, #7c5dfa);
+    color: var(--cor-tema, #7c5dfa);
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-adicionar-foto:hover {
+    background: rgba(124, 93, 250, 0.1);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.app-timeline-ui {
+    width: 100%;
+    height: 100%;
+    /* Fundo alterado para o padrão Dark Mode do Spotify */
+    background: linear-gradient(180deg, #1e1e1e 0%, #121212 100%);
+    display: flex; 
+    flex-direction: column;
+    overflow-y: auto; 
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* Deixa a barra de rolagem do celular invisível/fininha */
+.app-timeline-ui::-webkit-scrollbar { width: 4px; }
+.app-timeline-ui::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+
+.app-timeline-header {
+    text-align: center;
+    margin-bottom: 25px;
+    color: var(--cor-tema, #7c5dfa);
+    font-size: 16px;
+    font-weight: 700;
+}
+
+/* O container de cada foto na linha do tempo */
+.timeline-mockup-item {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 30px;
+    border-left: 2px solid var(--cor-tema, #7c5dfa);
+    padding-left: 15px;
+    position: relative;
+    animation: fadeIn 0.4s ease;
+}
+
+/* O pontinho na linha */
+.timeline-mockup-item::before {
+    content: '';
+    position: absolute;
+    left: -6px;
+    top: 0;
+    width: 10px;
+    height: 10px;
+    background: var(--cor-tema, #7c5dfa);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--cor-tema, #7c5dfa);
+}
+
+.timeline-mockup-date {
+    font-size: 12px;
+    color: #a8b2d1;
+    font-weight: 600;
+}
+
+.timeline-mockup-img-container {
+    width: 100%;
+    height: 160px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+.timeline-mockup-img-container span {
+    color: #666;
+    font-size: 12px;
+}
+
+.timeline-mockup-img-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none; /* Só aparece quando sobe a foto */
+}
+
+.timeline-mockup-text {
+    font-size: 13px;
+    color: #e2e8f0;
+    line-height: 1.5;
+    font-style: italic;
+}
+/* ==========================================================================
+   AUTOCOMPLETE (Cidades e Músicas)
+   ========================================================================== */
+.autocomplete-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: #1a1a2e;
+    border: 1px solid #7c5dfa;
+    border-radius: 8px;
+    z-index: 10;
+    max-height: 200px;
+    overflow-y: auto;
+    display: none; /* Escondido por padrão */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+.autocomplete-item {
+    padding: 10px 15px;
+    cursor: pointer;
+    color: #e2e8f0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.autocomplete-item:hover {
+    background: rgba(124, 93, 250, 0.2);
+}
+
+.autocomplete-item img {
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+}
+
+/* ==========================================================================
+   NOVOS ITENS MOCKUP (DIAS E CIDADE)
+   ========================================================================== */
+.mockup-infos-finais {
+    margin-top: 20px;
+    text-align: center;
+    animation: fadeIn 0.5s ease;
+}
+
+#mockup-contador-dias {
+    font-size: 18px;
+    font-weight: bold;
+    --cor-tema: #8b5cf6; 
+    --cor-tema-rgb: 139, 92, 246;
+    margin-bottom: 5px;
+}
+
+#mockup-cidade-estado {
+    font-size: 12px;
+    color: #b3b3b3; /* Cinza Spotify */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+#mockup-contador-dias {
+    font-size: 15px; /* Diminuí um pouquinho para caber dias, horas, min e seg */
+    font-weight: bold;
+    color: #1ed760; 
+    margin-bottom: 5px;
+    font-variant-numeric: tabular-nums; /* Isso faz os números não ficarem "dançando" enquanto mudam */
+}
+/* ==========================================================================
+   MOCKUP - INFO DA MÚSICA DA API (ABAIXO DA LETRA)
+   ========================================================================== */
+.mockup-musica-info {
+    display: flex;
+    flex-direction: column;
+    background: #242424;
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 15px;
+    gap: 12px;
+}
+
+.mockup-musica-linha-superior {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.mockup-musica-capa-textos {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.mockup-musica-capa {
+    width: 50px;
+    height: 50px;
+    border-radius: 6px;
+    object-fit: cover;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+.mockup-musica-detalhes {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.mockup-musica-titulo {
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mockup-musica-artista {
+    color: #a7a7a7;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* --- Barrinha de Progresso --- */
+.mockup-musica-linha-progresso {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mockup-musica-tempo {
+    color: #a7a7a7;
+    font-size: 11px;
+}
+
+.mockup-musica-barra {
+    flex-grow: 1;
+    height: 4px;
+    border-radius: 2px;
+    cursor: pointer;
+    accent-color: #1ed760; /* Verde estilo Spotify */
+}
+
+/* --- Botão Play --- */
+.mini-play-btn, .app-btn-play {
+    background-color: #ffffff;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.mini-play-btn.desativado {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.mini-play-btn:hover:not(.desativado), .app-btn-play:hover {
+    transform: scale(1.05);
+    background-color: #f0f0f0;
+}
+
+.mini-play-btn img, .app-btn-play img {
+    width: 18px;
+    height: auto;
+    margin-left: 3px; /* Centraliza o triângulo do Play */
+    display: block;
+}
+
+.mini-play-btn img[src*="pausa"], 
+.app-btn-play img[src*="pausa"] {
+    margin-left: 0 !important;
+}
+
+.mockup-musica-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* --- Autocomplete (Pesquisa) --- */
+.autocomplete-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #1e1e2e;
+    border: 1px solid #333;
+    border-radius: 8px;
+    max-height: 250px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+    margin-top: 5px;
+    box-shadow: 0 10px 15px rgba(0,0,0,0.5);
+}
+
+.autocomplete-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    cursor: pointer;
+    gap: 12px;
+    border-bottom: 1px solid #2a2a3a;
+    transition: background 0.2s;
+}
+
+.autocomplete-item:hover {
+    background: #2a2a3a;
+}
+
+.autocomplete-item:last-child {
+    border-bottom: none;
+}
+/* =========================================
+   CARD DE MEMÓRIAS (ESTILO PLAYLIST)
+========================================= */
+.app-card-memorias {
+    background-color: #242424; /* Um tom um pouco mais claro que o fundo pra destacar */
+    border-radius: 12px;
+    padding: 18px;
+    margin-top: 25px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.app-card-memorias:hover {
+    background-color: #2a2a2a; /* Efeito interativo leve ao passar o dedo/mouse */
+}
+
+#mockup-timeline-titulo-card {
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0 0 15px 0;
+    letter-spacing: 0.3px;
+}
+
+/* Grid das 3 fotinhas */
+.app-grid-miniaturas {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    width: 100%; /* FIX: Impede que textos muito longos estiquem o grid e empurrem as outras fotos */
+}
+
+/* Formato de cada foto miniatura */
+.app-mini-foto {
+    position: relative;
+    background-color: #333333; /* Fundo acinzentado bonito pra quando não tem foto */
+    border-radius: 8px;
+    aspect-ratio: 2/3;
+    display: flex;
+    align-items: flex-end;
+    padding: 10px;
+    box-sizing: border-box;
+    overflow: hidden; /* FIX: Corta qualquer coisa que tente vazar das bordas arredondadas */
+}
+
+.app-mini-foto img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Corta a imagem perfeitamente sem amassar/distorcer */
+    z-index: 0; /* Mantém a imagem ATRÁS do degradê (que é 1) e do texto (que é 2) */
+}
+
+/* O degradê mágico que faz o texto brilhar mesmo se a foto for clara */
+.app-mini-foto::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60%;
+    background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);
+    z-index: 1;
+    pointer-events: none; /* FIX: Garante que o degradê não bloqueie cliques na imagem (caso precise no futuro) */
+}
+
+.app-mini-foto span {
+    position: relative;
+    z-index: 2;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.2;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.8); /* FIX: Adiciona uma sombrinha no texto pra ele ficar 100% legível em qualquer foto */
+    
+    /* FIX: Sistema de segurança contra textos gigantes. Cria os "..." automáticos na segunda linha */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    word-break: break-word; /* FIX: Quebra a linha mesmo se o usuário digitar "kkkkkkkkkkkkkkk" sem espaços */
+}
+
+/* =========================================
+   RODAPÉ: TEMPO E CIDADE
+========================================= */
+.app-infos-finais {
+    text-align: center;
+    margin-top: 30px;
+    margin-bottom: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+#mockup-contador-dias {
+    color: #1DB954; /* O VERDE OFICIAL DO SPOTIFY */
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+}
+
+#mockup-cidade-estado {
+    color: #a7a7a7; /* O mesmo cinza suave que você usou no tempo da música */
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px; /* Espaçamento chic */
+}
+
+/* =========================================
+   TELA DA TIMELINE (QUANDO CLICA NO CARD)
+========================================= */
+.app-timeline-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #121212; /* Fundo base total black */
+    z-index: 100;
+    overflow-y: auto;
+}
+
+.app-header-timeline {
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-bottom: 1px solid #282828;
+    position: sticky;
+    top: 0;
+    background-color: rgba(18, 18, 18, 0.95); /* Leve transparência moderna */
+    backdrop-filter: blur(10px); /* Efeito de vidro do iOS/Spotify */
+    z-index: 10;
+}
+
+.app-btn-voltar {
+    background: none;
+    border: none;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.app-btn-voltar:active {
+    opacity: 0.6;
+}
+
+#mockup-timeline-titulo {
+    color: #ffffff;
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.app-conteudo-timeline {
+    padding: 20px;
+}
+
+.progresso-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px 0;
+}
+
+/* Container dos números do tempo */
+.tempos {
+    display: flex;
+    justify-content: space-between;
+    color: #a8b2d1;
+    font-size: 11px;
+    font-family: 'Inter', sans-serif;
+    font-variant-numeric: tabular-nums; /* Evita que os números fiquem pulando */
+}
+
+/* Estilização da Barra (Input Range) */
+#barra-progresso {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 4px; /* Barra bem fininha e elegante */
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    background-image: linear-gradient(#1ed760, #1ed760); /* Cor do preenchimento */
+    background-size: 0% 100%; /* Isso será controlado pelo JS */
+    background-repeat: no-repeat;
+    cursor: pointer;
+    outline: none;
+    transition: height 0.2s;
+}
+
+/* Aumenta a altura ao passar o mouse */
+#barra-progresso:hover {
+    height: 6px;
+}
+
+/* A "Bolinha" (Thumb) - Chrome/Safari/Edge */
+#barra-progresso::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+    opacity: 0; /* Escondida por padrão */
+    transition: opacity 0.2s, transform 0.2s;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+/* Mostra a bolinha ao passar o mouse */
+#barra-progresso:hover::-webkit-slider-thumb {
+    opacity: 1;
+    transform: scale(1.2);
+}
+
+/* A "Bolinha" para Firefox */
+#barra-progresso::-moz-range-thumb {
+    height: 12px;
+    width: 12px;
+    border: none;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+#barra-progresso:hover::-moz-range-thumb {
+    opacity: 1;
+}
+/* Limita o tamanho do texto do Título e Artista */
+#mockup-musica-titulo-api,
+#mockup-musica-artista-api {
+    white-space: nowrap; /* Impede o texto de pular para a linha de baixo */
+    overflow: hidden; /* Esconde tudo o que passar do limite */
+    text-overflow: ellipsis; /* Adiciona os "..." no final */
+    display: block;
+    max-width: 100%; 
+}
+
+/* * O PULO DO GATO (FLEXBOX):
+ * Se a sua div que segura os textos estiver usando "display: flex", 
+ * você precisa adicionar essa classe ou estilo nela para o corte funcionar:
+ */
+.container-dos-textos {
+    flex: 1;
+    min-width: 0; /* Isso é essencial! Impede que o texto estique a div pai */
+    padding-right: 10px; /* Dá um respiro antes de encostar no botão de play */
+}
+.container-carrossel-capa {
+    position: relative;
+    width: 100%;
+    /* Se você tiver um tamanho fixo pro mockup, coloque aqui */
+}
+
+/* Container flexível para afastar os botões */
+.controles-carrossel {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 10px;
+    box-sizing: border-box;
+}
+.btn-seta:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.foto-item-capa {
+    position: relative; /* Isso é essencial para o botão de fechar não voar para fora */
+    width: 100px; 
+    height: 100px;
+}
+
+.btn-remover-foto {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.btn-remover-foto:hover {
+    background-color: #ff1a1a;
+}
+#preview-foto {
+    transition: opacity 0.3s ease-in-out;
+    opacity: 1;
+}
+
+/* Classe que vamos colocar e tirar via JavaScript para fazer a foto sumir */
+.efeito-fade {
+    opacity: 0 !important;
+}
+.digitando::after {
+    content: '|';
+    margin-left: 2px;
+    animation: piscar 0.7s infinite;
+    color: #1ed760; /* Cor do Spotify */
+}
+
+@keyframes piscar {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+.input-group {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.char-count {
+    display: block;
+    text-align: right;
+    font-size: 11px;
+    color: #a8b2d1;
+    margin-top: 4px;
+}
