@@ -91,57 +91,44 @@ let tipoSelecionadoAtual = new URLSearchParams(window.location.search).get('tipo
 // ==========================================================================
 // 2. FUNÇÕES DE ANIMAÇÃO E INTERFACE
 // ==========================================================================
-
-let animacaoTitulo, animacaoDesc;
-
-function digitarTexto(elementoId, texto, velocidade = 35) {
+function animarEscrita(elementoId, texto) {
     const elemento = document.getElementById(elementoId);
     if (!elemento) return;
-    
-    elemento.innerHTML = ""; 
+
+    elemento.innerHTML = ""; // Limpamos com innerHTML
     let i = 0;
-    
-    return setInterval(() => {
+
+    function escrever() {
         if (i < texto.length) {
-            elemento.innerHTML += texto.charAt(i);
+            // Se for um espaço, usamos o código de espaço do HTML para garantir que ele apareça
+            if (texto.charAt(i) === " ") {
+                elemento.innerHTML += "&nbsp;";
+            } else {
+                elemento.innerHTML += texto.charAt(i);
+            }
+
             i++;
+            setTimeout(escrever, 35); // Velocidade de 35ms fica bem natural
         }
-    }, velocidade);
-}
-
-function aplicarTextos(tipo) {
-    const textos = textosPersonalizados[tipo] || textosPersonalizados['padrao'];
-    
-    clearInterval(animacaoTitulo);
-    clearInterval(animacaoDesc);
-    
-    const elLabelPara = document.getElementById('label-nome-para');
-    const elInputTitulo = document.getElementById('titulo');
-
-    if(elLabelPara) elLabelPara.innerText = textos.labelPara;
-    if(elInputTitulo) elInputTitulo.placeholder = textos.placeholderTitulo;
-
-    animacaoTitulo = digitarTexto('passo1-titulo', textos.titulo, 40);
-    setTimeout(() => {
-        animacaoDesc = digitarTexto('passo1-desc', textos.descricao, 25);
-    }, 400); 
+    }
+    escrever();
 }
 
 function escolherTipoTela(tipo) {
-    tipoSelecionadoAtual = tipo; 
+    tipoSelecionadoAtual = tipo;
     aplicarTextos(tipo);
-    
+
     document.getElementById('passo-0').classList.remove('ativo');
     document.getElementById('passo-1').classList.add('ativo');
-    
+
     const barra = document.querySelector('.progresso-passos');
-    if(barra) barra.style.display = 'flex';
+    if (barra) barra.style.display = 'flex';
 }
 
 function gerarTituloAleatorio() {
     const lista = sugestoesTitulos[tipoSelecionadoAtual] || sugestoesTitulos['padrao'];
     const inputTitulo = document.getElementById('titulo');
-    
+
     if (!inputTitulo) return;
 
     const tituloAtual = inputTitulo.value;
@@ -150,7 +137,7 @@ function gerarTituloAleatorio() {
     do {
         tituloSorteado = lista[Math.floor(Math.random() * lista.length)];
     } while (tituloSorteado === tituloAtual && lista.length > 1);
-    
+
     inputTitulo.value = tituloSorteado;
     // Dispara o evento input manualmente para atualizar o mockup
     inputTitulo.dispatchEvent(new Event('input'));
@@ -159,7 +146,7 @@ function gerarTituloAleatorio() {
 function gerarMensagemAleatoria() {
     const lista = sugestoesMensagens[tipoSelecionadoAtual] || sugestoesMensagens['padrao'];
     const inputMensagem = document.getElementById('letra_musica');
-    
+
     if (!inputMensagem) return;
 
     const msgAtual = inputMensagem.value;
@@ -169,9 +156,9 @@ function gerarMensagemAleatoria() {
     do {
         msgSorteada = lista[Math.floor(Math.random() * lista.length)];
     } while (msgSorteada === msgAtual && lista.length > 1);
-    
+
     inputMensagem.value = msgSorteada;
-    
+
     // Chama a função que já existe para atualizar o texto no celular
     atualizarLetra();
 }
@@ -189,12 +176,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!tipoPresente) {
         const p0 = document.getElementById('passo-0');
-        if(p0) p0.classList.add('ativo');
-        if(barraProgresso) barraProgresso.style.display = 'none';
+        if (p0) p0.classList.add('ativo');
+        if (barraProgresso) barraProgresso.style.display = 'none';
     } else {
         aplicarTextos(tipoPresente);
         document.getElementById('passo-1').classList.add('ativo');
-        if(barraProgresso) barraProgresso.style.display = 'flex';
+        if (barraProgresso) barraProgresso.style.display = 'flex';
     }
 
     // Listeners de Input para o Mockup
@@ -202,15 +189,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputPara = document.getElementById('nome_para');
     const inputTitulo = document.getElementById('titulo');
 
-    if(inputDe) inputDe.addEventListener('input', (e) => {
+    if (inputDe) inputDe.addEventListener('input', (e) => {
         document.getElementById('preview-de').innerText = `De: ${e.target.value || '...'}`;
     });
 
-    if(inputPara) inputPara.addEventListener('input', (e) => {
+    if (inputPara) inputPara.addEventListener('input', (e) => {
         document.getElementById('preview-topo').innerText = `PARA: ${e.target.value.toUpperCase() || '...'}`;
     });
 
-    if(inputTitulo) inputTitulo.addEventListener('input', (e) => {
+    if (inputTitulo) inputTitulo.addEventListener('input', (e) => {
         document.getElementById('preview-titulo').innerText = e.target.value || 'Seu Título Aqui';
     });
 });
@@ -221,7 +208,7 @@ function fecharEspiadinha() { document.querySelector('.editor-preview-panel').cl
 
 function carregarFoto(event) {
     const reader = new FileReader();
-    reader.onload = function() {
+    reader.onload = function () {
         const img = document.getElementById('preview-foto');
         img.src = reader.result;
         img.style.display = 'block';
@@ -230,26 +217,26 @@ function carregarFoto(event) {
     if (event.target.files[0]) reader.readAsDataURL(event.target.files[0]);
 }
 
-function mudarPasso(atual, proximo) {
-    document.getElementById('passo-' + atual).classList.remove('ativo');
-    document.getElementById('passo-' + proximo).classList.add('ativo');
-    
-    const bolinhas = document.querySelectorAll('.passo-bolinha');
-    bolinhas.forEach((b, i) => {
-        if (i < proximo) b.classList.add('ativo');
-        else b.classList.remove('ativo');
-    });
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
 
 function atualizarLetra() {
-    const texto = document.getElementById('letra_musica').value;
+    const input = document.getElementById('letra_musica');
     const preview = document.getElementById('preview-letra');
-    
-    if(texto.trim() === '') {
+    const contador = document.getElementById('contador_letra');
+
+    if (!input || !preview) return;
+
+    const texto = input.value;
+
+    // Atualiza o contador visual
+    if (contador) {
+        contador.innerText = `${texto.length} / 600 caracteres`;
+    }
+
+    // Atualiza o preview no celular
+    if (texto.trim() === '') {
         preview.innerHTML = 'Sua mensagem aparecerá aqui...';
     } else {
-        // O replace(/\n/g, '<br>') pega todos os "Enters" e transforma em quebra de linha real
+        // Substitui quebras de linha por <br> para aparecer no HTML
         preview.innerHTML = texto.replace(/\n/g, '<br>');
     }
 }
@@ -276,17 +263,17 @@ function hexParaRgb(hex) {
 function mudarTema(corHex, elementoClicado) {
     // Seleciona apenas o mockup do celular
     const mockup = document.querySelector('.mockup-celular');
-    
+
     if (mockup) {
         // Altera as variáveis APENAS no mockup
         mockup.style.setProperty('--cor-tema', corHex);
         mockup.style.setProperty('--cor-tema-rgb', hexParaRgb(corHex));
     }
-    
+
     // Mantém o destaque visual na bolinha selecionada
     const bolinhas = document.querySelectorAll('.cor-opcao');
     bolinhas.forEach(bolinha => bolinha.classList.remove('ativo'));
-    
+
     if (elementoClicado) {
         elementoClicado.classList.add('ativo');
     }
@@ -295,94 +282,377 @@ function mudarTema(corHex, elementoClicado) {
 // ==========================================================================
 // 5. NAVEGAÇÃO ENTRE PASSOS (TROCA A TELA DO CELULAR)
 // ==========================================================================
-function mudarPasso(atual, proximo) {
-    // Esconde o passo atual no formulário da esquerda e mostra o próximo
-    document.getElementById(`passo-${atual}`).classList.remove('ativo');
-    document.getElementById(`passo-${proximo}`).classList.add('ativo');
+function mudarPasso(passoAtual, proximoPasso) {
+    const elAtual = document.getElementById(`passo-${passoAtual}`);
+    const elProximo = document.getElementById(`passo-${proximoPasso}`);
 
-    // Atualiza o progresso das bolinhas em cima
-    const bolinhaAtual = document.getElementById(`bolinha-${atual}`);
-    const bolinhaProxima = document.getElementById(`bolinha-${proximo}`);
-    if(bolinhaAtual) bolinhaAtual.classList.remove('ativo');
-    if(bolinhaProxima) bolinhaProxima.classList.add('ativo');
+    if (elAtual && elProximo) {
+        // 1. Esconde o atual com um efeito de sumiço
+        elAtual.style.opacity = "0";
 
-    // MÁGICA DO MOCKUP: Troca a interface do celular
-    const uiMusica = document.querySelector('.app-musica-ui');
-    const uiTimeline = document.querySelector('.app-timeline-ui');
-    
-    if (uiMusica && uiTimeline) {
-        if (proximo === 3) {
-            // Se foi para o passo 3, mostra a linha do tempo!
-            uiMusica.style.display = 'none';
-            uiTimeline.style.display = 'flex';
-        } else {
-            // Se voltou para 1 ou 2, mostra o Spotify de novo
-            uiMusica.style.display = 'block'; 
-            uiTimeline.style.display = 'none';
-        }
+        setTimeout(() => {
+            elAtual.classList.remove('ativo');
+            elAtual.style.display = "none";
+
+            // 2. Prepara o próximo (mostra mas deixa transparente para o efeito)
+            elProximo.style.display = "block";
+            elProximo.style.opacity = "0";
+
+            setTimeout(() => {
+                elProximo.classList.add('ativo');
+                elProximo.style.opacity = "1";
+
+                // 3. AGORA sim, com o container visível, disparar os textos
+                const textos = {
+                    1: { titulo: "Quem são vocês?", desc: "Insira os nomes para personalizar a homenagem." },
+                    2: { titulo: "Momento Especial", desc: "Quando e onde tudo começou?" },
+                    3: { titulo: "Título da Homenagem", desc: "Como você quer chamar essa página?" },
+                    4: { titulo: "A Música de Vocês", desc: "Escolha a trilha sonora perfeita para este momento." },
+                    5: { titulo: "Fotos de Capa", desc: "Selecione até 4 fotos lindas para a capa do seu álbum." },
+                    6: {titulo: "Nossas Memórias 📸", desc: "Adicione fotos e crie uma linha do tempo com seus melhores momentos."}
+                };
+
+                if (textos[proximoPasso]) {
+                    const elTitulo = document.getElementById(`titulo-passo-${proximoPasso}`);
+                    const elDesc = document.getElementById(`desc-passo-${proximoPasso}`);
+
+                    // RESET TOTAL: Garante que ambos comecem invisíveis e limpos ao mudar de passo
+                    if (elTitulo) {
+                        elTitulo.style.opacity = "0";
+                        elTitulo.innerHTML = "";
+                    }
+                    if (elDesc) {
+                        elDesc.style.opacity = "0";
+                        elDesc.innerHTML = "";
+                    }
+
+                    // 1. Mostra o título e começa a escrever
+                    setTimeout(() => {
+                        if (elTitulo) {
+                            elTitulo.style.opacity = "1"; // Agora ele fica visível
+                            animarEscrita(`titulo-passo-${proximoPasso}`, textos[proximoPasso].titulo);
+                        }
+                    }, 100); // Pequeno delay para garantir que a transição de página terminou
+
+                    // 2. Mostra a descrição e começa a escrever depois do título
+                    setTimeout(() => {
+                        if (elDesc) {
+                            elDesc.style.opacity = "1"; // Agora ela fica visível
+                            animarEscrita(`desc-passo-${proximoPasso}`, textos[proximoPasso].desc);
+                        }
+                    }, 1200);
+                }
+
+                atualizarVisualStepper(proximoPasso);
+
+            }, 50);
+        }, 300); // Tempo para o fade-out do passo anterior
     }
 }
 
+window.onload = () => {
+    // 1. Garantimos que o Passo 0 está visível, mas os textos começam limpos
+    const t0 = document.getElementById('titulo-passo-0');
+    const d0 = document.getElementById('desc-passo-0');
 
-// ==========================================================================
-// 6. FUNÇÕES DA GALERIA / LINHA DO TEMPO EM TEMPO REAL (COM LIMITE DE 6 FOTOS)
-// ==========================================================================
+    if (t0 && d0) {
+        // 2. "Ligamos a luz" (opacity) e começamos a digitar
+        t0.style.opacity = "1";
+        animarEscrita('titulo-passo-0', "Para quem é o presente?");
 
-let contadorFotos = 0; // Usado apenas para dar um ID único (nunca diminui)
-let fotosAtivas = 0;   // Controla quantas fotos existem na tela agora
-const MAX_FOTOS = 6;   // O seu limite máximo
+        setTimeout(() => {
+            d0.style.opacity = "1";
+            animarEscrita('desc-passo-0', "Escolha uma opção para começarmos a criar algo especial.");
+        }, 1000);
+    }
+};
+function atualizarVisualStepper(passoDestino) {
+    // Seleciona todas as bolinhas e linhas
+    const steps = document.querySelectorAll('.step');
+    const lines = document.querySelectorAll('.step-line');
+
+    steps.forEach((step, index) => {
+        // Pega o número do passo pelo ID (ex: step-1 -> 1)
+        const stepNum = parseInt(step.id.replace('step-', ''));
+
+        if (stepNum <= passoDestino) {
+            step.classList.add('ativo');
+        } else {
+            step.classList.remove('ativo');
+        }
+    });
+
+    lines.forEach((line, index) => {
+        // A linha entre o passo 0 e 1 é a linha index 0
+        if (index < passoDestino) {
+            line.classList.add('ativa');
+        } else {
+            line.classList.remove('ativa');
+        }
+    });
+}
+
+function escolherTipoTela(tipo) {
+    // 1. Mostra o Stepper que estava escondido
+    const stepper = document.getElementById('main-stepper');
+    if (stepper) stepper.classList.remove('hidden');
+
+    // 2. Chama a mudança de passo do 0 para o 1
+    // Isso vai disparar aquela lógica de opacidade que criamos
+    mudarPasso(0, 1);
+
+    // 3. (Opcional) Salva o tipo escolhido para usar depois
+    console.log("Tipo escolhido:", tipo);
+}
+let contadorFotos = 0; 
+let fotosAtivas = 0;   
+const MAX_FOTOS = 6;   
 
 function adicionarNovaFoto() {
-    // Trava de segurança: impede de passar de 6
-    if (fotosAtivas >= MAX_FOTOS) {
-        alert("Você atingiu o limite máximo de 6 fotos!");
-        return;
-    }
+    // Trava silenciosa: se já tem 6, ele simplesmente não faz nada (sem alert)
+    if (fotosAtivas >= MAX_FOTOS) return;
 
     contadorFotos++;
     fotosAtivas++;
     const id = contadorFotos;
-    
-    // 1. ADICIONA O CARD NO FORMULÁRIO (ESQUERDA)
+
+    // 1. ADICIONA O CARD NO FORMULÁRIO (Agora com as classes do estilo Polaroid)
     const containerForm = document.getElementById('container-fotos');
     const divForm = document.createElement('div');
     divForm.className = 'foto-item';
     divForm.id = `foto-item-${id}`;
-    
+
     divForm.innerHTML = `
         <label class="foto-preview-box" for="input-foto-${id}" title="Clique para escolher uma foto">
-            <span id="icone-foto-${id}">📷</span>
-            <img id="img-preview-${id}" src="">
+            <span id="icone-foto-${id}" style="display:block; text-align:center; padding-top: 50px; color: rgba(0,0,0,0.3); font-size: 24px;">📷</span>
+            <img id="img-preview-${id}" src="" style="display: none;">
         </label>
-        <input type="file" id="input-foto-${id}" accept="image/*" style="display: none;" onchange="previewFotoLinhaTempo(event, ${id})">
+        
+        <input type="file" id="input-foto-${id}" accept="image/*" hidden 
+               onchange="previewFotoLinhaTempo(event, ${id})">
         
         <div class="foto-info">
-            <input type="text" placeholder="Data marcante" class="input-data" oninput="atualizarMockupTimeline(${id}, 'data', this.value)">
-            <input type="text" placeholder="Escreva uma mensagem especial..." class="input-legenda" maxlength="100" oninput="atualizarMockupTimeline(${id}, 'texto', this.value)">
+            <input type="text" placeholder="Ex: Maio 2022" class="timeline-data" maxlength="35"
+                   oninput="atualizarMockupTimeline(${id}, 'data', this.value)">
+            
+            <input type="text" name="momento_titulo_${id}" placeholder="Escreva uma legenda..." 
+                   class="timeline-legenda" maxlength="100" 
+                   oninput="atualizarMockupTimeline(${id}, 'texto', this.value); atualizarCaixinhaMemorias()">
         </div>
         
         <button type="button" class="btn-remover-foto" onclick="removerFoto(${id})" title="Apagar foto">✖</button>
     `;
     containerForm.appendChild(divForm);
 
-    // 2. ADICIONA O ESPELHO NO MOCKUP DO CELULAR (DIREITA)
     const containerMockup = document.getElementById('preview-timeline');
-    if(containerMockup) {
+    if (containerMockup) {
         const divMockup = document.createElement('div');
         divMockup.className = 'timeline-mockup-item';
         divMockup.id = `mockup-item-${id}`;
         divMockup.innerHTML = `
-            <div class="timeline-mockup-date" id="mockup-data-${id}">Sua data...</div>
             <div class="timeline-mockup-img-container">
                 <span id="mockup-placeholder-${id}">Sem foto</span>
-                <img id="mockup-img-${id}" src="">
+                <img id="mockup-img-${id}" src="" style="display:none;">
             </div>
-            <div class="timeline-mockup-text" id="mockup-texto-${id}">Sua mensagem aparecerá aqui...</div>
+            <div class="mockup-info">
+                <div class="timeline-mockup-date" id="mockup-data-${id}"></div>
+                <div class="timeline-mockup-text" id="mockup-texto-${id}"></div>
+            </div>
         `;
         containerMockup.appendChild(divMockup);
     }
 
-    verificarLimiteFotos(); // Verifica se precisa esconder o botão
+    verificarLimiteFotos(); // Esconde o botão se chegar no limite
+    
+    // Verifica se a função existe antes de chamar para evitar erros
+    if(typeof atualizarCaixinhaMemorias === "function") atualizarCaixinhaMemorias(); 
+    setTimeout(() => { // Usamos um pequeno delay para garantir que a div já foi inserida na tela
+        const fotosTimeline = document.querySelectorAll('#container-fotos .foto-item');
+        const btnAddTimeline = document.getElementById('btn-add-timeline');
+        
+        if (fotosTimeline.length >= 6) {
+            btnAddTimeline.style.display = 'none'; // Esconde o botão
+        }
+    }, 50);
+}
+
+// 3. A NOVA FUNÇÃO DE VERIFICAÇÃO (Mágica UI)
+function verificarLimiteFotos() {
+    // Pega o botão do passo 6
+    const btnAdd = document.querySelector('#passo-6 .btn-adicionar-foto');
+    let alerta = document.getElementById('alerta-fotos');
+
+    // Se o alerta ainda não existir no HTML, o JS cria ele dinamicamente
+    if (!alerta && btnAdd) {
+        alerta = document.createElement('small');
+        alerta.id = 'alerta-fotos';
+        alerta.className = 'error-msg';
+        alerta.style.textAlign = 'center';
+        alerta.style.display = 'none'; // Começa escondido
+        alerta.innerText = 'Você atingiu o máximo de 6 fotos na linha do tempo.';
+        btnAdd.parentNode.insertBefore(alerta, btnAdd.nextSibling); // Coloca embaixo do botão
+    }
+
+    if (fotosAtivas >= MAX_FOTOS) {
+        if (btnAdd) btnAdd.style.display = 'none'; // Some com o botão
+        if (alerta) alerta.style.display = 'block'; // Mostra o aviso
+    } else {
+        if (btnAdd) btnAdd.style.display = 'block'; // Volta o botão
+        if (alerta) alerta.style.display = 'none'; // Some com o aviso
+    }
+}
+// ==========================================================================
+// FUNÇÕES DA CAPA DO ÁLBUM (PASSO 5)
+// ==========================================================================
+let contadorCapas = 0;
+let capasAtivas = 0;
+const MAX_CAPAS = 4;
+let arrayCapasMockup = []; 
+
+function adicionarNovaCapa() {
+    if (capasAtivas >= MAX_CAPAS) return;
+
+    contadorCapas++;
+    capasAtivas++;
+    const id = contadorCapas;
+
+    const containerForm = document.getElementById('container-capas');
+    const divForm = document.createElement('div');
+
+    // MUDANÇA AQUI: Tiramos a classe "foto-item" e deixamos só "capa-item"
+    divForm.className = 'capa-item';
+    divForm.id = `capa-item-${id}`;
+
+    divForm.innerHTML = `
+        <label for="input-capa-${id}" title="Clique para escolher uma foto" style="display:block; width:100%; height:100%; cursor:pointer;">
+            <span id="icone-capa-${id}" style="display:flex; align-items:center; justify-content:center; height:100%; color: rgba(255,255,255,0.3); font-size: 24px;">📷</span>
+            <img id="img-preview-capa-${id}" src="" hidden>
+        </label>
+        
+        <input type="file" id="input-capa-${id}" accept="image/*" hidden 
+               onchange="previewFotoCapa(event, ${id})">
+        
+        <button type="button" class="btn-remover-foto" onclick="removerCapa(${id})" title="Apagar foto">✖</button>
+    `;
+
+    containerForm.appendChild(divForm);
+    verificarLimiteCapa();
+}
+
+function verificarLimiteCapa() {
+    const btnAdd = document.getElementById('btn-add-capa');
+    const alerta = document.getElementById('alerta-capas');
+
+    if (capasAtivas >= MAX_CAPAS) {
+        btnAdd.hidden = true;
+        alerta.hidden = false;
+    } else {
+        btnAdd.hidden = false;
+        alerta.hidden = true;
+    }
+}
+
+function previewFotoCapa(event, id) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const imgPreview = document.getElementById(`img-preview-capa-${id}`);
+            const icone = document.getElementById(`icone-capa-${id}`);
+
+            // 1. Salva a imagem no quadradinho
+            imgPreview.src = e.target.result;
+
+            // 2. Força a imagem a aparecer na tela do formulário
+            imgPreview.hidden = false;
+            imgPreview.style.display = 'block';
+
+            // 3. Força o ícone da câmera a sumir
+            if (icone) {
+                icone.hidden = true;
+                icone.style.display = 'none';
+            }
+
+            // 4. Aciona a função para atualizar o celular
+            atualizarMockupCapas();
+        }
+        reader.readAsDataURL(file);
+    }
+}
+
+function removerCapa(id) {
+    const item = document.getElementById(`capa-item-${id}`);
+    if (item) {
+        item.remove(); // Apaga do HTML
+        capasAtivas--; // Diminui a contagem
+        verificarLimiteCapa(); // Volta o botão de adicionar
+        atualizarMockupCapas(); // Tira a foto do mockup
+    }
+}
+
+function removerFoto(id) {
+    // 1. Encontra a div da foto que queremos apagar usando o ID
+    // (Estou assumindo que na função adicionarNovaFoto você cria a div com id="foto-item-X")
+    const fotoParaRemover = document.getElementById(`foto-item-${id}`);
+
+    // 2. Se a foto for encontrada, removemos ela do HTML
+    if (fotoParaRemover) {
+        fotoParaRemover.remove();
+    }
+
+    // 3. Agora contamos quantas fotos sobraram na timeline
+    const fotosTimeline = document.querySelectorAll('#container-fotos .foto-item');
+    const btnAddTimeline = document.getElementById('btn-add-timeline');
+    
+    // 4. Se tivermos menos de 6 fotos, o botão volta a aparecer!
+    if (fotosTimeline.length < 6 && btnAddTimeline) {
+        // Se o botão ficar desalinhado quando voltar, troque 'inline-flex' por 'block' ou 'flex'
+        btnAddTimeline.style.display = 'inline-flex'; 
+    }
+}
+
+function atualizarMockupCapas() {
+    const imagensNodes = document.querySelectorAll('[id^="img-preview-capa-"]');
+    arrayCapasMockup = [];
+
+    imagensNodes.forEach(img => {
+        // Pega só as que realmente tem uma foto carregada
+        if (img.src && !img.src.endsWith(window.location.host + "/") && img.src !== "") {
+            arrayCapasMockup.push(img.src);
+        }
+    });
+
+    // ATENÇÃO: Confirme se 'preview-foto' é o ID certo da capinha no celular
+    const imgMockupPlayer = document.getElementById('preview-foto');
+    const placeholder = document.getElementById('placeholder-texto');
+
+    if (imgMockupPlayer) {
+        if (arrayCapasMockup.length > 0) {
+            imgMockupPlayer.src = arrayCapasMockup[0]; // Mostra a primeira foto
+
+            // Força a mostrar
+            imgMockupPlayer.hidden = false;
+            imgMockupPlayer.style.display = 'block';
+
+            if (placeholder) {
+                placeholder.hidden = true;
+                placeholder.style.display = 'none';
+            }
+
+            if (typeof imagemAtual !== 'undefined') imagemAtual = 0;
+        } else {
+            imgMockupPlayer.src = "";
+
+            // Força a esconder se não tiver foto
+            imgMockupPlayer.hidden = true;
+            imgMockupPlayer.style.display = 'none';
+
+            if (placeholder) {
+                placeholder.hidden = false;
+                placeholder.style.display = 'block';
+            }
+        }
+    }
 }
 
 // Pega a foto do PC/Celular e joga no Formulário E no Mockup
@@ -390,39 +660,129 @@ function previewFotoLinhaTempo(event, id) {
     const file = event.target.files[0];
     if (file) {
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             const imgForm = document.getElementById(`img-preview-${id}`);
             const iconeForm = document.getElementById(`icone-foto-${id}`);
-            if(imgForm) { imgForm.src = e.target.result; imgForm.style.display = 'block'; }
-            if(iconeForm) iconeForm.style.display = 'none';
+            if (imgForm) { imgForm.src = e.target.result; imgForm.style.display = 'block'; }
+            if (iconeForm) iconeForm.style.display = 'none';
 
             const imgMockup = document.getElementById(`mockup-img-${id}`);
             const placeholderMockup = document.getElementById(`mockup-placeholder-${id}`);
-            if(imgMockup) { imgMockup.src = e.target.result; imgMockup.style.display = 'block'; }
-            if(placeholderMockup) placeholderMockup.style.display = 'none';
+            if (imgMockup) { imgMockup.src = e.target.result; imgMockup.style.display = 'block'; }
+            if (placeholderMockup) placeholderMockup.style.display = 'none';
+
+            // ⚠️ CHAME AQUI: Avisa a caixinha que uma nova foto foi carregada!
+            atualizarCaixinhaMemorias();
         }
         reader.readAsDataURL(file);
     }
 }
 
 // Quando a pessoa digita, o texto vai pro celular na mesma hora
-function atualizarMockupTimeline(id, campo, valor) {
-    const elementoMockup = document.getElementById(`mockup-${campo}-${id}`);
-    if(elementoMockup) {
-        const placeholder = campo === 'data' ? 'Sua data...' : 'Sua mensagem aparecerá aqui...';
-        elementoMockup.innerText = valor || placeholder;
+function abrirTimelineCompleta() {
+    const tela1 = document.getElementById('mockup-player-principal');
+    const tela2 = document.getElementById('timeline-completa');
+
+    if (tela1 && tela2) {
+        tela1.style.display = 'none'; // Esconde o player
+        tela2.style.display = 'block'; // Mostra a timeline
+    } else {
+        alert("Erro: Não achei as telas no HTML. Verifique os IDs!");
     }
 }
 
-// Remove do Form e do Celular ao mesmo tempo
+function fecharTimelineCompleta() {
+    const tela1 = document.getElementById('mockup-player-principal');
+    const tela2 = document.getElementById('timeline-completa');
+
+    if (tela1 && tela2) {
+        tela2.style.display = 'none'; // Esconde a timeline
+        tela1.style.display = 'block'; // Mostra o player de volta
+    }
+}
+function atualizarCaixinhaMemorias() {
+    const containerMiniaturas = document.getElementById('mini-fotos-preview');
+    if (!containerMiniaturas) return;
+
+    // Limpa o container para recriar as 3 fotos
+    containerMiniaturas.innerHTML = '';
+
+    // Pega todas as fotos que a pessoa já adicionou no formulário
+    const itensFormulario = document.querySelectorAll('.foto-item');
+    const placeholders = ["Nossos Dates", "Fotos aleatórias", "Primeira viagem"];
+
+    // Cria exatamente 3 colunas (sempre 3)
+    for (let i = 0; i < 3; i++) {
+        const divCaixa = document.createElement('div');
+        divCaixa.className = 'app-mini-foto'; // Usa a NOSSA classe segura do CSS
+
+        let temFoto = false;
+
+        // Verifica se existe o item do formulário e se ele tem uma foto válida
+        if (itensFormulario[i]) {
+            const imgFormulario = itensFormulario[i].querySelector('img.foto-upload-preview'); // Pega a tag <img> de preview
+
+            // Se a tag existir, tiver um 'src' e não for um placeholder padrão/vazio
+            if (imgFormulario && imgFormulario.src && imgFormulario.src !== "" && !imgFormulario.src.includes('placeholder')) {
+                // Se tem foto, cria a tag <img> do jeito certo que o CSS espera
+                const img = document.createElement('img');
+                img.src = imgFormulario.src;
+                divCaixa.appendChild(img);
+                temFoto = true;
+            }
+        }
+
+        // Se NÃO tem foto, mostra o texto de placeholder cinza.
+        // Se TEM foto, a caixa fica só com a foto (sem texto), como você pediu!
+        if (!temFoto) {
+            const spanTexto = document.createElement('span');
+            spanTexto.innerText = placeholders[i];
+            spanTexto.style.color = '#888'; // Força o texto cinza para os vazios
+            divCaixa.appendChild(spanTexto);
+        }
+
+        // Adiciona a caixinha pronta no painel do celular
+        containerMiniaturas.appendChild(divCaixa);
+    }
+}
+
+function atualizarMockupTimeline(id, campo, valor) {
+    // 1. Atualiza a tela de Preview (o celularzinho)
+    // Procura exatamente pelo ID que está dentro do #preview-timeline
+    const elementoMockup = document.getElementById(`mockup-${campo}-${id}`);
+
+    if (elementoMockup) {
+        const placeholders = {
+            'data': 'Ex: Data...',
+            'texto': 'Escreva uma legenda...',
+            'legenda': 'Escreva uma legenda...'
+        };
+        // Atualiza o texto no preview. Se apagar tudo, volta o placeholder.
+        elementoMockup.innerText = valor || placeholders[campo] || '';
+    }
+
+    // 2. Atualiza os títulos gerais da página e do celular
+    if (campo === 'titulo_geral') {
+        const labelCard = document.getElementById('mockup-timeline-titulo-card');
+        const labelTimeline = document.getElementById('mockup-timeline-titulo');
+        
+        if (labelCard) labelCard.innerText = valor || 'Nossas Memórias';
+        if (labelTimeline) labelTimeline.innerText = valor || 'Nossas Memórias';
+    }
+}
+
 function removerFoto(id) {
     const itemForm = document.getElementById(`foto-item-${id}`);
     const itemMockup = document.getElementById(`mockup-item-${id}`);
-    if(itemForm) itemForm.remove();
-    if(itemMockup) itemMockup.remove();
-    
-    fotosAtivas--; // Diminui a contagem
-    verificarLimiteFotos(); // Verifica se o botão pode voltar a aparecer
+
+    if (itemForm) itemForm.remove();
+    if (itemMockup) itemMockup.remove();
+
+    fotosAtivas--;
+    verificarLimiteFotos();
+
+    // CHAME AQUI: Para reorganizar as 3 miniaturas do card principal
+    atualizarCaixinhaMemorias();
 }
 
 // Esconde ou mostra o botão de adicionar fotos dependendo do limite
@@ -430,16 +790,63 @@ function verificarLimiteFotos() {
     const btnAdicionar = document.querySelector('.btn-adicionar-foto');
     if (btnAdicionar) {
         if (fotosAtivas >= MAX_FOTOS) {
-            btnAdicionar.style.display = 'none'; // Esconde o botão se chegou a 6
+            btnAdicionar.style.opacity = '0.5';
+            btnAdicionar.style.pointerEvents = 'none'; // Desativa o clique
+            btnAdicionar.innerText = 'Limite de fotos atingido';
         } else {
-            btnAdicionar.style.display = 'block'; // Mostra novamente se for menor que 6
+            btnAdicionar.style.opacity = '1';
+            btnAdicionar.style.pointerEvents = 'auto'; // Reativa o clique
+            btnAdicionar.innerText = '+ Adicionar Momento';
         }
     }
 }
+async function finalizarHomenagem() {
+    // 1. Mostrar um feedback de carregamento para o cliente
+    const btnFinalizar = document.querySelector('.btn-finalizar');
+    btnFinalizar.innerText = "Salvando sua Homenagem...";
+    btnFinalizar.disabled = true;
 
-// Função temporária apenas para não dar erro ao clicar em "Finalizar"
-function finalizarHomenagem() {
-    alert("Incrível! Tudo pronto para capturar os dados e salvar no servidor. 🚀");
+    // 2. Coletar os dados principais
+    const dados = {
+        titulo_geral: document.getElementById('mockup-timeline-titulo-card').innerText,
+        musica: {
+            nome: document.getElementById('musica_nome').value,
+            artista: document.getElementById('musica_artista').value,
+            capa: document.getElementById('musica_capa').value,
+            audio: document.getElementById('musica_preview')?.value
+        },
+        // Aqui pegamos todos os textos dos momentos da timeline
+        momentos: []
+    };
+
+    // 3. Capturar cada momento da timeline
+    const itensFotos = document.querySelectorAll('.foto-item'); // Pega só os que realmente existem
+    itensFotos.forEach((item) => {
+        // Busca os inputs dentro do card específico
+        const titulo = item.querySelector('.input-legenda')?.value || "";
+        const data = item.querySelector('.input-data')?.value || "";
+
+        dados.momentos.push({ titulo, data });
+    });
+
+    console.log("Dados prontos para o servidor:", dados);
+
+    try {
+        const response = await fetch('/salvar-homenagem', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dados)
+        });
+        if (response.ok) {
+            window.location.href = "/pagamento"; // Redireciona para o checkout
+        }
+    } catch (erro) {
+        alert("Erro ao salvar. Tente novamente.");
+        btnFinalizar.disabled = false;
+    }
+
+
+    alert("Dados capturados! Agora o próximo passo é configurar a rota /salvar-homenagem no seu Python.");
 }
 
 // ==========================================================================
@@ -458,24 +865,24 @@ function buscarCidade(termo) {
             // Busca cidades no Brasil. Aumentei o limit para 10 para ter mais chance de achar cidades diferentes após filtrar
             const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${termo}&format=json&addressdetails=1&countrycodes=br&limit=10`);
             const dados = await res.json();
-            
+
             dropdown.innerHTML = '';
-            
+
             if (dados.length > 0) {
                 // Cria um "caderninho" para anotar as cidades que já mostramos
-                const cidadesVistas = new Set(); 
+                const cidadesVistas = new Set();
 
                 dados.forEach(local => {
                     const cidade = local.address.city || local.address.town || local.address.village;
                     const estado = local.address.state;
-                    
+
                     if (cidade && estado) {
                         const textoLugar = `${cidade} - ${estado}`;
-                        
+
                         // Só cria a opção na lista SE a cidade ainda não estiver no nosso caderninho
                         if (!cidadesVistas.has(textoLugar)) {
                             cidadesVistas.add(textoLugar); // Anota no caderninho
-                            
+
                             const div = document.createElement('div');
                             div.className = 'autocomplete-item';
                             div.innerText = textoLugar;
@@ -484,14 +891,14 @@ function buscarCidade(termo) {
                         }
                     }
                 });
-                
+
                 // Só mostra a lista se sobrou alguma coisa depois de filtrar as repetições
                 if (cidadesVistas.size > 0) {
                     dropdown.style.display = 'block';
                 }
             }
         } catch (erro) { console.error("Erro na API de cidades:", erro); }
-    }, 500); 
+    }, 500);
 }
 
 function selecionarCidade(cidade, estado) {
@@ -499,145 +906,407 @@ function selecionarCidade(cidade, estado) {
     document.getElementById('cidade').value = texto;
     document.getElementById('mockup-cidade-estado').innerText = texto;
     document.getElementById('resultado-cidades').style.display = 'none';
+
 }
 
 function buscarMusica(termo) {
     const dropdown = document.getElementById('resultado-musicas');
-    
+
     // Se o usuário apagar o texto ou tiver menos de 3 letras, esconde a lista
-    if (termo.trim().length < 3) { 
-        dropdown.style.display = 'none'; 
-        return; 
+    if (termo.trim().length < 3) {
+        dropdown.style.display = 'none';
+        return;
     }
 
     // Limpa o timer anterior se a pessoa continuar digitando rápido
     clearTimeout(timerBusca);
-    
+
     timerBusca = setTimeout(async () => {
         try {
             // encodeURIComponent: formata o texto para a API não quebrar com espaços (ex: "shape of you" vira "shape%20of%20you")
             const termoFormatado = encodeURIComponent(termo);
             // URL oficial da Apple/iTunes
             const url = `https://itunes.apple.com/search?term=${termoFormatado}&entity=song&limit=5`;
-            
+
             const res = await fetch(url);
-            
+
             if (!res.ok) throw new Error("Falha ao comunicar com a API de músicas");
-            
+
             const dados = await res.json();
-            dropdown.innerHTML = ''; 
-            
+            dropdown.innerHTML = '';
+
             if (dados.results && dados.results.length > 0) {
                 dados.results.forEach(musica => {
                     const div = document.createElement('div');
                     div.className = 'autocomplete-item';
-                    
+
                     // O iTunes manda uma imagem 100x100 por padrão. Nós trocamos o texto da URL para 300x300 para qualidade HD!
                     const capaAltaQualidade = musica.artworkUrl100.replace('100x100bb', '300x300bb');
                     const nomeMusica = musica.trackName;
                     const nomeArtista = musica.artistName;
-                    
-                    // Montando o visual da lista. Mantive a cor do título verde (#1ed760) para dar aquele "ar" de Spotify
+
+                    const audioUrl = musica.previewUrl;
+
                     div.innerHTML = `
-                        <img src="${capaAltaQualidade}" style="width: 40px; height: 40px; border-radius: 4px; object-fit: cover; flex-shrink: 0;">
-                        <div style="display: flex; flex-direction: column; overflow: hidden;">
-                            <span style="font-weight: bold; font-size: 14px; color: #1ed760; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${nomeMusica}</span>
-                            <span style="font-size: 12px; color: #a8b2d1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${nomeArtista}</span>
-                        </div>
-                    `;
-                    
-                    div.onclick = () => selecionarMusica(nomeMusica, nomeArtista, capaAltaQualidade);
+    <img src="${capaAltaQualidade}" style="width: 40px; height: 40px; border-radius: 4px; object-fit: cover; flex-shrink: 0;">
+    <div style="display: flex; flex-direction: column; overflow: hidden;">
+        <span style="font-weight: bold; font-size: 14px; color: #1ed760; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${nomeMusica}</span>
+        <span style="font-size: 12px; color: #a8b2d1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${nomeArtista}</span>
+    </div>
+`;
+
+                    // AGORA SIM passando os 4 parâmetros corretamente!
+                    div.onclick = () => selecionarMusica(nomeMusica, nomeArtista, capaAltaQualidade, audioUrl);
                     dropdown.appendChild(div);
                 });
                 dropdown.style.display = 'block';
             } else {
                 dropdown.style.display = 'none'; // Não achou nada, esconde a lista
             }
-        } catch (erro) { 
-            console.error("Erro na busca de músicas:", erro); 
+        } catch (erro) {
+            console.error("Erro na busca de músicas:", erro);
         }
     }, 500); // Espera meio segundo (500ms) após a pessoa parar de digitar para gastar a pesquisa
 }
 
-// Função que joga os dados pra tela e pros inputs invisíveis quando a pessoa clica na música
-function selecionarMusica(nome, artista, capa) {
-    document.getElementById('busca_musica').value = `${nome} - ${artista}`;
-    document.getElementById('resultado-musicas').style.display = 'none';
-    
-    // Atualiza os campos ocultos que vão ser enviados pro servidor Python depois
-    document.getElementById('musica_nome').value = nome;
-    document.getElementById('musica_artista').value = artista;
-    document.getElementById('musica_capa').value = capa;
 
-    // Atualiza o Mockup do Celular que você criou!
-    const containerMusicaApi = document.getElementById('mockup-musica-container');
-    const mockTituloApi = document.getElementById('mockup-musica-titulo-api');
-    const mockArtistaApi = document.getElementById('mockup-musica-artista-api');
-    const mockCapaApi = document.getElementById('mockup-musica-capa-api');
-    
-    if(containerMusicaApi) containerMusicaApi.style.display = 'flex'; 
-    if(mockTituloApi) mockTituloApi.innerText = nome;
-    if(mockArtistaApi) mockArtistaApi.innerText = artista;
-    if(mockCapaApi) mockCapaApi.src = capa;
+let intervaloContador;
+
+// 1. Primeiro buscamos o elemento na tela
+const inputData = document.getElementById('data_conheceram');
+
+// 2. Só adicionamos o evento SE o elemento existir (evita o erro "Cannot read properties of null")
+if (inputData) {
+    inputData.addEventListener('change', function () {
+        const dataInput = this.value;
+        const display = document.getElementById('mockup-contador-dias');
+
+        if (!dataInput || !display) return;
+
+        // Se já existir um relógio rodando (porque a pessoa escolheu outra data antes), nós paramos ele
+        if (intervaloContador) clearInterval(intervaloContador);
+
+        // Pega a data inicial (vamos assumir que o "dia 1" começou à meia-noite)
+        const dataInicio = new Date(dataInput + 'T00:00:00').getTime();
+
+        // Cria o loop que vai rodar e atualizar a tela a cada 1 segundo (1000ms)
+        intervaloContador = setInterval(function () {
+            const agora = new Date().getTime();
+            const diferencaTempo = agora - dataInicio;
+
+            if (diferencaTempo >= 0) {
+                // A matemática para extrair cada parte do tempo
+                const dias = Math.floor(diferencaTempo / (1000 * 60 * 60 * 24));
+                const horas = Math.floor((diferencaTempo % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutos = Math.floor((diferencaTempo % (1000 * 60 * 60)) / (1000 * 60));
+                const segundos = Math.floor((diferencaTempo % (1000 * 60)) / 1000);
+
+                // Adiciona um "0" na frente se o número for menor que 10 (ex: 05h 09m)
+                const hFormatado = horas.toString().padStart(2, '0');
+                const mFormatado = minutos.toString().padStart(2, '0');
+                const sFormatado = segundos.toString().padStart(2, '0');
+
+                // Atualiza o Mockup do celular na hora!
+                display.innerText = `${dias} dias, ${hFormatado}h ${mFormatado}m ${sFormatado}s ❤️`;
+            } else {
+                display.innerText = `A data ainda vai chegar!`;
+                clearInterval(intervaloContador); // Para o relógio se a data for no futuro
+            }
+        }, 1000);
+    });
 }
 
-let intervaloContador; // Variável global para limpar o relógio se a pessoa trocar a data
+function selecionarMusica(nome, artista, capa, audioUrl) {
+    // 1. Preenche o campo de busca e esconde o dropdown
+    const inputBusca = document.getElementById('busca_musica');
+    if (inputBusca) inputBusca.value = `${nome} - ${artista}`;
 
-document.getElementById('data_conheceram').addEventListener('change', function() {
-    const dataInput = this.value;
-    const display = document.getElementById('mockup-contador-dias');
-    
-    if (!dataInput || !display) return;
+    const dropdown = document.getElementById('resultado-musicas');
+    if (dropdown) dropdown.style.display = 'none';
 
-    // Se já existir um relógio rodando (porque a pessoa escolheu outra data antes), nós paramos ele
-    if (intervaloContador) clearInterval(intervaloContador);
+    // 2. Atualiza os campos ocultos (essencial para salvar no banco depois)
+    const campos = {
+        'musica_nome': nome,
+        'musica_artista': artista,
+        'musica_capa': capa,
+        'musica_preview': audioUrl || ''
+    };
 
-    // Pega a data inicial (vamos assumir que o "dia 1" começou à meia-noite)
-    const dataInicio = new Date(dataInput + 'T00:00:00').getTime();
+    for (let id in campos) {
+        const el = document.getElementById(id);
+        if (el) el.value = campos[id];
+    }
 
-    // Cria o loop que vai rodar e atualizar a tela a cada 1 segundo (1000ms)
-    intervaloContador = setInterval(function() {
-        const agora = new Date().getTime();
-        const diferencaTempo = agora - dataInicio;
-        
-        if (diferencaTempo >= 0) {
-            // A matemática para extrair cada parte do tempo
-            const dias = Math.floor(diferencaTempo / (1000 * 60 * 60 * 24));
-            const horas = Math.floor((diferencaTempo % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutos = Math.floor((diferencaTempo % (1000 * 60 * 60)) / (1000 * 60));
-            const segundos = Math.floor((diferencaTempo % (1000 * 60)) / 1000);
-            
-            // Adiciona um "0" na frente se o número for menor que 10 (ex: 05h 09m)
-            const hFormatado = horas.toString().padStart(2, '0');
-            const mFormatado = minutos.toString().padStart(2, '0');
-            const sFormatado = segundos.toString().padStart(2, '0');
-            
-            // Atualiza o Mockup do celular na hora!
-            display.innerText = `${dias} dias, ${hFormatado}h ${mFormatado}m ${sFormatado}s ❤️`;
-        } else {
-            display.innerText = `A data ainda vai chegar!`;
-            clearInterval(intervaloContador); // Para o relógio se a data for no futuro
+    // 3. Atualiza o Mockup (Celular)
+    const mockTitulo = document.getElementById('mockup-musica-titulo-api');
+    const mockArtista = document.getElementById('mockup-musica-artista-api');
+    const mockCapa = document.getElementById('mockup-musica-capa-api');
+
+    if (mockTitulo) mockTitulo.innerText = nome;
+    if (mockArtista) mockArtista.innerText = artista;
+    if (mockCapa) mockCapa.src = capa;
+
+    // 4. Configura o Player de Áudio
+    const player = document.getElementById('player-musica');
+    if (player) {
+        player.src = audioUrl || "";
+        player.pause(); // Garante que não comece tocando sozinho
+    }
+
+    // 5. "Acende" o botão de Play
+    const btnPlay = document.getElementById('mini-btn-play-container');
+    if (btnPlay) {
+        btnPlay.classList.remove('desativado');
+        btnPlay.style.opacity = '1';
+        btnPlay.style.cursor = 'pointer';
+    }
+
+    // 6. Reseta a barra de progresso e ícone
+    const barra = document.getElementById('barra-progresso');
+    if (barra) barra.value = 0;
+
+    const tempoAtual = document.getElementById('tempo-atual');
+    if (tempoAtual) tempoAtual.innerText = "0:00";
+
+    const iconeMini = document.getElementById('mini-icone-play');
+    if (iconeMini && iconeMini.tagName === 'IMG') {
+        iconeMini.src = "/static/img/play.png"; // Ajuste o caminho se necessário
+    }
+}
+// ==========================================================
+// 1. CONFIGURAÇÕES GERAIS E FUNÇÕES AUXILIARES
+// ==========================================================
+
+// Desenhos dos Ícones (Caso esteja usando SVG)
+const svgPlay = '<path d="M8 5v14l11-7z"/>';
+const svgPause = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+
+// Formata os segundos em formato de relógio (Ex: 3:05)
+function formatarTempo(segundos) {
+    if (!segundos || isNaN(segundos)) return "0:00";
+    const min = Math.floor(segundos / 60);
+    const seg = Math.floor(segundos % 60);
+    return `${min}:${seg < 10 ? '0' : ''}${seg}`;
+}
+
+// Atualiza a cor de fundo da barra de progresso (Efeito verde)
+function atualizarCorBarra(valor) {
+    const barra = document.getElementById('barra-progresso');
+    if (barra) {
+        barra.style.backgroundSize = valor + '% 100%';
+    }
+}
+
+// ==========================================================
+// 2. FUNÇÃO PRINCIPAL: ALTERNAR PLAY/PAUSE (Apenas iTunes)
+// ==========================================================
+
+function alternarPlay() {
+    const player = document.getElementById('player-musica');
+    const iconeMini = document.getElementById('mini-icone-play');
+    const iconeGrande = document.getElementById('icone-play-pause'); // Caso tenha o play no centro
+
+    // 1. Só funciona se o player tiver uma música carregada
+    if (!player || !player.src || player.src === window.location.href) {
+        console.warn("Nenhuma música carregada.");
+        return;
+    }
+
+    if (player.paused) {
+        // --- VAI TOCAR ---
+        player.play();
+
+        // Troca para o ícone de PAUSA
+        if (iconeMini) iconeMini.src = "/static/img/pausa.png";
+        if (iconeGrande) {
+            // Se o grande for <img> troca o src, se for <svg> você pode alternar uma classe
+            if (iconeGrande.tagName === 'IMG') iconeGrande.src = "/static/img/pausa.png";
         }
-    }, 1000);
-});
+    } else {
+        // --- VAI PAUSAR ---
+        player.pause();
 
-function selecionarMusica(nome, artista, capa) {
-    document.getElementById('busca_musica').value = `${nome} - ${artista}`;
-    document.getElementById('resultado-musicas').style.display = 'none';
-    
-    // Atualiza os campos ocultos pro servidor
-    document.getElementById('musica_nome').value = nome;
-    document.getElementById('musica_artista').value = artista;
-    document.getElementById('musica_capa').value = capa;
+        // Troca para o ícone de PLAY
+        if (iconeMini) iconeMini.src = "/static/img/play.png";
+        if (iconeGrande) {
+            if (iconeGrande.tagName === 'IMG') iconeGrande.src = "/static/img/play.png";
+        }
+    }
+}
 
-    // Atualiza a NOVA div no Mockup do Celular
-    const containerMusicaApi = document.getElementById('mockup-musica-container');
-    const mockTituloApi = document.getElementById('mockup-musica-titulo-api');
-    const mockArtistaApi = document.getElementById('mockup-musica-artista-api');
-    const mockCapaApi = document.getElementById('mockup-musica-capa-api');
-    
-    if(containerMusicaApi) containerMusicaApi.style.display = 'flex'; // Torna a div visível
-    if(mockTituloApi) mockTituloApi.innerText = nome;
-    if(mockArtistaApi) mockArtistaApi.innerText = artista;
-    if(mockCapaApi) mockCapaApi.src = capa;
+// ==========================================================
+// 3. CONTROLE DA BARRA DE PROGRESSO E ÁUDIO
+// ==========================================================
+
+const audioNativo = document.getElementById('player-musica');
+const barraProgresso = document.getElementById('barra-progresso');
+const tempoAtualText = document.getElementById('tempo-atual');
+const tempoTotalText = document.getElementById('tempo-total');
+
+if (audioNativo && barraProgresso) {
+
+    // A. Quando você arrasta a bolinha com o dedo/mouse
+    barraProgresso.addEventListener('input', function () {
+        if (audioNativo.duration > 0) {
+            const novoTempo = (this.value / 100) * audioNativo.duration;
+            audioNativo.currentTime = novoTempo;
+            atualizarCorBarra(this.value);
+        }
+    });
+
+    // B. Quando o arquivo de áudio carrega (pega o tempo total de 30s)
+    audioNativo.addEventListener('loadedmetadata', () => {
+        if (tempoTotalText) {
+            tempoTotalText.innerText = formatarTempo(audioNativo.duration);
+        }
+    });
+
+    // C. Enquanto a música toca (faz a barra e o relógio andarem)
+    audioNativo.addEventListener('timeupdate', () => {
+        if (audioNativo.duration) {
+            // Atualiza o relógio
+            if (tempoAtualText) tempoAtualText.innerText = formatarTempo(audioNativo.currentTime);
+
+            // Atualiza a posição da bolinha
+            const porcentagem = (audioNativo.currentTime / audioNativo.duration) * 100;
+            barraProgresso.value = porcentagem;
+
+            // Atualiza a cor verde preenchendo a barra
+            atualizarCorBarra(porcentagem);
+        }
+    });
+
+    // D. Quando a música acaba (volta pro ícone de Play e zera tudo)
+    audioNativo.addEventListener('ended', () => {
+        const iconeMini = document.getElementById('mini-icone-play');
+
+        // Retorna o ícone para Play
+        if (iconeMini) {
+            if (iconeMini.tagName.toLowerCase() === 'img') {
+                iconeMini.src = "/static/img/play.png";
+            } else {
+                iconeMini.innerHTML = svgPlay;
+                iconeMini.style.marginLeft = "3px";
+            }
+        }
+
+        // Zera os relógios e a barra
+        barraProgresso.value = 0;
+        atualizarCorBarra(0);
+        if (tempoAtualText) tempoAtualText.innerText = "0:00";
+    });
+}
+
+let imagensCapa = [];
+let indiceImagemAtual = 0;
+
+// 1. Lê os arquivos selecionados
+function carregarFoto(event) {
+    const files = event.target.files;
+    const alerta = document.getElementById('alerta-fotos');
+
+    // Reseta as imagens caso a pessoa clique para enviar de novo
+    imagensCapa = [];
+    indiceImagemAtual = 0;
+
+    // Trava em 4 fotos
+    if (files.length > 4) {
+        alerta.style.display = 'block';
+        event.target.value = ''; // Limpa a seleção
+        return;
+    } else {
+        alerta.style.display = 'none';
+    }
+
+    if (files.length === 0) return;
+
+    let fotosCarregadas = 0;
+
+    // Converte cada foto em um link que o navegador consiga ler
+    for (let i = 0; i < files.length; i++) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            imagensCapa.push(e.target.result);
+            fotosCarregadas++;
+
+            // Só atualiza a tela quando terminar de ler todas as fotos
+            if (fotosCarregadas === files.length) {
+                atualizarPreviewImagem();
+            }
+        };
+        reader.readAsDataURL(files[i]);
+    }
+}
+
+// 2. Joga a foto certa na tela
+function atualizarPreviewImagem() {
+    if (imagensCapa.length === 0) return;
+
+    const img = document.getElementById('preview-foto');
+    const placeholder = document.getElementById('placeholder-texto');
+    const controles = document.getElementById('controles-imagem');
+
+    // Troca a imagem
+    img.src = imagensCapa[indiceImagemAtual];
+    img.style.display = 'block';
+    if (placeholder) placeholder.style.display = 'none';
+
+    // Se tiver mais de 1 foto, mostra as setinhas, se não, esconde
+    if (controles) {
+        controles.style.display = imagensCapa.length > 1 ? 'flex' : 'none';
+    }
+}
+
+let imagemAtual = 0;
+
+function proximaImagem() {
+    if (arrayCapasMockup.length <= 1) return;
+
+    imagemAtual++;
+    if (imagemAtual >= arrayCapasMockup.length) {
+        imagemAtual = 0;
+    }
+
+    trocarImagemComAnimacao(arrayCapasMockup[imagemAtual]);
+}
+
+function imagemAnterior() {
+    if (arrayCapasMockup.length <= 1) return;
+
+    imagemAtual--;
+    if (imagemAtual < 0) {
+        imagemAtual = arrayCapasMockup.length - 1;
+    }
+
+    trocarImagemComAnimacao(arrayCapasMockup[imagemAtual]);
+}
+
+// === A FUNÇÃO DA MÁGICA DO FADE ===
+function trocarImagemComAnimacao(novaSrc) {
+    const imgMockupPlayer = document.getElementById('preview-foto');
+
+    if (imgMockupPlayer) {
+        // 1. Aplica a classe que faz a opacidade ir para 0 (fade out)
+        imgMockupPlayer.classList.add('efeito-fade');
+
+        // 2. Espera exatos 300 milissegundos (o mesmo tempo do CSS) para trocar a foto escondida e fazê-ela aparecer (fade in)
+        setTimeout(() => {
+            imgMockupPlayer.src = novaSrc;
+            imgMockupPlayer.classList.remove('efeito-fade');
+        }, 300);
+    }
+}
+function atualizarContador(idInput, idContador) {
+    const input = document.getElementById(idInput);
+    const contador = document.getElementById(idContador);
+    const limite = input.getAttribute('maxlength');
+
+    contador.innerText = `${input.value.length}/${limite}`;
+
+    // Efeitinho visual: se chegar perto do limite, fica laranjinha
+    if (input.value.length >= limite) {
+        contador.style.color = "#1ed760"; // Cor de sucesso/limite
+    } else {
+        contador.style.color = "#a8b2d1";
+    }
 }
