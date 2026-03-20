@@ -26,7 +26,9 @@ def enviar_email_codigo(email_destino, codigo):
     msg['To'] = email_destino
 
     try:
-        server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        # Usando a porta 587 com STARTTLS (melhor para Render/Hospedagens)
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls() 
         server.login(email_remetente, senha_app)
         server.sendmail(email_remetente, email_destino, msg.as_string())
         server.quit()
