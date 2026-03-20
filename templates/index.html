@@ -17,8 +17,8 @@
         L<img src="{{ url_for('static', filename='img/coracao-lovyc.png') }}" alt="Coração" class="logo-img-icon">v<span>yc</span>
     </div>
     <div style="display: flex; gap: 15px;">
-        <a href="#planos" class="btn-outline"
-            style="padding: 8px 20px; font-size: 14px; border-radius: 8px;">Entrar</a>
+        <button onclick="abrirModalLogin()" class="btn-outline"
+            style="padding: 8px 20px; font-size: 14px; border-radius: 8px;">Entrar</button>
     </div>
 </header>
 
@@ -506,6 +506,28 @@
                     </div>
                 </div>
     </footer>
+    <div id="modal-login" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <button class="btn-fechar-modal" onclick="fecharModalLogin()">✕</button>
+        
+        <div id="login-passo-1">
+            <h3>Entrar ou Criar Conta</h3>
+            <p>Enviaremos um código de acesso para o seu e-mail.</p>
+            <input type="email" id="input-email-login" placeholder="seu@email.com" class="input-padrao">
+            <button class="btn-primario" onclick="enviarCodigoEmail()" id="btn-enviar-codigo">Enviar Código</button>
+            <p id="msg-erro-email" class="msg-erro"></p>
+        </div>
+
+        <div id="login-passo-2" style="display: none;">
+            <h3>Verifique seu E-mail</h3>
+            <p>Enviamos um código de 6 dígitos para <strong id="email-confirmacao"></strong></p>
+            <input type="text" id="input-codigo" placeholder="000000" maxlength="6" class="input-padrao" style="text-align: center; letter-spacing: 5px; font-size: 20px;">
+            <button class="btn-primario" onclick="verificarCodigo()" id="btn-verificar-codigo">Confirmar</button>
+            <p id="msg-erro-codigo" class="msg-erro"></p>
+            <button class="btn-link" onclick="voltarPassoLogin()">Voltar e editar e-mail</button>
+        </div>
+    </div>
+</div>
     <!-- <script src="/static/js/index.js"></script> -->
     <script src="{{ url_for('static', filename='js/index.js') }}"></script>
 </body>

@@ -309,7 +309,9 @@ function mudarPasso(passoAtual, proximoPasso) {
                     3: { titulo: "Título da Homenagem", desc: "Como você quer chamar essa página?" },
                     4: { titulo: "A Música de Vocês", desc: "Escolha a trilha sonora perfeita para este momento." },
                     5: { titulo: "Fotos de Capa", desc: "Selecione até 4 fotos lindas para a capa do seu álbum." },
-                    6: {titulo: "Nossas Memórias 📸", desc: "Adicione fotos e crie uma linha do tempo com seus melhores momentos."}
+                    6: { titulo: "Nossas Memórias 📸", desc: "Adicione fotos e crie uma linha do tempo com seus melhores momentos." },
+                    7: { titulo: "Sua Retrospectiva Interativa 🎡", desc: "Adicione 10 fotos especiais para os jogos finais." },
+                    8: { titulo: "Quase Lá...", desc: "Finalize os detalhes da sua homenagem." } // Adicionei o passo 8 caso precise
                 };
 
                 if (textos[proximoPasso]) {
@@ -341,6 +343,20 @@ function mudarPasso(passoAtual, proximoPasso) {
                             animarEscrita(`desc-passo-${proximoPasso}`, textos[proximoPasso].desc);
                         }
                     }, 1200);
+                }
+
+                // ==========================================
+                // LÓGICA DA RETROSPECTIVA (STORIES)
+                // ==========================================
+                
+                // Se a pessoa acabou de entrar no Passo 7
+                if (proximoPasso === 7) {
+                    abrirMockupRetro();
+                }
+
+                // Se a pessoa saiu do Passo 7 (voltou pro 6 ou foi pro 8)
+                if (passoAtual === 7 && proximoPasso !== 7) {
+                    fecharMockupRetro();
                 }
 
                 atualizarVisualStepper(proximoPasso);
@@ -476,31 +492,6 @@ function adicionarNovaFoto() {
     }, 50);
 }
 
-// 3. A NOVA FUNÇÃO DE VERIFICAÇÃO (Mágica UI)
-function verificarLimiteFotos() {
-    // Pega o botão do passo 6
-    const btnAdd = document.querySelector('#passo-6 .btn-adicionar-foto');
-    let alerta = document.getElementById('alerta-fotos');
-
-    // Se o alerta ainda não existir no HTML, o JS cria ele dinamicamente
-    if (!alerta && btnAdd) {
-        alerta = document.createElement('small');
-        alerta.id = 'alerta-fotos';
-        alerta.className = 'error-msg';
-        alerta.style.textAlign = 'center';
-        alerta.style.display = 'none'; // Começa escondido
-        alerta.innerText = 'Você atingiu o máximo de 6 fotos na linha do tempo.';
-        btnAdd.parentNode.insertBefore(alerta, btnAdd.nextSibling); // Coloca embaixo do botão
-    }
-
-    if (fotosAtivas >= MAX_FOTOS) {
-        if (btnAdd) btnAdd.style.display = 'none'; // Some com o botão
-        if (alerta) alerta.style.display = 'block'; // Mostra o aviso
-    } else {
-        if (btnAdd) btnAdd.style.display = 'block'; // Volta o botão
-        if (alerta) alerta.style.display = 'none'; // Some com o aviso
-    }
-}
 // ==========================================================================
 // FUNÇÕES DA CAPA DO ÁLBUM (PASSO 5)
 // ==========================================================================
@@ -591,23 +582,50 @@ function removerCapa(id) {
 }
 
 function removerFoto(id) {
-    // 1. Encontra a div da foto que queremos apagar usando o ID
-    // (Estou assumindo que na função adicionarNovaFoto você cria a div com id="foto-item-X")
-    const fotoParaRemover = document.getElementById(`foto-item-${id}`);
+    // Apaga do formulário e do celular (mockup)
+    const itemForm = document.getElementById(`foto-item-${id}`);
+    const itemMockup = document.getElementById(`mockup-item-${id}`);
 
-    // 2. Se a foto for encontrada, removemos ela do HTML
-    if (fotoParaRemover) {
-        fotoParaRemover.remove();
+    if (itemForm) itemForm.remove();
+    if (itemMockup) itemMockup.remove();
+
+    fotosAtivas--; // Diminui a contagem oficial
+    
+    verificarLimiteFotos(); // Atualiza o botão
+    atualizarCaixinhaMemorias(); // Reorganiza as 3 miniaturas
+}
+
+function verificarLimiteFotos() {
+    const btnAdd = document.querySelector('#passo-6 .btn-adicionar-foto') || document.querySelector('.btn-adicionar-foto');
+    let alerta = document.getElementById('alerta-fotos');
+
+    // Cria o alerta se não existir
+    if (!alerta && btnAdd) {
+        alerta = document.createElement('small');
+        alerta.id = 'alerta-fotos';
+        alerta.className = 'error-msg';
+        alerta.style.textAlign = 'center';
+        alerta.style.display = 'none';
+        alerta.innerText = 'Você atingiu o máximo de 6 fotos na linha do tempo.';
+        btnAdd.parentNode.insertBefore(alerta, btnAdd.nextSibling);
     }
 
-    // 3. Agora contamos quantas fotos sobraram na timeline
-    const fotosTimeline = document.querySelectorAll('#container-fotos .foto-item');
-    const btnAddTimeline = document.getElementById('btn-add-timeline');
-    
-    // 4. Se tivermos menos de 6 fotos, o botão volta a aparecer!
-    if (fotosTimeline.length < 6 && btnAddTimeline) {
-        // Se o botão ficar desalinhado quando voltar, troque 'inline-flex' por 'block' ou 'flex'
-        btnAddTimeline.style.display = 'inline-flex'; 
+    if (fotosAtivas >= MAX_FOTOS) {
+        // Desativa o botão e mostra o aviso
+        if (btnAdd) {
+            btnAdd.style.opacity = '0.5';
+            btnAdd.style.pointerEvents = 'none';
+            btnAdd.innerText = 'Limite atingido';
+        }
+        if (alerta) alerta.style.display = 'block';
+    } else {
+        // Reativa o botão e esconde o aviso
+        if (btnAdd) {
+            btnAdd.style.opacity = '1';
+            btnAdd.style.pointerEvents = 'auto';
+            btnAdd.innerText = '+ Adicionar Momento';
+        }
+        if (alerta) alerta.style.display = 'none';
     }
 }
 
@@ -720,7 +738,7 @@ function atualizarCaixinhaMemorias() {
 
         // Verifica se existe o item do formulário e se ele tem uma foto válida
         if (itensFormulario[i]) {
-            const imgFormulario = itensFormulario[i].querySelector('img.foto-upload-preview'); // Pega a tag <img> de preview
+            const imgFormulario = itensFormulario[i].querySelector('img[id^="img-preview-"]'); // Pega a tag <img> de preview
 
             // Se a tag existir, tiver um 'src' e não for um placeholder padrão/vazio
             if (imgFormulario && imgFormulario.src && imgFormulario.src !== "" && !imgFormulario.src.includes('placeholder')) {
@@ -771,35 +789,6 @@ function atualizarMockupTimeline(id, campo, valor) {
     }
 }
 
-function removerFoto(id) {
-    const itemForm = document.getElementById(`foto-item-${id}`);
-    const itemMockup = document.getElementById(`mockup-item-${id}`);
-
-    if (itemForm) itemForm.remove();
-    if (itemMockup) itemMockup.remove();
-
-    fotosAtivas--;
-    verificarLimiteFotos();
-
-    // CHAME AQUI: Para reorganizar as 3 miniaturas do card principal
-    atualizarCaixinhaMemorias();
-}
-
-// Esconde ou mostra o botão de adicionar fotos dependendo do limite
-function verificarLimiteFotos() {
-    const btnAdicionar = document.querySelector('.btn-adicionar-foto');
-    if (btnAdicionar) {
-        if (fotosAtivas >= MAX_FOTOS) {
-            btnAdicionar.style.opacity = '0.5';
-            btnAdicionar.style.pointerEvents = 'none'; // Desativa o clique
-            btnAdicionar.innerText = 'Limite de fotos atingido';
-        } else {
-            btnAdicionar.style.opacity = '1';
-            btnAdicionar.style.pointerEvents = 'auto'; // Reativa o clique
-            btnAdicionar.innerText = '+ Adicionar Momento';
-        }
-    }
-}
 async function finalizarHomenagem() {
     // 1. Mostrar um feedback de carregamento para o cliente
     const btnFinalizar = document.querySelector('.btn-finalizar');
@@ -1309,4 +1298,80 @@ function atualizarContador(idInput, idContador) {
     } else {
         contador.style.color = "#a8b2d1";
     }
+}
+
+let storyAtual = 0;
+
+// ==========================================
+// FUNÇÕES DE CONTROLE DO MOCKUP RETRO
+// ==========================================
+
+function abrirMockupRetro() {
+    // 1. Esconde a tela normal do mockup e mostra os stories
+    document.getElementById('tela-retro-mockup').style.display = 'block';
+    // Aqui você pode adicionar um ID à div principal do celular para escondê-la, 
+    // Ex: document.getElementById('tela-principal-mockup').style.display = 'none';
+    
+    // 2. Toca a música escolhida (o navegador permite porque foi ativado por um clique)
+    let audio = document.getElementById('audio-retrospectiva');
+    
+    // NOTA: Certifique-se de que o audio.src recebe o arquivo upado no passo de música
+    // Ex: audio.src = URL.createObjectURL(inputArquivoMusica.files[0]);
+    if (audio.src) {
+        audio.play().catch(erro => console.log("O autoplay da música foi bloqueado:", erro));
+    }
+
+    // 3. Reseta os stories para o primeiro
+    storyAtual = 0;
+    atualizarStoriesVisuais();
+}
+
+function fecharMockupRetro() {
+    // 1. Pega a tela e esconde
+    const telaRetro = document.getElementById('tela-retro-mockup');
+    if (telaRetro) {
+        telaRetro.style.display = 'none';
+    }
+    
+    // 2. Pega o áudio e pausa com segurança (só pausa se ele existir e estiver tocando)
+    const audio = document.getElementById('audio-retrospectiva');
+    if (audio && !audio.paused) {
+        audio.pause();
+    }
+}
+
+// Navegação entre os 4 stories
+function mudarStory(direcao) {
+    const slides = document.querySelectorAll('.story-slide');
+    
+    storyAtual += direcao;
+    
+    // Trava para não passar do primeiro ou do último
+    if (storyAtual < 0) storyAtual = 0;
+    if (storyAtual >= slides.length) storyAtual = slides.length - 1;
+    
+    atualizarStoriesVisuais();
+}
+
+function atualizarStoriesVisuais() {
+    const slides = document.querySelectorAll('.story-slide');
+    const barras = document.querySelectorAll('.progress-fill');
+    
+    // Atualiza Slides
+    slides.forEach((slide, index) => {
+        if (index === storyAtual) {
+            slide.classList.add('active');
+        } else {
+            slide.classList.remove('active');
+        }
+    });
+    
+    // Atualiza Barrinhas
+    barras.forEach((barra, index) => {
+        if (index <= storyAtual) {
+            barra.classList.add('active-fill');
+        } else {
+            barra.classList.remove('active-fill');
+        }
+    });
 }

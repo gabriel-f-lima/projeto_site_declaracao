@@ -193,7 +193,130 @@ header {
 .logo span {
     color: var(--roxo-marca);
 }
+/* =========================================
+   MODAL DE LOGIN (Atualizado para o Tema)
+   ========================================= */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(8px); /* Deixa o fundo do site bem embaçado */
+}
 
+.modal-content {
+    background: var(--fundo-secundario);
+    padding: 40px;
+    border-radius: 20px;
+    width: 90%; max-width: 400px;
+    text-align: center;
+    position: relative;
+    color: var(--texto-branco);
+    border: 1px solid rgba(138, 43, 226, 0.2); /* Bordinha roxa sutil */
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6), 0 0 20px var(--roxo-brilho);
+    animation: modalEntrada 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Animação para o modal aparecer pulando suavemente */
+@keyframes modalEntrada {
+    from { opacity: 0; transform: translateY(30px) scale(0.9); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-content h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 24px;
+    font-weight: 800;
+}
+
+.modal-content p {
+    color: var(--texto-cinza);
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+/* Botão de Fechar Redondo */
+.btn-fechar-modal {
+    position: absolute; top: 15px; right: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border: none; color: var(--texto-cinza);
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    font-size: 14px; cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex; justify-content: center; align-items: center;
+}
+
+.btn-fechar-modal:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--texto-branco);
+    transform: scale(1.1);
+}
+
+/* Campos de Digitar (Email e Código) */
+.input-padrao {
+    width: 100%; padding: 16px; margin: 15px 0 25px 0;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--fundo-preto);
+    color: var(--texto-branco);
+    box-sizing: border-box; 
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.input-padrao:focus {
+    border-color: var(--roxo-marca);
+    box-shadow: 0 0 0 3px var(--roxo-brilho);
+}
+
+/* Botão Principal do Modal (Agora usa o Verde Neon do Site) */
+.btn-primario {
+    width: 100%; padding: 16px; border-radius: 12px;
+    background-color: var(--verde-acao);
+    color: #000; border: none;
+    font-weight: 800; font-size: 16px;
+    cursor: pointer; transition: all 0.3s ease;
+    box-shadow: 0 0 25px rgba(16, 185, 129, 0.3);
+    font-family: 'Inter', sans-serif;
+}
+
+.btn-primario:hover { 
+    transform: translateY(-3px);
+    box-shadow: 0 0 35px rgba(16, 185, 129, 0.5);
+    background-color: var(--verde-hover);
+}
+
+/* Estado do botão quando está carregando (Enviando...) */
+.btn-primario:disabled {
+    background-color: var(--texto-cinza);
+    box-shadow: none;
+    transform: none;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.btn-link { 
+    background: none; border: none; 
+    color: var(--texto-cinza); margin-top: 15px; 
+    cursor: pointer; font-family: 'Inter', sans-serif;
+    transition: 0.3s;
+    font-weight: 500;
+}
+
+.btn-link:hover {
+    color: var(--roxo-marca);
+}
+
+.msg-erro { 
+    color: #ef4444; font-size: 14px; margin-top: 10px; min-height: 20px;
+    font-weight: 500;
+}
 /* =========================================================
    4. HERO SECTION (Topo principal)
    ========================================================= */

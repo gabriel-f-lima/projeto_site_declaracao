@@ -234,18 +234,54 @@
                     <div id="container-fotos" class="lista-fotos-timeline"></div>
 
 
-                    <button type="button" id="btn-add-timeline" class="btn-adicionar-foto mt-10" onclick="adicionarNovaFoto()">
+                    <button type="button" id="btn-add-timeline" class="btn-adicionar-foto mt-10"
+                        onclick="adicionarNovaFoto()">
                         <i class="fas fa-camera"></i> Adicionar Nova Foto à Timeline
                     </button>
                     <small id="alerta-timeline" class="error-msg" hidden>
-                            Você atingiu o máximo de 6 fotos.
-                        </small>
+                        Você atingiu o máximo de 6 fotos.
+                    </small>
 
                     <div class="botoes-navegacao">
                         <button type="button" class="btn-voltar" onclick="mudarPasso(6, 5)">Voltar</button>
                         <button type="button" class="btn-proximo" onclick="mudarPasso(6, 7)">Continuar</button>
                     </div>
                 </div>
+
+                <div class="passo-container" id="passo-7">
+                    <div class="form-header">
+                        <h2 id="titulo-passo-7">Sua Retrospectiva Interativa 🎡</h2>
+                        <p id="desc-passo-7">Adicione 10 fotos especiais para os jogos finais.</p>
+                    </div>
+
+                    <div class="input-group">
+                        <div class="label-destaque">
+                            <label>Fotos para Deslizar</label>
+                            <span class="badge-contador" id="contador-deslizar">0/6</span>
+                        </div>
+                        <p class="hint-text">Essas fotos aparecerão em uma galeria interativa para o lado.</p>
+
+                        <div id="container-retro-deslizar" class="grid-fotos-retro deslizar-grid">
+                        </div>
+                    </div>
+
+                    <div class="input-group mt-20">
+                        <div class="label-destaque">
+                            <label>Fotos para a Garra</label>
+                            <span class="badge-contador" id="contador-garra">0/4</span>
+                        </div>
+                        <p class="hint-text">Essas fotos serão "pescadas" pela máquina de garra animada!</p>
+
+                        <div id="container-retro-garra" class="grid-fotos-retro garra-grid">
+                        </div>
+                    </div>
+
+                    <div class="botoes-navegacao">
+                        <button type="button" class="btn-voltar" onclick="mudarPasso(7, 6)">Voltar</button>
+                        <button type="button" class="btn-proximo" onclick="mudarPasso(7, 8)">Continuar</button>
+                    </div>
+                </div>
+
             </form>
         </section>
 
@@ -356,21 +392,21 @@
                             <h3 id="mockup-timeline-titulo-card">Conheça Nossas Memórias</h3>
 
                             <div id="mini-fotos-preview" class="app-grid-miniaturas">
-                                <div class="app-mini-foto">
-                                    <span>Nossos Dates</span>
-                                </div>
-                                <div class="app-mini-foto">
-                                    <span>Fotos aleatórias</span>
-                                </div>
-                                <div class="app-mini-foto">
-                                    <span>Primeira viagem</span>
-                                </div>
+                                <div class="app-mini-foto"><span>Nossos Dates</span></div>
+                                <div class="app-mini-foto"><span>Fotos aleatórias</span></div>
+                                <div class="app-mini-foto"><span>Primeira viagem</span></div>
                             </div>
                         </div>
 
-                        <div class="app-infos-finais">
-                            <div id="mockup-contador-dias">Tempo juntos: 0 dias</div>
-                            <div id="mockup-cidade-estado">Nossa cidade</div>
+                        <div class="app-card-retro" onclick="abrirModalRetro()">
+                            <div class="retro-banner">
+                                <img src="{{ url_for('static', filename='img/img-wrapped.png') }}" alt="Retrospectiva">
+                                <div class="retro-texto">
+                                    <h3>Sua Retrospectiva</h3>
+                                    <p>Explore o seu tempo de casal</p>
+                                    <button type="button" class="btn-vamos-la" onclick="abrirMockupRetro(); event.stopPropagation();">Vamos lá</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -387,6 +423,52 @@
                         <div id="preview-timeline" class="app-conteudo-timeline"></div>
                     </div>
 
+                    <div id="tela-retro-mockup" class="retro-story-container" style="display: none;">
+                        <audio id="audio-retrospectiva" loop preload="auto"></audio>
+
+                        <button class="btn-fechar-retro" onclick="fecharMockupRetro()">✕ Fechar Preview</button>
+
+                        <div class="story-progress-bar">
+                            <div class="progress-segment">
+                                <div class="progress-fill active-fill"></div>
+                            </div>
+                            <div class="progress-segment">
+                                <div class="progress-fill"></div>
+                            </div>
+                            <div class="progress-segment">
+                                <div class="progress-fill"></div>
+                            </div>
+                            <div class="progress-segment">
+                                <div class="progress-fill"></div>
+                            </div>
+                        </div>
+
+                        <div class="story-slides-container">
+                            <div class="story-slide active" style="background: linear-gradient(135deg, #1a1a1a, #000);">
+                                <h3 class="story-title">Fotos para Deslizar</h3>
+                                <p class="story-desc">Suas 6 fotos aparecerão aqui em carrossel.</p>
+                                <div class="icone-preview">👆</div>
+                            </div>
+                            <div class="story-slide" style="background: linear-gradient(135deg, #2c003e, #000);">
+                                <h3 class="story-title">A Máquina de Garra</h3>
+                                <p class="story-desc">Suas 4 fotos sendo "pescadas".</p>
+                                <div class="icone-preview">🕹️</div>
+                            </div>
+                            <div class="story-slide" style="background: linear-gradient(135deg, #3e001f, #000);">
+                                <h3 class="story-title">Seu Jogo 3</h3>
+                                <p class="story-desc">Preview da próxima etapa...</p>
+                                <div class="icone-preview">🎮</div>
+                            </div>
+                            <div class="story-slide" style="background: linear-gradient(135deg, #001f3e, #000);">
+                                <h3 class="story-title">Grande Final</h3>
+                                <p class="story-desc">A surpresa final.</p>
+                                <div class="icone-preview">✨</div>
+                            </div>
+                        </div>
+
+                        <div class="story-nav-zone left" onclick="mudarStory(-1)"></div>
+                        <div class="story-nav-zone right" onclick="mudarStory(1)"></div>
+                    </div>
                 </div>
 
 

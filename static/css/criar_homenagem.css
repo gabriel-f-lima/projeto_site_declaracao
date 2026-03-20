@@ -1159,6 +1159,10 @@
    2. TIMELINE FORMULÁRIO "POLAROID" (PASSO 6 - LADO ESQUERDO)
    ========================================================================== */
 
+/* =========================================
+   LINHA DO TEMPO E POLAROIDS (FORMATO EM PÉ)
+   ========================================= */
+
 .lista-fotos-timeline {
     position: relative;
     padding: 30px 0;
@@ -1173,158 +1177,192 @@
     transform: translateX(-50%);
     width: 2px;
     height: 100%;
-    background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.2) 10%, rgba(255, 255, 255, 0.2) 90%, transparent);
+    background: linear-gradient(to bottom, transparent, rgba(255, 243, 230, 0.2) 10%, rgba(255, 255, 255, 0.2) 90%, transparent);
     z-index: 1;
-    display: none; /* COMEÇA ESCONDIDA */
+    display: none;
 }
 
-/* O truque: Só mostra a linha se houver conteúdo (fotos) dentro do container */
 .lista-fotos-timeline:not(:empty)::before,
 .lista-fotos-timeline:has(.foto-item)::before {
     display: block;
-    animation: fadeIn 0.5s ease; /* Faz a linha aparecer suavemente */
+    animation: fadeIn 0.5s ease;
 }
 
-/* Item da Foto (Alternância) */
+/* Container de cada momento */
 .foto-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    margin-bottom: 40px;
+    margin-bottom: 50px;
     position: relative;
     z-index: 2;
     animation: fadeIn 0.5s ease forwards;
 }
 
-/* Inverte a ordem para itens pares */
+/* Alternância Esquerda/Direita */
+.foto-item:nth-child(odd) {
+    flex-direction: row;
+}
 .foto-item:nth-child(even) {
     flex-direction: row-reverse;
 }
 
-/* O "Cartão" Polaroid no Formulário */
+/* O "Cartão" Polaroid (Agora Em Pé e Reto) */
 .foto-preview-box {
-    width: 42%;
+    width: 160px; /* Mais estreito */
     background: #ffffff;
-    padding: 10px 10px 25px 10px;
-    border-radius: 2px;
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
-    transition: transform 0.3s ease;
+    padding: 8px 8px 35px 8px; /* Espaço maior embaixo, bem clássico */
+    border-radius: 4px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
     cursor: pointer;
-    transform: rotate(-3deg);
+    position: relative;
+    display: flex;
+    flex-direction: column;
 }
 
-.foto-item:nth-child(even) .foto-preview-box {
-    transform: rotate(3deg);
-}
-
+/* Efeito de hover limpo (sem girar, só levanta) */
 .foto-preview-box:hover {
-    transform: scale(1.05) rotate(0deg);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
 }
 
 .foto-preview-box img {
     width: 100%;
-    height: 150px;
-    object-fit: cover;
-    border: 1px solid #eee;
+    /* Define uma altura máxima para não estourar o layout, 
+       mas permite que fotos mais baixas fiquem proporcionais */
+    max-height: 220px; 
+    height: auto; /* Mantém a proporção original */
+    object-fit: contain; /* Ajusta a imagem inteira DENTRO do espaço, sem cortar */
+    border-radius: 2px;
+    background: #fffdfa;
+    display: block; /* Remove o pequeno espaço extra embaixo de imagens inline */
 }
 
-/* Textos (Data e Legenda) no Formulário */
+/* Textos (Data e Legenda) ao lado da foto */
 .foto-info {
-    width: 42%;
+    width: calc(50% - 40px); /* Ocupa a metade da tela menos o espaço da linha */
     display: flex;
     flex-direction: column;
+    justify-content: center;
     gap: 5px;
 }
 
 .foto-item:nth-child(odd) .foto-info {
     text-align: left;
+    align-items: flex-start;
 }
-
 .foto-item:nth-child(even) .foto-info {
     text-align: right;
+    align-items: flex-end;
 }
 
+/* Estilo dos Inputs para parecerem texto normal */
 .foto-info input {
     background: transparent !important;
     border: none !important;
-    border-bottom: 1px dashed rgba(255, 255, 255, 0.2) !important;
     color: #fff !important;
-    padding: 5px 0 !important;
-    font-size: 14px;
+    padding: 5px 8px !important;
+    width: 100%;
+    outline: none;
+    transition: background 0.2s ease;
 }
 
+.foto-info input:hover, 
+.foto-info input:focus {
+    background: rgba(255, 255, 255, 0.05) !important; /* Dica visual de que é editável */
+    border-radius: 4px;
+}
+
+/* Data - Rosa e Negrito igual ao print */
 .foto-info .timeline-data {
-    color: var(--cor-tema, #7c5dfa) !important;
-    font-weight: bold;
-    font-size: 16px;
+    color: #ff4d94 !important; 
+    font-weight: 700;
+    font-size: 18px;
 }
 
-/* O Coração Conector */
+/* Legenda - Cinza claro */
+.foto-info .timeline-legenda {
+    color: #d1d1d1 !important;
+    font-size: 15px;
+}
+
+/* O Coração Conector no meio da linha */
 .foto-item::after {
     content: '❤';
     position: absolute;
     left: 50%;
-    transform: translateX(-50%);
-    color: var(--cor-tema, #ff4d94);
-    background: #1e1e24;
-    /* Cor de fundo do seu formulário para "cortar" a linha */
-    padding: 0 5px;
-    font-size: 18px;
-    text-shadow: 0 0 8px rgba(255, 77, 148, 0.6);
+    top: 50%; /* Centralizado na altura */
+    transform: translate(-50%, -50%);
+    color: #ff4d94;
+    background: #15151b; /* Troque pela cor EXATA do fundo do seu site para a linha não aparecer atrás do coração */
+    padding: 8px;
+    font-size: 14px;
+    border-radius: 50%;
 }
 
-/* Botão de Remover (X) do Formulário Polaroid */
+/* Botão de Remover (X) */
 .foto-item .btn-remover-foto {
     position: absolute;
-    top: -10px;
-    right: -10px;
+    top: -12px;
+    right: -12px;
     background: #ff3b30;
     color: white;
     border: none;
     border-radius: 50%;
-    width: 25px;
-    height: 25px;
+    width: 26px;
+    height: 26px;
     cursor: pointer;
     font-weight: bold;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
     z-index: 10;
 }
 
-/* Ajuste Mobile Formulário Polaroid */
+/* Ajuste Mobile */
 @media (max-width: 600px) {
     .lista-fotos-timeline::before {
-        left: 15px;
+        left: 20px;
         transform: none;
     }
 
     .foto-item::after {
-        left: 15px;
-        transform: none;
+        left: 20px;
+        transform: translate(-50%, -50%);
     }
 
     .foto-item,
     .foto-item:nth-child(even) {
-        flex-direction: column !important;
-        align-items: flex-start;
+        flex-direction: row !important;
+        justify-content: flex-start;
+        padding-left: 45px; /* Empurra pra direita da linha */
+        gap: 20px;
     }
 
-    .foto-preview-box,
+    .foto-preview-box {
+        width: 120px;
+        padding: 6px 6px 25px 6px;
+    }
+    
+    .foto-preview-box img {
+        max-height: 160px; /* Reduz o limite máximo no celular */
+        height: auto;
+    }
+
     .foto-info {
-        width: 85%;
-        margin-left: 35px;
-        margin-bottom: 15px;
+        width: auto;
+        flex: 1;
     }
 
     .foto-item:nth-child(odd) .foto-info,
     .foto-item:nth-child(even) .foto-info {
         text-align: left;
+        align-items: flex-start;
     }
 }
-
 
 /* ==========================================================================
    3. MOCKUP DO CELULAR (DIREITA) E COMPONENTES GERAIS
@@ -1842,6 +1880,220 @@
 }
 
 /* =========================================
+   SEÇÃO 7: RETROSPECTIVA INTERATIVA
+   ========================================= */
+
+.label-destaque {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+
+.badge-contador {
+    background-color: var(--cor-tema, #7c5dfa);
+    color: #ffffff;
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.hint-text {
+    font-size: 0.85rem;
+    color: #a0a0a0;
+    margin-top: 0;
+    margin-bottom: 12px;
+}
+
+/* Grids Responsivos */
+.grid-fotos-retro {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.deslizar-grid {
+    grid-template-columns: repeat(3, 1fr); /* 3 colunas para 6 fotos */
+}
+
+.garra-grid {
+    grid-template-columns: repeat(4, 1fr); /* 4 colunas diretas para as 4 fotos */
+}
+
+/* O "Slot" (quadradinho de upload) */
+.slot-retro {
+    aspect-ratio: 1 / 1; /* Garante que seja um quadrado perfeito */
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.slot-retro:hover {
+    border-color: var(--cor-tema, #7c5dfa);
+    background-color: rgba(255, 255, 255, 0.08);
+    transform: translateY(-2px);
+}
+
+.slot-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    width: 100%;
+    height: 100%;
+    transition: color 0.3s ease;
+}
+
+.slot-retro:hover .slot-content {
+    color: var(--cor-tema, #7c5dfa);
+}
+
+.slot-content span.plus-icon {
+    font-size: 2rem;
+    font-weight: 300;
+    line-height: 1;
+}
+
+/* Imagem de preview dentro do slot */
+.slot-content img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    border-radius: 10px; /* Levemente menor que o border-radius do pai */
+}
+
+.mt-20 {
+    margin-top: 20px;
+}
+
+/* Ajustes para Celular */
+@media (max-width: 600px) {
+    .deslizar-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 colunas na tela pequena */
+    }
+    .garra-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 colunas na tela pequena */
+    }
+}
+/* =========================================
+   MOCKUP CELULAR: BANNER RETROSPECTIVA
+   ========================================= */
+.app-card-retro {
+    margin-top: 15px;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+
+/* =========================================
+   NOVO DESIGN DO .retro-banner:
+   A IMAGEM É O FUNDO, FULL BLEED, TEXTO POR CIMA
+   ========================================= */
+.retro-banner {
+    position: relative; /* context para elementos posicionados absolutamente */
+    width: 100%;
+    aspect-ratio: 9 / 16; /* Proporção retrato limpa, semelhante a image_13.png */
+    background-color: transparent; /* O fundo virá da imagem */
+}
+
+.retro-banner img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Preenche a div enquanto preserva a proporção da imagem limpa */
+    z-index: 0; /* Coloca no fundo */
+}
+/* Remover toda a seção .retro-banner img, pois a imagem agora é o fundo */
+.retro-texto {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centraliza verticalmente */
+    align-items: center; /* Centraliza horizontalmente */
+    text-align: center; /* Garante que o texto flua a partir do centro */
+    color: white;
+    z-index: 1; 
+    padding: 20px; /* Reduzi o padding de 40px para 20px para dar mais espaço no celular */
+    box-sizing: border-box; 
+}
+
+/* Título (h3) */
+.retro-texto h3 {
+    font-size: 26px; 
+    font-weight: 700;
+    margin: 0 0 8px 0; 
+    color: white;
+    text-align: center;
+    width: 100%; /* Força a ocupar toda a largura disponível */
+    font-family: 'Inter', sans-serif; 
+    letter-spacing: -0.5px; 
+}
+
+/* Parágrafo (p) */
+.retro-texto p {
+    font-size: 16px;
+    font-weight: 400;
+    margin: 0 auto 30px auto; /* O 'auto' nas laterais crava o elemento no meio */
+    color: rgba(255, 255, 255, 0.9); /* Um branco levemente suave para dar contraste com o título */
+    text-align: center;
+    width: 100%; 
+    max-width: 260px; /* Controla a largura máxima para não ficar uma linha muito esticada no PC */
+    font-family: 'Inter', sans-serif;
+}
+.btn-vamos-la {
+    background-color: #5DB1FF; /* Cor azul */
+    color: white;
+    border: none;
+    /* Reduzi levemente o padding lateral para 40px para não estourar no celular */
+    padding: 12px 40px; 
+    border-radius: 30px; 
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+    display: inline-block;
+    font-family: 'Inter', sans-serif;
+    transition: background-color 0.2s; 
+    
+    /* 👇 AQUI ESTÁ A SOLUÇÃO 👇 */
+    white-space: nowrap; /* Impede o texto de quebrar em duas linhas */
+    
+    /* Posiciona perto do fundo */
+    position: absolute;
+    bottom: 40px; 
+    left: 50%;
+    transform: translateX(-50%); 
+}
+
+/* Efeito de hover para o botão */
+.btn-vamos-la:hover {
+    background-color: #48a5f1;
+}
+/* Manter a interação de hover entre o card e o botão */
+
+/* =========================================
    RODAPÉ: TEMPO E CIDADE
 ========================================= */
 .app-infos-finais {
@@ -2123,3 +2375,133 @@
     color: #a8b2d1;
     margin-top: 4px;
 }
+
+/* =========================================
+   MOCKUP CELULAR: STORIES RETROSPECTIVA
+   ========================================= */
+
+.retro-story-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    z-index: 100; /* Fica por cima de todo o resto no celular */
+    border-radius: inherit; /* Segue o arredondamento do seu mockup */
+    overflow: hidden;
+    color: white;
+}
+
+/* Botão de Fechar/Voltar */
+.btn-fechar-retro {
+    position: absolute;
+    top: 40px;
+    right: 15px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    z-index: 105; /* AQUI ESTÁ A MÁGICA: Maior que as zonas de clique */
+    cursor: pointer;
+    backdrop-filter: blur(5px);
+}
+
+/* Barrinhas de Progresso */
+.story-progress-bar {
+    position: absolute;
+    top: 15px;
+    left: 10px;
+    right: 10px;
+    display: flex;
+    gap: 4px;
+    z-index: 102;
+}
+
+.progress-segment {
+    flex: 1;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    width: 0%;
+    background: white;
+    transition: width 0.3s ease;
+}
+
+.progress-fill.active-fill {
+    width: 100%;
+}
+
+/* Slides */
+.story-slides-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.story-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    z-index: 100;
+    text-align: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.story-slide.active {
+    opacity: 1;
+    z-index: 101;
+}
+
+.story-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.story-desc {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+.icone-preview {
+    font-size: 4rem;
+    margin-top: 30px;
+    animation: pulsar 2s infinite;
+}
+
+@keyframes pulsar {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* Zonas de clique para navegar (metade esquerda, metade direita) */
+.story-nav-zone {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 50%;
+    z-index: 103;
+    cursor: pointer;
+}
+
+.story-nav-zone.left { left: 0; }
+.story-nav-zone.right { right: 0; }

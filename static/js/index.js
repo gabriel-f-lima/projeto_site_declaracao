@@ -154,3 +154,93 @@ window.addEventListener('click', function(event) {
         fecharModalOverlay();
     }
 });
+
+
+
+
+let emailDigitado = "";
+
+function abrirModalLogin() {
+    document.getElementById('modal-login').style.display = 'flex';
+}
+
+function fecharModalLogin() {
+    document.getElementById('modal-login').style.display = 'none';
+}
+
+function voltarPassoLogin() {
+    document.getElementById('login-passo-2').style.display = 'none';
+    document.getElementById('login-passo-1').style.display = 'block';
+}
+
+async function enviarCodigoEmail() {
+    const inputEmail = document.getElementById('input-email-login');
+    const msgErro = document.getElementById('msg-erro-email');
+    const btn = document.getElementById('btn-enviar-codigo');
+    
+    emailDigitado = inputEmail.value.trim();
+    if(!emailDigitado || !emailDigitado.includes('@')) {
+        msgErro.innerText = "Por favor, digite um e-mail válido.";
+        return;
+    }
+
+    msgErro.innerText = "";
+    btn.innerText = "Enviando...";
+    btn.disabled = true;
+
+    try {
+        // Envia para o servidor Flask
+        const response = await fetch('/api/login/enviar-codigo', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ email: emailDigitado })
+        });
+        
+        if (response.ok) {
+            document.getElementById('email-confirmacao').innerText = emailDigitado;
+            document.getElementById('login-passo-1').style.display = 'none';
+            document.getElementById('login-passo-2').style.display = 'block';
+        } else {
+            msgErro.innerText = "Erro ao enviar código. Tente novamente.";
+        }
+    } catch (error) {
+        msgErro.innerText = "Erro de conexão.";
+    } finally {
+        btn.innerText = "Enviar Código";
+        btn.disabled = false;
+    }
+}
+
+async function verificarCodigo() {
+    const codigo = document.getElementById('input-codigo').value.trim();
+    const msgErro = document.getElementById('msg-erro-codigo');
+    const btn = document.getElementById('btn-verificar-codigo');
+
+    if(codigo.length !== 6) {
+        msgErro.innerText = "O código deve ter 6 números.";
+        return;
+    }
+
+    btn.innerText = "Verificando...";
+    btn.disabled = true;
+
+    try {
+        const response = await fetch('/api/login/verificar', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ email: emailDigitado, codigo: codigo })
+        });
+        
+        if (response.ok) {
+            // LOGIN SUCESSO! Recarrega a página ou redireciona
+            window.location.reload(); 
+        } else {
+            msgErro.innerText = "Código inválido ou expirado.";
+        }
+    } catch (error) {
+        msgErro.innerText = "Erro de conexão.";
+    } finally {
+        btn.innerText = "Confirmar";
+        btn.disabled = false;
+    }
+}
