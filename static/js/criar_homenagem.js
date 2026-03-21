@@ -1,3 +1,64 @@
+// =========================================================
+// ATUALIZAÇÃO DO MOCKUP (CELULARZINHO) EM TEMPO REAL
+// =========================================================
+
+function atualizarPreview() {
+    // 1. Pegamos os valores digitados nos inputs
+    const nomeDe = document.getElementById('nome_de')?.value || '';
+    const nomePara = document.getElementById('nome_para')?.value || '';
+    const titulo = document.getElementById('titulo')?.value || '';
+    
+    // 2. Pegamos os elementos do mockup que vão receber os textos
+    const previewTopo = document.getElementById('preview-topo');
+    const previewDe = document.getElementById('preview-de');
+    const previewTitulo = document.getElementById('preview-titulo');
+    
+    // 3. Atualizamos o Topo (PARA: ...)
+    if (previewTopo) {
+        previewTopo.innerText = nomePara ? `PARA: ${nomePara.toUpperCase()}` : "PARA: ...";
+    }
+
+    // 4. Atualizamos o campo "De: ..."
+    if (previewDe) {
+        previewDe.innerText = nomeDe ? `De: ${nomeDe}` : "De: ...";
+    }
+
+    // 5. Atualizamos o Título da Música
+    if (previewTitulo) {
+        previewTitulo.innerText = titulo ? titulo : "Seu Título Aqui";
+    }
+
+    // 6. Atualizamos os dados da Música (se já tiver sido escolhida/carregada do localStorage)
+    const musicaNome = document.getElementById('musica_nome')?.value;
+    const musicaArtista = document.getElementById('musica_artista')?.value;
+    const musicaCapa = document.getElementById('musica_capa')?.value;
+
+    if (musicaNome && document.getElementById('mockup-musica-titulo-api')) {
+        document.getElementById('mockup-musica-titulo-api').innerText = musicaNome;
+    }
+    
+    if (musicaArtista && document.getElementById('mockup-musica-artista-api')) {
+        document.getElementById('mockup-musica-artista-api').innerText = musicaArtista;
+    }
+
+    if (musicaCapa) {
+        const capaMockup = document.getElementById('mockup-musica-capa-api'); // Mini capa inferior
+        const capaPrincipal = document.getElementById('preview-foto'); // Capa grande
+        const placeholder = document.getElementById('placeholder-texto'); // Texto "Sua foto aparecerá aqui"
+
+        if (capaMockup) capaMockup.src = musicaCapa;
+        
+        if (capaPrincipal) {
+            capaPrincipal.src = musicaCapa;
+            capaPrincipal.style.display = 'block'; // Garante que a imagem apareça
+            if (placeholder) placeholder.style.display = 'none'; // Esconde o texto
+        }
+    }
+    
+    // Salva o progresso no LocalStorage toda vez que o preview atualizar
+    // (Pode comentar a linha abaixo se quiser salvar apenas ao mudar de passo)
+    salvarProgresso(1); 
+}
 
 // ==========================================================================
 // 1. CONFIGURAÇÕES E TEXTOS
@@ -144,23 +205,64 @@ function gerarTituloAleatorio() {
 }
 
 function gerarMensagemAleatoria() {
-    const lista = sugestoesMensagens[tipoSelecionadoAtual] || sugestoesMensagens['padrao'];
-    const inputMensagem = document.getElementById('letra_musica');
-
+    // Verifica qual tipo a pessoa escolheu lá no Passo 1. Se não achar, usa 'padrao'
+    const tipo = (typeof tipoSelecionadoAtual !== 'undefined') ? tipoSelecionadoAtual : 'padrao';
+    const lista = sugestoesMensagens[tipo] || sugestoesMensagens['padrao'];
+    
+    const inputMensagem = document.getElementById('mensagem_especial');
     if (!inputMensagem) return;
 
     const msgAtual = inputMensagem.value;
     let msgSorteada;
 
-    // Sorteia nova mensagem sem repetir a anterior logo em seguida
+    // Sorteia nova mensagem garantindo que não repete a mesma duas vezes seguidas
     do {
         msgSorteada = lista[Math.floor(Math.random() * lista.length)];
     } while (msgSorteada === msgAtual && lista.length > 1);
 
+    // Preenche a caixa de texto
     inputMensagem.value = msgSorteada;
 
-    // Chama a função que já existe para atualizar o texto no celular
-    atualizarLetra();
+    // Atualiza o celularzinho na hora!
+    atualizarPreviewLetra();
+}
+
+// =========================================================
+// ATUALIZA O CELULARZINHO COM O QUE FOI DIGITADO NA CARTA
+// =========================================================
+function atualizarPreviewLetra() {
+    const input = document.getElementById('mensagem_especial');
+    const preview = document.getElementById('preview-letra');
+    const contador = document.getElementById('contador_letra');
+
+    if (!input || !preview) return;
+
+    const texto = input.value;
+
+    // Atualiza o contador visual (se existir no HTML)
+    if (contador) {
+        contador.innerText = `${texto.length} / 600 caracteres`;
+    }
+
+    // Atualiza o preview no celular preservando as quebras de linha (sua ótima ideia!)
+    if (texto.trim() === '') {
+        preview.innerHTML = 'Sua mensagem aparecerá aqui...';
+    } else {
+        preview.innerHTML = texto.replace(/\n/g, '<br>');
+    }
+
+    // Salva no LocalStorage
+    if (typeof salvarProgresso === 'function') salvarProgresso(4);
+}
+
+// =========================================================
+// FUNÇÃO DE ABRIR/FECHAR A LETRA (MANTIDA, ESTÁ PERFEITA)
+// =========================================================
+function toggleLetra() {
+    const card = document.getElementById('card-letra');
+    if (card) {
+        card.classList.toggle('expandido');
+    }
 }
 
 // ==========================================================================
@@ -215,34 +317,6 @@ function carregarFoto(event) {
         document.getElementById('placeholder-texto').style.display = 'none';
     };
     if (event.target.files[0]) reader.readAsDataURL(event.target.files[0]);
-}
-
-
-function atualizarLetra() {
-    const input = document.getElementById('letra_musica');
-    const preview = document.getElementById('preview-letra');
-    const contador = document.getElementById('contador_letra');
-
-    if (!input || !preview) return;
-
-    const texto = input.value;
-
-    // Atualiza o contador visual
-    if (contador) {
-        contador.innerText = `${texto.length} / 600 caracteres`;
-    }
-
-    // Atualiza o preview no celular
-    if (texto.trim() === '') {
-        preview.innerHTML = 'Sua mensagem aparecerá aqui...';
-    } else {
-        // Substitui quebras de linha por <br> para aparecer no HTML
-        preview.innerHTML = texto.replace(/\n/g, '<br>');
-    }
-}
-
-function toggleLetra() {
-    document.getElementById('card-letra').classList.toggle('expandido');
 }
 
 // ==========================================
@@ -307,7 +381,7 @@ function mudarPasso(passoAtual, proximoPasso) {
                     1: { titulo: "Quem são vocês?", desc: "Insira os nomes para personalizar a homenagem." },
                     2: { titulo: "Momento Especial", desc: "Quando e onde tudo começou?" },
                     3: { titulo: "Título da Homenagem", desc: "Como você quer chamar essa página?" },
-                    4: { titulo: "A Música de Vocês", desc: "Escolha a trilha sonora perfeita para este momento." },
+                    4: { titulo: "Mensagem e música", desc: "Escolha a trilha sonora perfeita para este momento." },
                     5: { titulo: "Fotos de Capa", desc: "Selecione até 4 fotos lindas para a capa do seu álbum." },
                     6: { titulo: "Nossas Memórias 📸", desc: "Adicione fotos e crie uma linha do tempo com seus melhores momentos." },
                     7: { titulo: "Sua Retrospectiva Interativa 🎡", desc: "Adicione 10 fotos especiais para os jogos finais." },
@@ -344,6 +418,7 @@ function mudarPasso(passoAtual, proximoPasso) {
                         }
                     }, 1200);
                 }
+                salvarProgresso(passoAtual)
 
                 // ==========================================
                 // LÓGICA DA RETROSPECTIVA (STORIES)
@@ -439,24 +514,26 @@ function adicionarNovaFoto() {
     divForm.id = `foto-item-${id}`;
 
     divForm.innerHTML = `
-        <label class="foto-preview-box" for="input-foto-${id}" title="Clique para escolher uma foto">
-            <span id="icone-foto-${id}" style="display:block; text-align:center; padding-top: 50px; color: rgba(0,0,0,0.3); font-size: 24px;">📷</span>
-            <img id="img-preview-${id}" src="" style="display: none;">
-        </label>
+        <div class="foto-preview-box">
+            <label for="input-foto-${id}" title="Clique para escolher uma foto" style="display:block; width:100%; height:100%; cursor:pointer;">
+                <span id="icone-foto-${id}" style="display:block; text-align:center; padding-top: 50px; color: rgba(0,0,0,0.3); font-size: 24px;">📷</span>
+                <img id="img-preview-${id}" src="" style="display: none; width: 100%; height: 100%; object-fit: cover; border-radius: 2px;">
+            </label>
+            
+            <button type="button" class="btn-remover-foto" onclick="removerFoto(${id})" title="Apagar foto">✖</button>
+        </div>
         
         <input type="file" id="input-foto-${id}" accept="image/*" hidden 
                onchange="previewFotoLinhaTempo(event, ${id})">
         
         <div class="foto-info">
-            <input type="text" placeholder="Ex: Maio 2022" class="timeline-data" maxlength="35"
+            <input type="text" placeholder="Ex: Maio 2024" class="timeline-data" maxlength="20"
                    oninput="atualizarMockupTimeline(${id}, 'data', this.value)">
             
             <input type="text" name="momento_titulo_${id}" placeholder="Escreva uma legenda..." 
-                   class="timeline-legenda" maxlength="100" 
+                   class="timeline-legenda" maxlength="80" 
                    oninput="atualizarMockupTimeline(${id}, 'texto', this.value); atualizarCaixinhaMemorias()">
         </div>
-        
-        <button type="button" class="btn-remover-foto" onclick="removerFoto(${id})" title="Apagar foto">✖</button>
     `;
     containerForm.appendChild(divForm);
 
@@ -503,27 +580,29 @@ let arrayCapasMockup = [];
 function adicionarNovaCapa() {
     if (capasAtivas >= MAX_CAPAS) return;
 
-    contadorCapas++;
+    contadorCapas++; // Aumenta o contador global
     capasAtivas++;
-    const id = contadorCapas;
+    
+    // Criamos uma constante local para travar o número deste quadrado específico
+    const idAtual = contadorCapas; 
 
     const containerForm = document.getElementById('container-capas');
     const divForm = document.createElement('div');
 
-    // MUDANÇA AQUI: Tiramos a classe "foto-item" e deixamos só "capa-item"
     divForm.className = 'capa-item';
-    divForm.id = `capa-item-${id}`;
+    divForm.id = `capa-item-${idAtual}`;
 
+    // IMPORTANTE: O 'for' do label e o 'id' do input PRECISAM ser iguais e únicos
     divForm.innerHTML = `
-        <label for="input-capa-${id}" title="Clique para escolher uma foto" style="display:block; width:100%; height:100%; cursor:pointer;">
-            <span id="icone-capa-${id}" style="display:flex; align-items:center; justify-content:center; height:100%; color: rgba(255,255,255,0.3); font-size: 24px;">📷</span>
-            <img id="img-preview-capa-${id}" src="" hidden>
+        <label for="input-capa-${idAtual}" title="Clique para escolher uma foto" style="display:block; width:100%; height:100%; cursor:pointer;">
+            <span id="icone-capa-${idAtual}" style="display:flex; align-items:center; justify-content:center; height:100%; color: rgba(255,255,255,0.3); font-size: 24px;">📷</span>
+            <img id="img-preview-capa-${idAtual}" src="" style="display:none; width:100%; height:100%; object-fit:cover; border-radius:8px;">
         </label>
         
-        <input type="file" id="input-capa-${id}" accept="image/*" hidden 
-               onchange="previewFotoCapa(event, ${id})">
+        <input type="file" id="input-capa-${idAtual}" accept="image/*" hidden 
+               onchange="previewFotoCapa(event, ${idAtual})">
         
-        <button type="button" class="btn-remover-foto" onclick="removerCapa(${id})" title="Apagar foto">✖</button>
+        <button type="button" class="btn-remover-foto" onclick="removerCapa(${idAtual})" title="Apagar foto">✖</button>
     `;
 
     containerForm.appendChild(divForm);
@@ -545,32 +624,63 @@ function verificarLimiteCapa() {
 
 function previewFotoCapa(event, id) {
     const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        // Cria uma imagem invisível na memória para podermos encolher
+        const img = new Image();
+        
+        img.onload = function() {
+            // Prepara um Canvas (uma tela de pintura do navegador)
+            const canvas = document.createElement('canvas');
+            const MAX_WIDTH = 800; // Limite de tamanho ideal e leve
+            
+            let width = img.width;
+            let height = img.height;
+
+            // Se a foto for maior que 800px, calcula a proporção para encolher
+            if (width > MAX_WIDTH) {
+                height = height * (MAX_WIDTH / width);
+                width = MAX_WIDTH;
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+
+            // "Pinta" a foto original encolhida dentro do Canvas
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            // Transforma a foto numa versão JPEG muito leve (Qualidade 70%)
+            const fotoLeve = canvas.toDataURL('image/jpeg', 0.7);
+
+            // Atualiza a imagem na tela com a versão levinha
             const imgPreview = document.getElementById(`img-preview-capa-${id}`);
             const icone = document.getElementById(`icone-capa-${id}`);
 
-            // 1. Salva a imagem no quadradinho
-            imgPreview.src = e.target.result;
+            if (imgPreview) {
+                imgPreview.src = fotoLeve;
+                imgPreview.hidden = false;
+                imgPreview.style.display = 'block';
+            }
 
-            // 2. Força a imagem a aparecer na tela do formulário
-            imgPreview.hidden = false;
-            imgPreview.style.display = 'block';
-
-            // 3. Força o ícone da câmera a sumir
             if (icone) {
                 icone.hidden = true;
                 icone.style.display = 'none';
             }
 
-            // 4. Aciona a função para atualizar o celular
-            atualizarMockupCapas();
-        }
-        reader.readAsDataURL(file);
-    }
+            // Atualiza o celularzinho
+            if (typeof atualizarMockupCapas === 'function') {
+                atualizarMockupCapas();
+            }
+        };
+        
+        // Carrega a foto original
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
 }
-
 function removerCapa(id) {
     const item = document.getElementById(`capa-item-${id}`);
     if (item) {
@@ -596,36 +706,15 @@ function removerFoto(id) {
 }
 
 function verificarLimiteFotos() {
-    const btnAdd = document.querySelector('#passo-6 .btn-adicionar-foto') || document.querySelector('.btn-adicionar-foto');
-    let alerta = document.getElementById('alerta-fotos');
-
-    // Cria o alerta se não existir
-    if (!alerta && btnAdd) {
-        alerta = document.createElement('small');
-        alerta.id = 'alerta-fotos';
-        alerta.className = 'error-msg';
-        alerta.style.textAlign = 'center';
-        alerta.style.display = 'none';
-        alerta.innerText = 'Você atingiu o máximo de 6 fotos na linha do tempo.';
-        btnAdd.parentNode.insertBefore(alerta, btnAdd.nextSibling);
-    }
+    const btnAdd = document.getElementById('btn-add-timeline');
+    const alerta = document.getElementById('alerta-timeline');
 
     if (fotosAtivas >= MAX_FOTOS) {
-        // Desativa o botão e mostra o aviso
-        if (btnAdd) {
-            btnAdd.style.opacity = '0.5';
-            btnAdd.style.pointerEvents = 'none';
-            btnAdd.innerText = 'Limite atingido';
-        }
-        if (alerta) alerta.style.display = 'block';
+        btnAdd.hidden = true;
+        alerta.hidden = false;
     } else {
-        // Reativa o botão e esconde o aviso
-        if (btnAdd) {
-            btnAdd.style.opacity = '1';
-            btnAdd.style.pointerEvents = 'auto';
-            btnAdd.innerText = '+ Adicionar Momento';
-        }
-        if (alerta) alerta.style.display = 'none';
+        btnAdd.hidden = false;
+        alerta.hidden = true;
     }
 }
 
@@ -1300,6 +1389,8 @@ function atualizarContador(idInput, idContador) {
     }
 }
 
+
+
 let storyAtual = 0;
 
 // ==========================================
@@ -1311,6 +1402,7 @@ function abrirMockupRetro() {
     document.getElementById('tela-retro-mockup').style.display = 'block';
     // Aqui você pode adicionar um ID à div principal do celular para escondê-la, 
     // Ex: document.getElementById('tela-principal-mockup').style.display = 'none';
+    atualizarCarrosselMockup();
     
     // 2. Toca a música escolhida (o navegador permite porque foi ativado por um clique)
     let audio = document.getElementById('audio-retrospectiva');
@@ -1375,3 +1467,497 @@ function atualizarStoriesVisuais() {
         }
     });
 }
+
+/* =========================================
+   FUNÇÕES DO PASSO 7 (JOGOS / HISTÓRIAS)
+   ========================================= */
+// Limites definidos no HTML
+const MAX_FOTOS_DESLIZAR = 6;
+const MAX_FOTOS_GARRA = 4;
+
+// Contadores internos para sabermos quantos IDs únicos já geramos
+let idContadorDeslizar = 0;
+let idContadorGarra = 0;
+
+// Variáveis para guardar as imagens selecionadas
+let arquivosDeslizar = [];
+let arquivosGarra = [];
+
+// ==========================================
+// SEÇÃO: FOTOS PARA DESLIZAR (PILHA COM SWIPE)
+// ==========================================
+
+let indexCartaoTopo = 0; // Guardamos o index da foto que está no topo
+
+// Variáveis para detectar o swipe (deslize do dedo)
+let startX = 0;
+let endX = 0;
+const threshold = 60; // Distância mínima para considerar um swipe
+
+document.getElementById('input-foto-deslizar').addEventListener('change', function(event) {
+    const files = Array.from(event.target.files);
+    const container = document.getElementById('container-retro-deslizar');
+    const badge = document.getElementById('contador-deslizar');
+    
+    const espacoDisponivel = MAX_FOTOS_DESLIZAR - arquivosDeslizar.length;
+    const arquivosPermitidos = files.slice(0, espacoDisponivel);
+
+    arquivosPermitidos.forEach(file => {
+        idContadorDeslizar++;
+        const currentId = idContadorDeslizar;
+        const reader = new FileReader();
+        
+        reader.onload = (e) => {
+            const urlImagem = e.target.result;
+            arquivosDeslizar.push({ id: currentId, file: file, url: urlImagem, titulo: '', descricao: '' });
+
+            const divCard = document.createElement('div');
+            divCard.className = 'item-foto-linha';
+            divCard.id = `retro-deslizar-${currentId}`;
+            divCard.innerHTML = `
+                <img src="${urlImagem}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                <div class="inputs-textos">
+                    <input type="text" placeholder="Ex: Nosso Universo Particular" maxlength="40" oninput="atualizarTextosMockup(${currentId}, 'titulo', this.value)">
+                    <textarea placeholder="Na imensidão da noite..." rows="3" maxlength="120" oninput="atualizarTextosMockup(${currentId}, 'descricao', this.value)"></textarea>
+                </div>
+                <button type="button" class="btn-remover-foto-deslizar" onclick="removerFotoDeslizar(${currentId})" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.5); border: none; color: white; width: 24px; height: 24px; border-radius: 50%; cursor: pointer;">✖</button>
+            `;
+            container.appendChild(divCard);
+            
+            if(badge) badge.innerText = `${arquivosDeslizar.length}/${MAX_FOTOS_DESLIZAR}`;
+            atualizarVisibilidadeDeslizar(arquivosDeslizar.length);
+            verificarLimiteDeslizar();
+            renderizarPilhaMockup(); // Recria a pilha no mockup
+        };
+        reader.readAsDataURL(file);
+    });
+    event.target.value = '';
+});
+
+// Função para atualizar Título/Descrição
+function atualizarTextosMockup(id, campo, valor) {
+    const item = arquivosDeslizar.find(i => i.id === id);
+    if (item) {
+        item[campo] = valor;
+        const elementoMockup = document.getElementById(`mockup-${campo}-deslizar-${id}`);
+        if (elementoMockup) {
+            elementoMockup.innerText = valor;
+        }
+    }
+}
+
+// Remover foto
+function removerFotoDeslizar(id) {
+    const div = document.getElementById(`retro-deslizar-${id}`);
+    if (div) div.remove();
+    arquivosDeslizar = arquivosDeslizar.filter(item => item.id !== id);
+    
+    const badge = document.getElementById('contador-deslizar');
+    if(badge) badge.innerText = `${arquivosDeslizar.length}/${MAX_FOTOS_DESLIZAR}`;
+    
+    if(arquivosDeslizar.length > 0 && indexCartaoTopo >= arquivosDeslizar.length) {
+        indexCartaoTopo = arquivosDeslizar.length - 1;
+    }
+    
+    atualizarVisibilidadeDeslizar(arquivosDeslizar.length);
+    renderizarPilhaMockup();
+    verificarLimiteDeslizar();
+}
+
+// ==========================================
+// FUNÇÕES DE EXIBIÇÃO DA PILHA (MOCKUP)
+// ==========================================
+
+function renderizarPilhaMockup() {
+    const container = document.getElementById('mockup-carrosel-deslizar');
+    if (!container) return; // Segurança para não dar erro
+    
+    const containerPai = container.parentElement; 
+    container.innerHTML = '';
+
+    if (arquivosDeslizar.length === 0) {
+        container.innerHTML = '<p style="color: #888; margin-top: 20px;">Adicione fotos para começar.</p>';
+        container.style.justifyContent = 'center';
+        return;
+    }
+    
+    container.style.justifyContent = 'flex-start';
+
+    arquivosDeslizar.forEach((item, index) => {
+        const divItem = document.createElement('div');
+        divItem.className = 'retro-pilha-item'; 
+        divItem.id = `retro-mockup-item-${index}`; 
+
+        divItem.innerHTML = `
+            <div class="mockup-texto-deslizar">
+                <h4 id="mockup-titulo-deslizar-${item.id}">${item.titulo || ''}</h4>
+                <p id="mockup-descricao-deslizar-${item.id}">${item.descricao || ''}</p>
+            </div>
+            <img src="${item.url}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+        `;
+        container.appendChild(divItem);
+    });
+
+    // CRIAÇÃO DO BOTÃO "Próxima Seção" NO LUGAR CERTO!
+    let btnProxima = document.getElementById('btn-proxima-pilha');
+    if (!btnProxima) {
+        btnProxima = document.createElement('button');
+        btnProxima.id = 'btn-proxima-pilha';
+        btnProxima.className = 'btn-proxima-secao';
+        btnProxima.innerText = 'Próxima Seção ➔';
+        
+        btnProxima.onclick = () => {
+            btnProxima.style.display = 'none';
+            const telaDeslizar = document.getElementById('mockup-carrosel-deslizar').parentElement; 
+            if(telaDeslizar) telaDeslizar.style.display = 'none';
+            
+            const telaGarra = document.getElementById('tela-mockup-garra'); 
+            if(telaGarra) telaGarra.style.display = 'flex'; 
+        };
+        
+        containerPai.appendChild(btnProxima);
+    }
+
+    atualizarClassesPilha(); 
+    
+    container.removeEventListener('touchstart', handleTouchStart);
+    container.removeEventListener('touchend', handleTouchEnd);
+    container.removeEventListener('mousedown', handleTouchStart);
+    container.removeEventListener('mouseup', handleTouchEnd);
+    
+    container.addEventListener('touchstart', handleTouchStart, {passive: true});
+    container.addEventListener('touchend', handleTouchEnd, {passive: true});
+    container.addEventListener('mousedown', handleTouchStart);
+    container.addEventListener('mouseup', handleTouchEnd);
+}
+
+function atualizarClassesPilha() {
+    const todosItens = document.querySelectorAll('#mockup-carrosel-deslizar .retro-pilha-item');
+    const btnProxima = document.getElementById('btn-proxima-pilha');
+
+    todosItens.forEach((item, index) => {
+        item.classList.remove('stack-top', 'stack-second', 'stack-third', 'stack-hidden', 'swiped-out');
+
+        const posicaoNaPilha = index - indexCartaoTopo;
+
+        if (posicaoNaPilha === 0) {
+            item.classList.add('stack-top'); 
+        } else if (posicaoNaPilha === 1) {
+            item.classList.add('stack-second'); 
+        } else if (posicaoNaPilha === 2) {
+            item.classList.add('stack-third'); 
+        } else if (posicaoNaPilha >= 3) {
+            item.classList.add('stack-hidden'); 
+        } else if (posicaoNaPilha < 0) {
+            item.classList.add('swiped-out'); 
+        }
+    });
+
+    if (btnProxima) {
+        if (arquivosDeslizar.length > 0 && indexCartaoTopo >= arquivosDeslizar.length) {
+            btnProxima.style.display = 'block'; 
+        } else {
+            btnProxima.style.display = 'none'; 
+        }
+    }
+}
+
+// ==========================================
+// FUNÇÕES DE GESTÃO DO DESLIZE (SWIPE MOUSE/TOUCH)
+// ==========================================
+
+function handleTouchStart(event) {
+    startX = event.type.includes('mouse') ? event.clientX : event.touches[0].clientX;
+}
+
+function handleTouchEnd(event) {
+    endX = event.type.includes('mouse') ? event.clientX : event.changedTouches[0].clientX;
+    handleSwipe(); 
+}
+
+function handleSwipe() {
+    const deltaX = endX - startX;
+    if (Math.abs(deltaX) < threshold) return; 
+
+    if (deltaX < 0) {
+        swipeLeftHandler(); 
+    } else {
+        swipeRightHandler(); 
+    }
+}
+
+function swipeLeftHandler() {
+    if(arquivosDeslizar.length > 0 && indexCartaoTopo >= arquivosDeslizar.length) return; 
+    indexCartaoTopo++;
+    atualizarClassesPilha();
+}
+
+function swipeRightHandler() {
+    if(indexCartaoTopo <= 0) return; 
+    indexCartaoTopo--;
+    atualizarClassesPilha();
+}
+
+function verificarLimiteDeslizar() {
+    const btnAdd = document.getElementById('btn-add-deslizar');
+    const alerta = document.getElementById('alerta-deslizar');
+
+    // CORREÇÃO AQUI: Estava arquivosDeslizar em vez de arquivosDeslizar.length
+    if (arquivosDeslizar.length >= MAX_FOTOS_DESLIZAR) {
+        if(btnAdd) btnAdd.hidden = true;
+        if(alerta) alerta.hidden = false;
+    } else {
+        if(btnAdd) btnAdd.hidden = false;
+        if(alerta) alerta.hidden = true;
+    }
+}
+
+function atualizarVisibilidadeDeslizar(quantidadeDeFotos) {
+    const titulo = document.getElementById('titulo-slide-deslizar');
+    const desc = document.getElementById('desc-slide-deslizar');
+    const icone = document.getElementById('icone-slide-deslizar');
+    
+    const botaoAdd = document.querySelector('button[onclick*="input-foto-deslizar"]');
+
+    const displayMensagens = quantidadeDeFotos > 0 ? 'none' : 'block';
+    if (titulo) titulo.style.display = displayMensagens;
+    if (desc) desc.style.display = displayMensagens;
+    if (icone) icone.style.display = displayMensagens;
+
+    if (botaoAdd) {
+        botaoAdd.style.display = quantidadeDeFotos >= 6 ? 'none' : 'block';
+    }
+}
+function salvarProgresso(passoAtual) {
+    const dados = {
+        passo: passoAtual,
+        textos: {},
+        musica: {
+            nome: document.getElementById('musica_nome')?.value || '',
+            artista: document.getElementById('musica_artista')?.value || '',
+            capa: document.getElementById('musica_capa')?.value || '',
+            preview: document.getElementById('musica_preview')?.value || '',
+            busca: document.getElementById('busca_musica')?.value || ''
+        },
+        tema: document.documentElement.style.getPropertyValue('--cor-tema') || '#7c5dfa',
+        
+        fotos: {
+            // 1. Fotos de Deslizar 
+            deslizar: (typeof arquivosDeslizar !== 'undefined' ? arquivosDeslizar : []).map(item => ({
+                id: item.id,
+                url: item.url && (item.url.startsWith('data:') || item.url.startsWith('blob:')) ? item.url : '',
+                titulo: item.titulo || '',
+                descricao: item.descricao || ''
+            })).filter(item => item.url !== ''),
+            
+            // 2. Fotos da Timeline/Polaroid 
+            timeline: Array.from(document.querySelectorAll('#container-fotos .foto-item')).map(item => {
+                const idMatch = item.id.match(/\d+/);
+                const id = idMatch ? parseInt(idMatch[0]) : Math.floor(Math.random() * 1000);
+                const img = item.querySelector('img');
+                const dataInput = item.querySelector('.timeline-data');
+                const legendaInput = item.querySelector('.timeline-legenda');
+                
+                const urlValida = (img && img.src && (img.src.startsWith('data:') || img.src.startsWith('blob:'))) ? img.src : '';
+                
+                return {
+                    id: id,
+                    url: urlValida,
+                    data: dataInput ? dataInput.value : '',
+                    texto: legendaInput ? legendaInput.value : ''
+                };
+            }).filter(item => item.url !== ''),
+            
+            // 3. Fotos das Capas Iniciais (AGORA À PROVA DE BUGS)
+            capas: Array.from(document.querySelectorAll('#container-capas .capa-item')).map(item => {
+                const idMatch = item.id.match(/\d+/);
+                const id = idMatch ? parseInt(idMatch[0]) : Math.floor(Math.random() * 1000);
+                const img = item.querySelector('img');
+                
+                // O SEGREDO: Se o código da imagem tem mais de 100 caracteres, é uma foto real!
+                const urlValida = (img && img.src && img.src.length > 100) ? img.src : '';
+                
+                return {
+                    id: id,
+                    url: urlValida
+                };
+            }).filter(item => item.url !== '')
+        }
+    };
+
+    // Salva os campos de texto soltos
+    document.querySelectorAll('input[type="text"], input[type="date"], textarea').forEach(input => {
+        if (input.id && !input.classList.contains('timeline-data') && !input.classList.contains('timeline-legenda')) {
+            dados.textos[input.id] = input.value;
+        }
+    });
+
+    try {
+        localStorage.setItem('projeto_homenagem', JSON.stringify(dados));
+        console.log("Progresso salvo com sucesso!");
+    } catch (e) {
+        console.warn("Limite de espaço atingido no navegador!");
+    }
+}
+
+// =========================================================
+// CARREGAR PROGRESSO (COOKIES) - VERSÃO BLINDADA
+// =========================================================
+function carregarProgresso() {
+    const salvo = localStorage.getItem('projeto_homenagem');
+    if (!salvo) { document.body.classList.add('pronto'); return; }
+
+    try {
+        const dados = JSON.parse(salvo);
+
+        // 1. Restaurar Textos Simples
+        for (let id in dados.textos) {
+            const campo = document.getElementById(id);
+            if (campo) campo.value = dados.textos[id];
+        }
+
+        // 2. Restaurar Música
+        if (dados.musica) {
+            if (document.getElementById('musica_nome')) document.getElementById('musica_nome').value = dados.musica.nome || '';
+            if (document.getElementById('musica_artista')) document.getElementById('musica_artista').value = dados.musica.artista || '';
+            if (document.getElementById('musica_capa')) document.getElementById('musica_capa').value = dados.musica.capa || '';
+            if (document.getElementById('musica_preview')) document.getElementById('musica_preview').value = dados.musica.preview || '';
+            if (document.getElementById('busca_musica')) document.getElementById('busca_musica').value = dados.musica.busca || '';
+        }
+
+        // 3. Restaurar Tema
+        if (dados.tema) { document.documentElement.style.setProperty('--cor-tema', dados.tema); }
+
+        // 4. RESTAURAR FOTOS
+        if (dados.fotos) {
+            
+            // --- 4.1. Recriar Fotos da Timeline ---
+            if (dados.fotos.timeline && dados.fotos.timeline.length > 0) {
+                const containerFotos = document.getElementById('container-fotos');
+                const containerMockup = document.getElementById('preview-timeline');
+                
+                dados.fotos.timeline.forEach(item => {
+                    if(typeof contadorFotos !== 'undefined') contadorFotos = Math.max(contadorFotos, item.id);
+                    if(typeof fotosAtivas !== 'undefined') fotosAtivas++;
+                    
+                    const divForm = document.createElement('div');
+                    divForm.className = 'foto-item';
+                    divForm.id = `foto-item-${item.id}`;
+                    divForm.innerHTML = `
+                        <div class="foto-preview-box">
+                            <label for="input-foto-${item.id}" title="Clique para trocar" style="display:block; width:100%; height:100%; cursor:pointer;">
+                                <img id="img-preview-${item.id}" src="${item.url}" style="display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 2px;">
+                            </label>
+                            <button type="button" class="btn-remover-foto" onclick="if(typeof removerFoto === 'function') removerFoto(${item.id})" title="Apagar foto">✖</button>
+                        </div>
+                        <input type="file" id="input-foto-${item.id}" accept="image/*" hidden onchange="if(typeof previewFotoLinhaTempo === 'function') previewFotoLinhaTempo(event, ${item.id})">
+                        <div class="foto-info">
+                            <input type="text" placeholder="Ex: Maio 2024" class="timeline-data" maxlength="20" value="${item.data}"
+                                   oninput="atualizarMockupTimeline(${item.id}, 'data', this.value)">
+                            <input type="text" name="momento_titulo_${item.id}" placeholder="Escreva uma legenda..." 
+                                   class="timeline-legenda" maxlength="80" value="${item.texto}"
+                                   oninput="atualizarMockupTimeline(${item.id}, 'texto', this.value); if(typeof atualizarCaixinhaMemorias === 'function') atualizarCaixinhaMemorias()">
+                        </div>
+                    `;
+                    if(containerFotos) containerFotos.appendChild(divForm);
+
+                    if (containerMockup) {
+                        const divMockup = document.createElement('div');
+                        divMockup.className = 'timeline-mockup-item';
+                        divMockup.id = `mockup-item-${item.id}`;
+                        divMockup.innerHTML = `
+                            <div class="timeline-mockup-img-container">
+                                <img id="mockup-img-${item.id}" src="${item.url}" style="display:block;">
+                            </div>
+                            <div class="mockup-info">
+                                <div class="timeline-mockup-date" id="mockup-data-${item.id}">${item.data}</div>
+                                <div class="timeline-mockup-text" id="mockup-texto-${item.id}">${item.texto}</div>
+                            </div>
+                        `;
+                        containerMockup.appendChild(divMockup);
+                    }
+                });
+                try { if (typeof verificarLimiteFotos === "function") verificarLimiteFotos(); } catch(e){}
+            }
+
+            // --- 4.2. Recriar Fotos de Capa (NOVA LÓGICA) ---
+            if (dados.fotos.capas && dados.fotos.capas.length > 0) {
+                const containerCapas = document.getElementById('container-capas');
+                if (containerCapas) containerCapas.innerHTML = ''; // Limpa os quadrados vazios/bugados antes
+                
+                dados.fotos.capas.forEach(item => {
+                    // FILTRO DE SEGURANÇA: Bloqueia lixo antigo do cache
+                    if (!item.url || (!item.url.startsWith('data:') && !item.url.startsWith('blob:'))) return;
+
+                    if(typeof contadorCapas !== 'undefined') contadorCapas = Math.max(contadorCapas, item.id);
+                    if(typeof capasAtivas !== 'undefined') capasAtivas++;
+                    
+                    const divForm = document.createElement('div');
+                    divForm.className = 'capa-item';
+                    divForm.id = `capa-item-${item.id}`;
+                    divForm.innerHTML = `
+                        <label for="input-capa-${item.id}" title="Clique para escolher" style="display:block; width:100%; height:100%; cursor:pointer;">
+                            <img id="img-preview-capa-${item.id}" src="${item.url}" style="display:block; width:100%; height:100%; object-fit:cover; border-radius:8px;">
+                        </label>
+                        <input type="file" id="input-capa-${item.id}" accept="image/*" hidden onchange="if(typeof previewFotoCapa === 'function') previewFotoCapa(event, ${item.id})">
+                        <button type="button" class="btn-remover-foto" onclick="if(typeof removerCapa === 'function') removerCapa(${item.id})" title="Apagar foto">✖</button>
+                    `;
+                    if(containerCapas) containerCapas.appendChild(divForm);
+                });
+                try { if (typeof verificarLimiteCapa === "function") verificarLimiteCapa(); } catch(e){}
+            }
+
+            // --- 4.3. Recriar Fotos de Deslizar ---
+            if (dados.fotos.deslizar && dados.fotos.deslizar.length > 0) {
+                const containerDeslizar = document.getElementById('container-retro-deslizar');
+                
+                dados.fotos.deslizar.forEach(item => {
+                    if(typeof idContadorDeslizar !== 'undefined') idContadorDeslizar = Math.max(idContadorDeslizar, item.id);
+                    if(typeof arquivosDeslizar !== 'undefined') arquivosDeslizar.push(item);
+                    
+                    const divCard = document.createElement('div');
+                    divCard.className = 'item-foto-linha';
+                    divCard.id = `retro-deslizar-${item.id}`;
+                    divCard.innerHTML = `
+                        <img src="${item.url}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                        <div class="inputs-textos">
+                            <input type="text" placeholder="Ex: Nosso Universo Particular" maxlength="40" value="${item.titulo}" oninput="atualizarTextosMockup(${item.id}, 'titulo', this.value)">
+                            <textarea placeholder="Na imensidão da noite..." rows="3" maxlength="120" oninput="atualizarTextosMockup(${item.id}, 'descricao', this.value)">${item.descricao}</textarea>
+                        </div>
+                        <button type="button" class="btn-remover-foto-deslizar" onclick="if(typeof removerFotoDeslizar === 'function') removerFotoDeslizar(${item.id})" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.5); border: none; color: white; width: 24px; height: 24px; border-radius: 50%; cursor: pointer;">✖</button>
+                    `;
+                    if(containerDeslizar) containerDeslizar.appendChild(divCard);
+                });
+                
+                const badge = document.getElementById('contador-deslizar');
+                if (badge && typeof arquivosDeslizar !== 'undefined') badge.innerText = `${arquivosDeslizar.length}/${MAX_FOTOS_DESLIZAR}`;
+                try { if (typeof atualizarVisibilidadeDeslizar === "function") atualizarVisibilidadeDeslizar(arquivosDeslizar.length); } catch(e){}
+                try { if (typeof verificarLimiteDeslizar === "function") verificarLimiteDeslizar(); } catch(e){}
+                try { if (typeof renderizarPilhaMockup === "function") renderizarPilhaMockup(); } catch(e){}
+            }
+        }
+
+        if (dados.passo > 0 && typeof mudarPasso === "function") mudarPasso(0, dados.passo);
+        try { if (typeof atualizarPreview === "function") atualizarPreview(); } catch(e){}
+        try { if (typeof atualizarPreviewLetra === "function") atualizarPreviewLetra(); } catch(e){}
+
+    } catch (erroGeral) {
+        console.error("Erro ao carregar os dados:", erroGeral);
+    } finally {
+        setTimeout(() => document.body.classList.add('pronto'), 50);
+    }
+}
+// Função auxiliar para reinjetar as fotos na tela ao carregar
+function reconstruirFotoNaTela(containerId, src) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    const div = document.createElement('div');
+    div.className = 'foto-item'; // use a mesma classe que você já usa
+    div.innerHTML = `
+        <img src="${src}" style="width:80px; height:80px; object-fit:cover; border-radius:8px;">
+        <button type="button" onclick="this.parentElement.remove(); salvarProgresso(currentStep)">x</button>
+    `;
+    container.appendChild(div);
+}
+document.addEventListener('DOMContentLoaded', carregarProgresso);

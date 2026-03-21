@@ -127,6 +127,17 @@
     margin-top: 15px;
     cursor: pointer;
 }
+body {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+/* Quando o JS terminar de carregar os cookies, ele adiciona essa classe */
+body.pronto {
+    opacity: 1;
+    visibility: visible;
+}
 
 /* Quando o usuário clica e a classe 'expandido' é adicionada */
 .app-letra-card.expandido .app-letra-texto {
@@ -355,22 +366,56 @@
 }
 
 .btn-sugerir {
+    /* Alinhamento perfeito do texto com o ícone ✨ */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px; 
+    
     background: rgba(var(--cor-tema-rgb), 0.15);
-    border: 1px solid rgba(var(--cor-tema-rgb), 0.3);
+    border: 1px solid rgba(var(--cor-tema-rgb), 0.4); /* Borda levemente mais visível */
     color: #fff;
-    padding: 0 20px;
+    padding: 0 24px; /* Um respiro lateral um pouco maior */
     height: 50px;
-    /* Alinhado com a altura do input */
     border-radius: 12px;
     cursor: pointer;
     font-size: 14px;
+    font-weight: 600; /* Deixa o texto mais firme/destacado */
     white-space: nowrap;
-    transition: all 0.3s ease;
+    
+    /* Transição mais fluida e profissional */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Efeito opcional de vidro (Glassmorphism) para fundos escuros */
+    backdrop-filter: blur(4px); 
 }
 
+/* Quando passa o rato (Ganha brilho e levanta) */
 .btn-sugerir:hover {
     background: var(--cor-tema);
-    transform: scale(1.02);
+    border-color: var(--cor-tema);
+    transform: translateY(-2px); /* Levanta sutilmente */
+    box-shadow: 0 6px 15px rgba(var(--cor-tema-rgb), 0.35); /* Brilho na cor do tema */
+}
+
+/* Quando clica (Efeito de afundar) */
+.btn-sugerir:active {
+    transform: translateY(1px); 
+    box-shadow: 0 2px 5px rgba(var(--cor-tema-rgb), 0.2);
+}
+.input-coluna {
+    display: flex;
+    flex-direction: column; /* Força os elementos a ficarem um embaixo do outro */
+    align-items: flex-start; /* Joga o botão para o canto direito (fica super premium) */
+    gap: 12px; /* Espaço entre a caixa de texto e o botão */
+    width: 100%;
+}
+
+/* Garante que a caixa de texto ocupe toda a largura */
+.input-coluna textarea {
+    width: 100%;
+    box-sizing: border-box;
+    /* Se você quiser permitir que o usuário puxe a caixa para baixo, mantenha o resize, senão use: resize: none; */
 }
 
 .form-header {
@@ -1158,68 +1203,117 @@
 /* ==========================================================================
    2. TIMELINE FORMULÁRIO "POLAROID" (PASSO 6 - LADO ESQUERDO)
    ========================================================================== */
+/* ==========================================================================
+   MELHORIAS NO GRID DE UPLOAD E CAMPOS DE TEXTO (FORMULÁRIO)
+   ========================================================================== */
 
-/* =========================================
-   LINHA DO TEMPO E POLAROIDS (FORMATO EM PÉ)
-   ========================================= */
-
+/* 1. Dá mais espaço geral para o Grid respirar */
 .lista-fotos-timeline {
-    position: relative;
-    padding: 30px 0;
-    margin-top: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Garante tamanho bom pras colunas */
+    gap: 30px 20px; /* 30px de espaço vertical (entre as linhas) e 20px horizontal */
+    align-items: start;
 }
 
-/* A Linha Vertical Pontilhada */
-.lista-fotos-timeline::before {
-    content: '';
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 2px;
-    height: 100%;
-    background: linear-gradient(to bottom, transparent, rgba(255, 243, 230, 0.2) 10%, rgba(255, 255, 255, 0.2) 90%, transparent);
-    z-index: 1;
+/* 2. Organiza o item individual (Foto em cima, Textos embaixo) */
+.lista-fotos-timeline .foto-item {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 12px; /* Espaço exato entre a polaroid e os campos de texto */
+    position: relative;
+}
+
+/* Oculta o coração (❤) conector da linha do tempo que não deve aparecer no grid de upload */
+.lista-fotos-timeline .foto-item::after {
     display: none;
 }
 
-.lista-fotos-timeline:not(:empty)::before,
-.lista-fotos-timeline:has(.foto-item)::before {
-    display: block;
-    animation: fadeIn 0.5s ease;
-}
-
-/* Container de cada momento */
-.foto-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+/* 3. Força os textos a ocuparem 100% da largura (Corrige o texto espremido) */
+.lista-fotos-timeline .foto-info {
     width: 100%;
-    margin-bottom: 50px;
-    position: relative;
-    z-index: 2;
-    animation: fadeIn 0.5s ease forwards;
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Espaço entre o campo de Data e o de Legenda */
 }
 
-/* Alternância Esquerda/Direita */
-.foto-item:nth-child(odd) {
-    flex-direction: row;
+/* 4. Remove o efeito "zigue-zague" torto que vinha do CSS da Timeline */
+.lista-fotos-timeline .foto-item:nth-child(odd) .foto-info,
+.lista-fotos-timeline .foto-item:nth-child(even) .foto-info {
+    text-align: left;
+    align-items: flex-start;
 }
-.foto-item:nth-child(even) {
-    flex-direction: row-reverse;
+
+/* 5. Deixa os campos de texto com cara de "Input" para o usuário saber que pode digitar */
+.lista-fotos-timeline .foto-info input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.08) !important; /* Fundo levemente cinza */
+    border: 1px solid rgba(255, 255, 255, 0.1) !important; /* Bordinha discreta */
+    border-radius: 6px;
+    padding: 10px 12px !important; /* Mais gordinho e fácil de clicar */
+    color: #fff !important;
+    font-size: 13px;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
 }
+
+/* 6. Efeito bonito quando o usuário clica para digitar */
+.lista-fotos-timeline .foto-info input:focus {
+    border-color: var(--cor-tema, #7c5dfa) !important;
+    background: rgba(255, 255, 255, 0.15) !important;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(124, 93, 250, 0.2);
+}
+
+/* Ajusta as cores e pesos específicos que você queria (Data e Legenda) */
+.lista-fotos-timeline .foto-info .timeline-data {
+    color: #fff !important; /* Mantém branco no input para leitura fácil */
+    font-weight: bold;
+}
+.lista-fotos-timeline .foto-info .timeline-legenda {
+    color: #ddd !important;
+}
+.timeline-mockup-text {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    white-space: normal; /* Permite que o texto flua naturalmente para baixo */
+    max-width: 100%; /* Respeita o limite do container */
+    display: block;
+}
+
+/* Opcional: limitar a largura da div de informações no mockup para não encostar na borda da tela */
+.mockup-info {
+    max-width: 120px; /* Ajuste se achar que o texto está muito largo */
+}
+/* =========================================
+   LINHA DO TEMPO E POLAROIDS (FORMATO EM PÉ)
+   ========================================= */
+.app-timeline-overlay, .retro-story-container {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--fundo-preto); z-index: 100; flex-direction: column; display: flex;
+}
+.app-header-timeline { display: flex; align-items: center; padding: 20px; background: rgba(0,0,0,0.8); border-bottom: 1px solid #222; }
+.app-btn-voltar { background: transparent; border: none; cursor: pointer; padding: 0; margin-right: 15px; }
+.app-header-timeline h3 { font-size: 16px; margin: 0; color: #fff; }
+.app-conteudo-timeline { padding: 20px; overflow-y: auto; flex: 1; }
+
 
 /* O "Cartão" Polaroid (Agora Em Pé e Reto) */
 .foto-preview-box {
-    width: 160px; /* Mais estreito */
+    width: 100%; /* Ocupa a largura da coluna do grid */
+    max-width: 160px; /* Limite máximo */
+    height: 220px; /* ALTURA FIXA para todos ficarem iguais */
     background: #ffffff;
-    padding: 8px 8px 35px 8px; /* Espaço maior embaixo, bem clássico */
+    padding: 8px 8px 35px 8px; /* Espaço maior embaixo, estilo polaroid */
     border-radius: 4px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     cursor: pointer;
-    position: relative;
+    position: relative; /* CRÍTICO para o botão X ficar no lugar certo */
     display: flex;
     flex-direction: column;
+    box-sizing: border-box; /* Garante que o padding não aumente o tamanho total */
 }
 
 /* Efeito de hover limpo (sem girar, só levanta) */
@@ -1230,14 +1324,11 @@
 
 .foto-preview-box img {
     width: 100%;
-    /* Define uma altura máxima para não estourar o layout, 
-       mas permite que fotos mais baixas fiquem proporcionais */
-    max-height: 220px; 
-    height: auto; /* Mantém a proporção original */
-    object-fit: contain; /* Ajusta a imagem inteira DENTRO do espaço, sem cortar */
+    height: 100%; /* Ocupa todo o espaço restante tirando o padding */
+    object-fit: cover; /* CORTA as sobras para preencher o quadrado perfeitamente, sem amassar a foto */
     border-radius: 2px;
-    background: #fffdfa;
-    display: block; /* Remove o pequeno espaço extra embaixo de imagens inline */
+    background: #f0f0f0; /* Fundo cinza claro caso a foto demore a carregar */
+    display: block;
 }
 
 /* Textos (Data e Legenda) ao lado da foto */
@@ -1382,22 +1473,29 @@
     margin-top: 10px;
 }
 .btn-remover-foto {
-    background: #ff4d4d; /* Vermelho */
+    position: absolute;
+    top: -10px; /* Sobe um pouquinho do limite do polaroid */
+    right: -10px; /* Puxa para a direita */
+    background: #ff3b30;
     color: white;
-    border: none;
-    border-radius: 50%; /* Redondo */
-    width: 24px;
-    height: 24px;
-    font-size: 14px;
+    border: 2px solid #1a1a1a; /* Bordinha escura para destacar do fundo */
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
     cursor: pointer;
-    position: absolute; /* Sobrepõe a moldura */
-    top: -10px;
-    right: -10px;
+    font-size: 14px;
+    font-weight: bold;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
     z-index: 10;
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.btn-remover-foto:hover {
+    background: #d32f2f;
+    transform: scale(1.1); /* Dá um zoom levinho ao passar o mouse */
 }
 
 .btn-adicionar-foto:hover {
@@ -1991,107 +2089,17 @@
 /* =========================================
    MOCKUP CELULAR: BANNER RETROSPECTIVA
    ========================================= */
-.app-card-retro {
-    margin-top: 15px;
-    border-radius: 12px;
-    overflow: hidden;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
+.app-card-retro { background: #1a1a1a; border-radius: 12px; padding: 15px; margin-bottom: 15px; cursor: pointer; transition: transform 0.2s; }
+.app-card-retro:hover { transform: scale(1.02); }
+#mockup-timeline-titulo-card { font-size: 14px; margin: 0 0 12px 0; color: #fff; }
+.app-grid-miniaturas { display: flex; gap: 8px; overflow: hidden; }
+.app-mini-foto { flex: 1; aspect-ratio: 1/1; background: #333; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 9px; text-align: center; color: #888; padding: 5px; }
 
-
-/* =========================================
-   NOVO DESIGN DO .retro-banner:
-   A IMAGEM É O FUNDO, FULL BLEED, TEXTO POR CIMA
-   ========================================= */
-.retro-banner {
-    position: relative; /* context para elementos posicionados absolutamente */
-    width: 100%;
-    aspect-ratio: 9 / 16; /* Proporção retrato limpa, semelhante a image_13.png */
-    background-color: transparent; /* O fundo virá da imagem */
-}
-
-.retro-banner img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* Preenche a div enquanto preserva a proporção da imagem limpa */
-    z-index: 0; /* Coloca no fundo */
-}
-/* Remover toda a seção .retro-banner img, pois a imagem agora é o fundo */
-.retro-texto {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center; /* Centraliza verticalmente */
-    align-items: center; /* Centraliza horizontalmente */
-    text-align: center; /* Garante que o texto flua a partir do centro */
-    color: white;
-    z-index: 1; 
-    padding: 20px; /* Reduzi o padding de 40px para 20px para dar mais espaço no celular */
-    box-sizing: border-box; 
-}
-
-/* Título (h3) */
-.retro-texto h3 {
-    font-size: 26px; 
-    font-weight: 700;
-    margin: 0 0 8px 0; 
-    color: white;
-    text-align: center;
-    width: 100%; /* Força a ocupar toda a largura disponível */
-    font-family: 'Inter', sans-serif; 
-    letter-spacing: -0.5px; 
-}
-
-/* Parágrafo (p) */
-.retro-texto p {
-    font-size: 16px;
-    font-weight: 400;
-    margin: 0 auto 30px auto; /* O 'auto' nas laterais crava o elemento no meio */
-    color: rgba(255, 255, 255, 0.9); /* Um branco levemente suave para dar contraste com o título */
-    text-align: center;
-    width: 100%; 
-    max-width: 260px; /* Controla a largura máxima para não ficar uma linha muito esticada no PC */
-    font-family: 'Inter', sans-serif;
-}
-.btn-vamos-la {
-    background-color: #5DB1FF; /* Cor azul */
-    color: white;
-    border: none;
-    /* Reduzi levemente o padding lateral para 40px para não estourar no celular */
-    padding: 12px 40px; 
-    border-radius: 30px; 
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    text-align: center;
-    display: inline-block;
-    font-family: 'Inter', sans-serif;
-    transition: background-color 0.2s; 
-    
-    /* 👇 AQUI ESTÁ A SOLUÇÃO 👇 */
-    white-space: nowrap; /* Impede o texto de quebrar em duas linhas */
-    
-    /* Posiciona perto do fundo */
-    position: absolute;
-    bottom: 40px; 
-    left: 50%;
-    transform: translateX(-50%); 
-}
-
-/* Efeito de hover para o botão */
-.btn-vamos-la:hover {
-    background-color: #48a5f1;
-}
-/* Manter a interação de hover entre o card e o botão */
+.retro-banner { display: flex; align-items: center; gap: 15px; }
+.retro-banner img { width: 60px; height: 60px; border-radius: 8px; }
+.retro-texto h3 { font-size: 14px; margin: 0 0 4px 0; color: #fff; }
+.retro-texto p { font-size: 11px; margin: 0 0 8px 0; color: var(--texto-cinza); }
+.btn-vamos-la { background: var(--cor-tema); border: none; color: #fff; padding: 6px 12px; border-radius: 12px; font-size: 11px; font-weight: bold; cursor: pointer; }
 
 /* =========================================
    RODAPÉ: TEMPO E CIDADE
@@ -2386,11 +2394,11 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #000;
-    z-index: 100; /* Fica por cima de todo o resto no celular */
-    border-radius: inherit; /* Segue o arredondamento do seu mockup */
+    background-color: #121212 !important; /* Fundo escuro clássico do Spotify */
+    z-index: 100; 
+    border-radius: inherit; 
     overflow: hidden;
-    color: white;
+    color: #FFFFFF; /* Texto branco */
 }
 
 /* Botão de Fechar/Voltar */
@@ -2398,14 +2406,14 @@
     position: absolute;
     top: 40px;
     right: 15px;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.1); 
     border: none;
-    color: white;
+    color: #FFFFFF;
     padding: 6px 12px;
     border-radius: 20px;
     font-size: 0.75rem;
     font-weight: 600;
-    z-index: 105; /* AQUI ESTÁ A MÁGICA: Maior que as zonas de clique */
+    z-index: 105; 
     cursor: pointer;
     backdrop-filter: blur(5px);
 }
@@ -2424,7 +2432,7 @@
 .progress-segment {
     flex: 1;
     height: 3px;
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.2); 
     border-radius: 2px;
     overflow: hidden;
 }
@@ -2432,7 +2440,7 @@
 .progress-fill {
     height: 100%;
     width: 0%;
-    background: white;
+    background: #FFFFFF; 
     transition: width 0.3s ease;
 }
 
@@ -2463,6 +2471,7 @@
     text-align: center;
     padding: 20px;
     box-sizing: border-box;
+    background: transparent !important; 
 }
 
 .story-slide.active {
@@ -2474,17 +2483,19 @@
     font-size: 1.5rem;
     font-weight: 800;
     margin-bottom: 10px;
+    color: #FFFFFF;
 }
 
 .story-desc {
     font-size: 0.9rem;
-    opacity: 0.8;
+    color: #B3B3B3;
 }
 
 .icone-preview {
     font-size: 4rem;
     margin-top: 30px;
     animation: pulsar 2s infinite;
+    color: #1DB954; 
 }
 
 @keyframes pulsar {
@@ -2505,3 +2516,257 @@
 
 .story-nav-zone.left { left: 0; }
 .story-nav-zone.right { right: 0; }
+
+
+/* =========================================
+   LISTA DE FOTOS LADO A LADO (FORMULÁRIO)
+   ========================================= */
+.lista-fotos-deslizar {
+    display: flex;
+    flex-direction: row; 
+    gap: 15px;
+    margin-top: 15px;
+    overflow-x: auto; 
+    padding-bottom: 10px;
+    
+    /* CORREÇÃO: Impede a div de crescer infinitamente para os lados */
+    width: 100%; 
+    max-width: 100%; 
+    box-sizing: border-box;
+}
+
+/* Esconde a barra de rolagem nativa no formulário para ficar mais elegante */
+.lista-fotos-deslizar::-webkit-scrollbar {
+    height: 8px;
+}
+.lista-fotos-deslizar::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.2);
+    border-radius: 4px;
+}
+
+.item-foto-linha {
+            width: 100% !important; /* Ocupa exatamente a metade (1 coluna do grid) */
+            max-width: none !important; /* Removemos aquela trava antiga */
+            flex: none !important;
+            box-sizing: border-box !important;
+            overflow: hidden !important;
+            /* Estética que já estava no seu CSS */
+            background: rgba(255,255,255,0.05) !important;
+            padding: 10px !important;
+            border-radius: 12px !important;
+            border: 1px solid rgba(255,255,255,0.1) !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 10px !important;
+        }
+
+.item-foto-linha img {
+            width: 100% !important;
+            height: 120px !important; /* Altura fixa para ficarem todas iguais */
+            object-fit: cover !important; /* Corta a imagem bonitinho sem achatar */
+            border-radius: 8px !important;
+        }
+
+.item-foto-linha .inputs-textos {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.item-foto-linha input, .item-foto-linha textarea {
+    background: rgba(0,0,0,0.2);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+
+/* =========================================
+   NOVA PILHA DE FOTOS MOCKUP (SUBSTITUI O CARROSSEL)
+   ========================================= */
+
+/* Container Principal: Agora é uma pilha, não uma linha */
+/* IMPORTANTE: z-index alto para o dedo pegar o deslize e não o story */
+.retro-pilha-container {
+    width: 100%;
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    position: relative; /* Contexto para posicionamento absoluto dos itens */
+    padding-right: 60px; /* Espaço para mostrar as bordinhas laterais das cartas de trás */
+    z-index: 9999; 
+    height: 400px; /* Altura fixa para acomodar as cartas */
+}
+
+/* Base de cada foto na pilha */
+.retro-pilha-item {
+    position: absolute;
+    top: 0;
+    left: 20px; /* Alinha o início da pilha um pouco para a esquerda para caber a borda direita */
+    width: 80%; /* Largura um pouco menor para caberem as laterais das outras */
+    aspect-ratio: 4/5;
+    background-color: transparent !important;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.4s ease; /* Animação suave (a magia acontece aqui) */
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.retro-pilha-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+    box-shadow: -4px 4px 15px rgba(0,0,0,0.5);
+    
+    /* CORREÇÃO: Impede o navegador de tentar arrastar a imagem como arquivo no PC */
+    pointer-events: none; 
+}
+
+
+/* =========================================
+   CLASSES DE POSIÇÃO NA PILHA (MAGIA DO DESLIZE)
+   ========================================= */
+
+/* FOTO DO TOPO: Totalmente visível e central */
+.stack-top {
+    transform: translateX(0) scale(1);
+    z-index: 3;
+    opacity: 1;
+}
+
+/* SEGUNDA FOTO: Meio escondida à direita */
+.stack-second {
+    transform: translateX(30px) scale(0.95);
+    z-index: 2;
+    opacity: 0.8;
+}
+
+/* TERCEIRA FOTO: Mais escondida à direita */
+.stack-third {
+    transform: translateX(60px) scale(0.9);
+    z-index: 1;
+    opacity: 0.6;
+}
+
+/* FOTOS ESCONDIDAS (da quarta em diante ficam totalmente atrás) */
+.stack-hidden {
+    transform: translateX(90px) scale(0.85);
+    z-index: 0;
+    opacity: 0;
+}
+
+/* FOTOS JOGADAS PARA O LADO ESQUERDO (cartas já vistas) */
+.swiped-out {
+    transform: translateX(-150%) scale(1) rotate(-10deg); /* Joga bem longe para a esquerda girando um pouco */
+    z-index: 4; /* Fica acima das outras enquanto sai */
+    opacity: 0;
+}
+
+
+/* Textos de cada item da pilha */
+.mockup-texto-deslizar {
+    text-align: center;
+    padding: 0 10px;
+}
+
+.mockup-texto-deslizar h4 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.mockup-texto-deslizar p {
+    margin: 8px 0 0 0;
+    font-size: 13px;
+    color: #cccccc;
+    line-height: 1.4;
+}
+
+/* =========================================
+   NOVO BOTÃO: PRÓXIMA SEÇÃO
+   ========================================= */
+.btn-proxima-secao {
+    position: absolute;
+    bottom: 40px; /* Fica na parte de baixo da tela do celular */
+    left: 50%;
+    transform: translateX(-50%);
+    background: #8b5cf6; /* Cor roxa bonita que combina com seu tema */
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    z-index: 10000;
+    display: none; /* Começa escondido! */
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+}
+
+.btn-proxima-secao:hover {
+    background: #7c3aed;
+    transform: translateX(-50%) scale(1.05);
+}
+
+#container-retro-deslizar {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important; /* É ISSO QUE FAZ FICAR DE 2 EM 2 */
+            gap: 15px !important; /* Espaço entre as fotos */
+            width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+            margin-top: 15px !important;
+        }
+
+#passo-7 {
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+        }
+
+.foto-item, .card-retro-item {
+    position: relative;
+    display: inline-block; /* ou flex, dependendo do seu grid */
+    width: fit-content;
+}
+
+/* O botão "X" agora vai respeitar os limites do container acima */
+.btn-remover-foto-deslizar {
+    position: absolute;
+    top: -10px;    /* Ajusta para ficar um pouco saindo da borda superior */
+    right: -10px;  /* Ajusta para ficar um pouco saindo da borda direita */
+    width: 24px;
+    height: 24px;
+    background: #000;
+    color: #fff;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    z-index: 10;
+    transition: transform 0.2s;
+}
+
+.btn-remover-foto-deslizar:hover {
+    background: #ff4d4d; /* Fica vermelho ao passar o mouse */
+    transform: scale(1.1);
+}
+#preview-letra {
+    white-space: pre-wrap;     /* Respeita os "Enters" (quebras de linha) que a pessoa digitar */
+    overflow-wrap: break-word; /* Quebra o texto para a linha de baixo se chegar no limite */
+    word-wrap: break-word;     /* Suporte para navegadores mais antigos */
+    word-break: break-word;    /* Força a quebra de palavras gigantes (como o "dadadada...") */
+    max-width: 100%;           /* Garante que o texto respeite a largura do card roxo */
+}

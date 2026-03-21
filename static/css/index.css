@@ -174,11 +174,13 @@ header {
     justify-content: space-between;
     align-items: center;
     padding: 20px 5%;
+    position: fixed;
+    width: 100%;
+    box-sizing: border-box; /* Garante que o padding seja contido dentro dos 100% */
+    left: 0;
     background-color: rgba(10, 10, 10, 0.8);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    position: fixed;
-    width: 90%;
     top: 0;
     z-index: 1000;
 }
@@ -316,6 +318,157 @@ header {
 .msg-erro { 
     color: #ef4444; font-size: 14px; margin-top: 10px; min-height: 20px;
     font-weight: 500;
+}
+/* ==========================================
+   CONTAINER DO USUÁRIO LOGADO (NAVBAR)
+   ========================================== */
+
+.perfil-usuario-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+/* A bolinha da foto de perfil (Um pouco maior agora) */
+.perfil-avatar {
+    width: 50px; 
+    height: 50px;
+    border-radius: 50%;
+    background-color: #f0ecfc;
+    border: 2px solid #6c5ce7;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.2s ease;
+}
+
+.perfil-usuario-container:hover .perfil-avatar {
+    transform: scale(1.05);
+}
+
+/* O fundo branco estilo "Polaroid" inclinado */
+.polaroid-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.polaroid-image {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: calc(100% - 8px);
+    height: calc(100% - 8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #ffffff;
+    border-radius: 50%;
+    transform: rotate(-10deg);
+}
+
+/* ==========================================
+   O MENU DROPDOWN (Escondido por padrão)
+   ========================================== */
+.perfil-dropdown {
+    position: absolute;
+    top: 60px; /* Ajustado para a nova bolinha */
+    right: 0;
+    width: 240px; /* Mais largo para caber as novas opções */
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    padding: 15px 0;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.perfil-usuario-container:hover .perfil-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.perfil-info {
+    padding: 0 15px 10px 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Saudação com mais destaque */
+.perfil-saudacao {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 2px;
+}
+
+/* O e-mail um pouco mais discreto */
+.perfil-email {
+    font-size: 13px;
+    color: #888;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; 
+}
+
+.perfil-dropdown hr {
+    border: none;
+    border-top: 1px solid #f0f0f0;
+    margin: 5px 0 10px 0;
+}
+
+/* Os botões do menu */
+.btn-dropdown {
+    width: 100%;
+    background: none;
+    border: none;
+    text-align: left;
+    padding: 12px 15px;
+    font-size: 14px;
+    color: #444;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Espaço entre o emoji e o texto */
+}
+
+.btn-dropdown:hover {
+    background-color: #f8f9fa;
+    color: #6c5ce7;
+}
+
+.btn-sair {
+    color: #e74c3c;
+}
+
+.btn-sair:hover {
+    background-color: #fdf2f1;
+    color: #c0392b;
+}
+/* ==========================================
+   ANIMAÇÃO DO BOTÃO DE LOGIN
+   ========================================== */
+@keyframes surgirSuave {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.mostrar-com-animacao {
+    display: block !important; /* Força a sobrescrever o display: none inicial */
+    animation: surgirSuave 0.5s ease forwards;
 }
 /* =========================================================
    4. HERO SECTION (Topo principal)
@@ -796,7 +949,7 @@ ul.beneficios li.sem-beneficios::before { content: "✕"; color: #ef4444; backgr
 
 /* Coluna Esquerda */
 .faq-tag {
-    color: var(--cor-tema);
+    color: var(--roxo-marca);
     text-transform: uppercase;
     font-size: 12px;
     font-weight: 800;
@@ -917,7 +1070,7 @@ ul.beneficios li.sem-beneficios::before { content: "✕"; color: #ef4444; backgr
 }
 
 .faq-pergunta:hover {
-    color: var(--cor-tema);
+    color: var(--roxo-marca)
 }
 
 .faq-pergunta i {
@@ -939,7 +1092,7 @@ ul.beneficios li.sem-beneficios::before { content: "✕"; color: #ef4444; backgr
 
 .faq-modulo.aberto .faq-pergunta i {
     transform: rotate(45deg); /* Transforma o + em um X */
-    color: var(--cor-tema);
+    color: var(--roxo-marca);
 }
 
 .faq-resposta ul {
@@ -1352,7 +1505,7 @@ ul.beneficios li.sem-beneficios::before { content: "✕"; color: #ef4444; backgr
     border-radius: 4px;
 }
 .modal-texto-interno h3 {
-    color: var(--cor-tema);
+    color: var(--roxo-marca);
     font-size: 18px;
     margin: 25px 0 10px 0;
     font-weight: 600;
@@ -1401,7 +1554,7 @@ ul.beneficios li.sem-beneficios::before { content: "✕"; color: #ef4444; backgr
 }
 
 .modal-contato-card:hover {
-    border-color: var(--cor-tema);
+    border-color: var(--roxo-marca);
     transform: translateY(-5px);
 }
 
@@ -1437,7 +1590,7 @@ ul.beneficios li.sem-beneficios::before { content: "✕"; color: #ef4444; backgr
     align-items: center;
     justify-content: center;
     font-size: 20px;
-    color: var(--cor-tema);
+    color: var(--roxo-marca);
     margin-bottom: 15px;
 }
 
@@ -1458,7 +1611,7 @@ ul.beneficios li.sem-beneficios::before { content: "✕"; color: #ef4444; backgr
     display: inline-block;
     width: 100%;
     padding: 12px;
-    background: var(--cor-tema);
+    background: var(--roxo-marca);
     color: #fff;
     text-decoration: none;
     border-radius: 8px;

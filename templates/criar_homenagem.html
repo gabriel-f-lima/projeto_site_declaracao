@@ -5,6 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Criar Homenagem - Editor</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700&display=swap"
+        rel="stylesheet">
+
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/criar_homenagem.css') }}">
 </head>
@@ -33,6 +42,7 @@
             </div>
 
             <form id="form-homenagem">
+
                 <div class="passo-container ativo" id="passo-0">
                     <div class="form-header">
                         <h2 id="titulo-passo-0">Para quem é o presente?</h2>
@@ -41,42 +51,40 @@
 
                     <div class="grid-tipos">
                         <button type="button" class="btn-tipo" onclick="escolherTipoTela('namorado')">
-                            <img src="{{ url_for('static', filename='img/coracao.png') }}" alt="Coração">
+                            <img src="{{ url_for('static', filename='img/coracao.png') }}" class="icone-roxo"
+                                alt="Coração">
                             <span>Para Namorado(a)</span>
                         </button>
-
                         <button type="button" class="btn-tipo" onclick="escolherTipoTela('mae')">
-                            <img src="{{ url_for('static', filename='img/flor.png') }}" alt="Mãe">
+                            <img src="{{ url_for('static', filename='img/flor.png') }}" class="icone-roxo" alt="Mãe">
                             <span>Para Mãe</span>
                         </button>
-
                         <button type="button" class="btn-tipo" onclick="escolherTipoTela('pai')">
-                            <img src="{{ url_for('static', filename='img/brilhante.png') }}" alt="Pai">
+                            <img src="{{ url_for('static', filename='img/brilhante.png') }}" class="icone-roxo"
+                                alt="Pai">
                             <span>Para Pai</span>
                         </button>
-
                         <button type="button" class="btn-tipo" onclick="escolherTipoTela('amigo')">
-                            <img src="{{ url_for('static', filename='img/pessoas.png') }}" alt="Amigo">
+                            <img src="{{ url_for('static', filename='img/pessoas.png') }}" class="icone-roxo"
+                                alt="Amigo">
                             <span>Para Amigo(a)</span>
                         </button>
-
                         <button type="button" class="btn-tipo" onclick="escolherTipoTela('avo')">
-                            <img src="{{ url_for('static', filename='img/flor.png') }}" alt="Avós">
+                            <img src="{{ url_for('static', filename='img/flor.png') }}" class="icone-roxo" alt="Avós">
                             <span>Para Avós</span>
                         </button>
-
                         <button type="button" class="btn-tipo" onclick="escolherTipoTela('irmao')">
-                            <img src="{{ url_for('static', filename='img/diamante.png') }}" alt="Irmão">
+                            <img src="{{ url_for('static', filename='img/diamante.png') }}" class="icone-roxo"
+                                alt="Irmão">
                             <span>Para Irmão/Irmã</span>
                         </button>
-
                         <button type="button" class="btn-tipo" onclick="escolherTipoTela('primo')">
-                            <img src="{{ url_for('static', filename='img/presente.png') }}" alt="Primo">
+                            <img src="{{ url_for('static', filename='img/presente.png') }}" class="icone-roxo"
+                                alt="Primo">
                             <span>Para Primo(a)</span>
                         </button>
-
                         <button type="button" class="btn-tipo" onclick="escolherTipoTela('tia')">
-                            <img src="{{ url_for('static', filename='img/flor.png') }}" alt="Tio">
+                            <img src="{{ url_for('static', filename='img/flor.png') }}" class="icone-roxo" alt="Tio">
                             <span>Para Tio/Tia</span>
                         </button>
                     </div>
@@ -94,7 +102,6 @@
                                 oninput="atualizarContador('nome_de', 'count-de'); atualizarPreview()">
                             <small class="char-count" id="count-de">0/25</small>
                         </div>
-
                         <div class="input-group">
                             <label for="nome_para" id="label-nome-para">Para quem é?</label>
                             <input type="text" id="nome_para" maxlength="25"
@@ -115,7 +122,6 @@
                             <label for="data_conheceram">Dia em que se conheceram</label>
                             <input type="date" id="data_conheceram" onchange="atualizarPreview()">
                         </div>
-
                         <div class="input-group">
                             <label for="cidade">Cidade Especial</label>
                             <div style="position: relative;">
@@ -139,13 +145,10 @@
                     <div class="input-group full-width">
                         <label for="titulo" id="label-titulo">Título da Página</label>
                         <div class="input-with-button">
-                            <input type="text" id="titulo" maxlength="30" placeholder="Ex: Nosso 1º Ano"
-                                oninput="atualizarPreview()">
-                            <button type="button" class="btn-sugerir" onclick="gerarTituloAleatorio()">
-                                ✨ Sugerir
-                            </button>
+                            <input type="text" id="titulo" maxlength="30" oninput="atualizarPreview()">
+                            <button type="button" class="btn-sugerir" onclick="gerarTituloAleatorio()">✨
+                                Sugerir</button>
                         </div>
-                        <small class="char-hint">Esse título aparecerá no topo da sua jornada.</small>
                     </div>
                     <div class="botoes-navegacao">
                         <button type="button" class="btn-voltar" onclick="mudarPasso(3, 2)">Voltar</button>
@@ -159,6 +162,18 @@
                         <p id="desc-passo-4"></p>
                     </div>
 
+                    <div class="input-group full-width">
+                        <label for="mensagem_especial">Sua Mensagem Especial</label>
+                        <div class="input-with-button" style="align-items: flex-start;">
+                            <div class="input-coluna">
+                                <textarea id="mensagem_especial" rows="4" maxlength="600"
+                                    placeholder="Escreva o que o seu coração mandar..."
+                                    oninput="atualizarPreviewLetra()"></textarea>
+                                <button type="button" class="btn-sugerir" onclick="gerarMensagemAleatoria()">✨
+                                    Sugerir</button>
+                            </div>
+                        </div>
+                    </div>
                     <div class="input-group" style="position: relative;">
                         <label for="busca_musica">A Trilha Sonora</label>
                         <div class="input-with-icon">
@@ -206,17 +221,11 @@
 
                     <div class="input-group">
                         <label>Fotos de Capa do Álbum (até 4 imagens)</label>
-
                         <div id="container-capas" class="grid-fotos-capa"></div>
-
-                        <button type="button" id="btn-add-capa" class="btn-adicionar-foto"
+                        <button type="button" id="btn-add-capa" class="btn-adicionar-foto mt-10"
                             onclick="adicionarNovaCapa()">
                             <i class="fas fa-plus"></i> Adicionar Foto da Capa
                         </button>
-
-                        <small id="alerta-capas" class="error-msg" hidden>
-                            Você atingiu o máximo de 4 fotos.
-                        </small>
                     </div>
 
                     <div class="botoes-navegacao">
@@ -224,7 +233,7 @@
                         <button type="button" class="btn-proximo" onclick="mudarPasso(5, 6)">Próximo</button>
                     </div>
                 </div>
-                </div>
+
                 <div class="passo-container" id="passo-6">
                     <div class="form-header">
                         <h2 id="titulo-passo-6"></h2>
@@ -233,14 +242,10 @@
 
                     <div id="container-fotos" class="lista-fotos-timeline"></div>
 
-
                     <button type="button" id="btn-add-timeline" class="btn-adicionar-foto mt-10"
                         onclick="adicionarNovaFoto()">
                         <i class="fas fa-camera"></i> Adicionar Nova Foto à Timeline
                     </button>
-                    <small id="alerta-timeline" class="error-msg" hidden>
-                        Você atingiu o máximo de 6 fotos.
-                    </small>
 
                     <div class="botoes-navegacao">
                         <button type="button" class="btn-voltar" onclick="mudarPasso(6, 5)">Voltar</button>
@@ -259,10 +264,17 @@
                             <label>Fotos para Deslizar</label>
                             <span class="badge-contador" id="contador-deslizar">0/6</span>
                         </div>
-                        <p class="hint-text">Essas fotos aparecerão em uma galeria interativa para o lado.</p>
+                        <p class="hint-text" id="dica-deslizar">Essas fotos aparecerão em uma galeria interativa para o
+                            lado.</p>
 
-                        <div id="container-retro-deslizar" class="grid-fotos-retro deslizar-grid">
-                        </div>
+                        <input type="file" id="input-foto-deslizar" accept="image/*" multiple style="display: none;">
+
+                        <button type="button" id="btn-add-deslizar" class="btn-adicionar-foto mt-10"
+                            onclick="document.getElementById('input-foto-deslizar').click()">
+                            <i class="fas fa-images"></i> Adicionar Fotos para Deslizar
+                        </button>
+
+                        <div id="container-retro-deslizar" class="lista-fotos-deslizar mt-10"></div>
                     </div>
 
                     <div class="input-group mt-20">
@@ -270,10 +282,17 @@
                             <label>Fotos para a Garra</label>
                             <span class="badge-contador" id="contador-garra">0/4</span>
                         </div>
-                        <p class="hint-text">Essas fotos serão "pescadas" pela máquina de garra animada!</p>
+                        <p class="hint-text" id="dica-garra">Essas fotos serão "pescadas" pela máquina de garra animada!
+                        </p>
 
-                        <div id="container-retro-garra" class="grid-fotos-retro garra-grid">
-                        </div>
+                        <input type="file" id="input-foto-garra" accept="image/*" multiple style="display: none;">
+
+                        <button type="button" id="btn-add-garra" class="btn-adicionar-foto mt-10"
+                            onclick="document.getElementById('input-foto-garra').click()">
+                            <i class="fas fa-grip-lines"></i> Adicionar Fotos para a Garra
+                        </button>
+
+                        <div id="container-retro-garra" class="grid-fotos-retro garra-grid mt-10"></div>
                     </div>
 
                     <div class="botoes-navegacao">
@@ -286,7 +305,6 @@
         </section>
 
         <section class="editor-preview-panel">
-
             <button class="btn-fechar-espiadinha" onclick="fecharEspiadinha()">✖ Fechar</button>
 
             <div class="mockup-celular">
@@ -296,6 +314,7 @@
                         <div class="app-playlist-name" id="preview-topo">PARA: ...</div>
                         <span class="icone-fino">⋮</span>
                     </div>
+
                     <div class="app-capa-container">
                         <span id="placeholder-texto">Sua foto aparecerá aqui</span>
                         <img id="preview-foto" class="app-capa-foto" src="" alt="Capa da Música">
@@ -306,7 +325,6 @@
                             <h2 id="preview-titulo">Seu Título Aqui</h2>
                             <p id="preview-de">De: ...</p>
                         </div>
-
                         <div class="app-coracao-tema pulse-anim">
                             <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path fill="var(--cor-tema, #1DB954)"
@@ -329,21 +347,18 @@
                     <div class="app-controles">
                         <img src="{{ url_for('static', filename='img/shuffle.png') }}"
                             class="icone-secundario icone-invertido" width="20" alt="Aleatório">
-
                         <img src="{{ url_for('static', filename='img/retroceder.png') }}"
                             class="icone-primario icone-invertido" width="24" alt="Anterior" onclick="imagemAnterior()"
                             style="cursor: pointer;">
-
                         <img src="{{ url_for('static', filename='img/play.png') }}" class="icone-pause icone-invertido"
                             width="20" alt="Play">
-
                         <img src="{{ url_for('static', filename='img/avancar.png') }}"
                             class="icone-primario icone-invertido" width="24" alt="Próxima" onclick="proximaImagem()"
                             style="cursor: pointer;">
-
                         <img src="{{ url_for('static', filename='img/repetir.png') }}"
                             class="icone-secundario icone-invertido" width="20" alt="Repetir">
                     </div>
+
                     <div class="app-letra-card" id="card-letra" onclick="toggleLetra()">
                         <div class="app-letra-header">
                             <span>Mensagem especial</span>
@@ -351,23 +366,22 @@
                         <div class="app-letra-texto" id="preview-letra">Sua mensagem aparecerá aqui...</div>
                         <button class="app-letra-btn">Mostrar mensagem</button>
                     </div>
+
                     <div class="mockup-musica-header">
                         <h3 id="mockup-musica-titulo">A música de vocês</h3>
                     </div>
-                    <div class="mockup-musica-info" id="mockup-musica-container">
 
+                    <div class="mockup-musica-info" id="mockup-musica-container">
                         <div class="mockup-musica-linha-superior">
                             <div class="mockup-musica-capa-textos">
                                 <img src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2250%22%20height%3D%2250%22%20viewBox%3D%220%200%2050%2050%22%3E%3Crect%20width%3D%2250%22%20height%3D%2250%22%20fill%3D%22%23333%22%2F%3E%3Cpath%20d%3D%22M25%2015v13.5a4.5%204.5%200%20104.5%204.5V19.5h6V15h-10.5z%22%20fill%3D%22%23888%22%2F%3E%3C%2Fsvg%3E"
                                     id="mockup-musica-capa-api" alt="Capa da Música" class="mockup-musica-capa">
-
                                 <div class="mockup-musica-detalhes">
                                     <div class="mockup-musica-titulo" id="mockup-musica-titulo-api">Sua música...</div>
                                     <div class="mockup-musica-artista" id="mockup-musica-artista-api">Busque o artista
                                     </div>
                                 </div>
                             </div>
-
                             <div class="mini-play-btn desativado app-btn-play" onclick="alternarPlay()"
                                 id="mini-btn-play-container">
                                 <img src="{{ url_for('static', filename='img/play.png') }}" id="mini-icone-play"
@@ -377,12 +391,9 @@
 
                         <div class="mockup-musica-linha-progresso">
                             <span id="tempo-atual" class="mockup-musica-tempo">0:00</span>
-
                             <input type="range" id="barra-progresso" class="mockup-musica-barra" value="0" max="100">
-
                             <span id="tempo-total" class="mockup-musica-tempo">0:00</span>
                         </div>
-
                     </div>
 
                     <audio id="player-musica" src="" loop></audio>
@@ -390,7 +401,6 @@
                     <div id="mockup-player-principal">
                         <div class="app-card-memorias" onclick="abrirTimelineCompleta()">
                             <h3 id="mockup-timeline-titulo-card">Conheça Nossas Memórias</h3>
-
                             <div id="mini-fotos-preview" class="app-grid-miniaturas">
                                 <div class="app-mini-foto"><span>Nossos Dates</span></div>
                                 <div class="app-mini-foto"><span>Fotos aleatórias</span></div>
@@ -404,7 +414,8 @@
                                 <div class="retro-texto">
                                     <h3>Sua Retrospectiva</h3>
                                     <p>Explore o seu tempo de casal</p>
-                                    <button type="button" class="btn-vamos-la" onclick="abrirMockupRetro(); event.stopPropagation();">Vamos lá</button>
+                                    <button type="button" class="btn-vamos-la"
+                                        onclick="abrirMockupRetro(); event.stopPropagation();">Vamos lá</button>
                                 </div>
                             </div>
                         </div>
@@ -425,7 +436,6 @@
 
                     <div id="tela-retro-mockup" class="retro-story-container" style="display: none;">
                         <audio id="audio-retrospectiva" loop preload="auto"></audio>
-
                         <button class="btn-fechar-retro" onclick="fecharMockupRetro()">✕ Fechar Preview</button>
 
                         <div class="story-progress-bar">
@@ -444,22 +454,24 @@
                         </div>
 
                         <div class="story-slides-container">
-                            <div class="story-slide active" style="background: linear-gradient(135deg, #1a1a1a, #000);">
-                                <h3 class="story-title">Fotos para Deslizar</h3>
-                                <p class="story-desc">Suas 6 fotos aparecerão aqui em carrossel.</p>
-                                <div class="icone-preview">👆</div>
+                            <div class="story-slide active">
+                                <h3 class="story-title" id="titulo-slide-deslizar">Fotos para Deslizar</h3>
+                                <p class="story-desc" id="desc-slide-deslizar">Suas 6 fotos aparecerão aqui em
+                                    carrossel.</p>
+                                <div class="icone-preview" id="icone-slide-deslizar">👆</div>
+                                <div id="mockup-carrosel-deslizar" class="retro-pilha-container"></div>
                             </div>
-                            <div class="story-slide" style="background: linear-gradient(135deg, #2c003e, #000);">
+                            <div class="story-slide" id="tela-mockup-garra">
                                 <h3 class="story-title">A Máquina de Garra</h3>
                                 <p class="story-desc">Suas 4 fotos sendo "pescadas".</p>
                                 <div class="icone-preview">🕹️</div>
                             </div>
-                            <div class="story-slide" style="background: linear-gradient(135deg, #3e001f, #000);">
+                            <div class="story-slide">
                                 <h3 class="story-title">Seu Jogo 3</h3>
                                 <p class="story-desc">Preview da próxima etapa...</p>
                                 <div class="icone-preview">🎮</div>
                             </div>
-                            <div class="story-slide" style="background: linear-gradient(135deg, #001f3e, #000);">
+                            <div class="story-slide">
                                 <h3 class="story-title">Grande Final</h3>
                                 <p class="story-desc">A surpresa final.</p>
                                 <div class="icone-preview">✨</div>
@@ -469,17 +481,16 @@
                         <div class="story-nav-zone left" onclick="mudarStory(-1)"></div>
                         <div class="story-nav-zone right" onclick="mudarStory(1)"></div>
                     </div>
+
                 </div>
-
-
             </div>
         </section>
-
     </main>
 
     <button class="btn-espiadinha" onclick="abrirEspiadinha()">
         👀 Dar uma espiada
     </button>
+
     <script src="{{ url_for('static', filename='js/criar_homenagem.js') }}"></script>
 </body>
 

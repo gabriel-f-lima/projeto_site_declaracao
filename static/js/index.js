@@ -244,3 +244,59 @@ async function verificarCodigo() {
         btn.disabled = false;
     }
 }
+
+document.addEventListener('DOMContentLoaded', verificarLogin);
+
+async function verificarLogin() {
+    try {
+        const resposta = await fetch('/api/auth/status');
+        const dados = await resposta.json();
+
+        const btnEntrar = document.getElementById('btn-entrar');
+        const containerConta = document.getElementById('container-conta');
+
+        if (dados.logado) {
+            // Se estiver logado: Garante que o botão Entrar suma e mostra a conta
+            if (btnEntrar) {
+                btnEntrar.style.display = 'none';
+                btnEntrar.classList.remove('mostrar-com-animacao');
+            }
+            if (containerConta) {
+                containerConta.style.display = 'flex';
+                document.getElementById('texto-email').innerText = dados.email;
+            }
+        } else {
+            // Se NÃO estiver logado: Traz o botão Entrar com a animação
+            if (btnEntrar) {
+                btnEntrar.classList.add('mostrar-com-animacao');
+            }
+            if (containerConta) {
+                containerConta.style.display = 'none';
+            }
+        }
+    } catch (erro) {
+        console.error("Erro ao checar login:", erro);
+        // Em caso de erro na internet do usuário, por segurança, mostra o botão Entrar
+        const btnEntrar = document.getElementById('btn-entrar');
+        if (btnEntrar) btnEntrar.classList.add('mostrar-com-animacao');
+    }
+}
+
+// Função para o botão "Sair"
+async function deslogar() {
+    await fetch('/api/auth/sair', { method: 'POST' });
+    window.location.reload(); // Recarrega a página para o botão "Entrar" voltar
+}
+document.addEventListener('DOMContentLoaded', () => {
+    const cartoesPresente = document.querySelectorAll('.presente-card');
+
+    cartoesPresente.forEach(cartao => {
+        cartao.addEventListener('click', function() {
+            // Opcional: Se quiser que ao abrir um, os outros fechem, deixe esta linha:
+            cartoesPresente.forEach(c => { if (c !== cartao) c.classList.remove('ativo'); });
+            
+            // Abre ou fecha o cartão clicado
+            this.classList.toggle('ativo');
+        });
+    });
+});

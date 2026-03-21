@@ -12,7 +12,6 @@ load_dotenv()
 # FUNÇÃO PARA ENVIAR E-MAIL
 # ==========================================
 def enviar_email_codigo(email_destino, codigo):
-    # Pegamos do arquivo .env para não deixar senhas expostas no código!
     email_remetente = os.getenv("EMAIL_USER")
     senha_app = os.getenv("EMAIL_PASS")
     
@@ -20,11 +19,41 @@ def enviar_email_codigo(email_destino, codigo):
         print("ERRO: E-mail ou Senha não configurados no .env")
         return False
 
-    msg = MIMEText(f"Seu código de acesso para a Lovyc é: {codigo}\n\nUse este código para entrar na sua conta.")
-    msg['Subject'] = 'Seu código de login - Lovyc'
+    # 1. Criamos um template HTML bonitão para o e-mail
+    html = f"""
+    <html>
+      <body style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333333; line-height: 1.6; max-width: 600px; margin: 0 auto; padding: 20px;">
+        
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h1 style="color: #6c5ce7; margin: 0;">Lovyc</h1>
+        </div>
+        
+        <p style="font-size: 16px;">Olá!</p>
+        
+        <p style="font-size: 16px;">Recebemos um pedido para acessar a sua conta. Use o código de verificação abaixo para confirmar seu login:</p>
+        
+        <div style="background-color: #f8f9fa; border: 1px solid #e9ecef; padding: 20px; text-align: center; border-radius: 8px; margin: 30px 0;">
+            <span style="font-size: 36px; font-weight: bold; color: #1e1e24; letter-spacing: 8px;">{codigo}</span>
+        </div>
+        
+        <p style="font-size: 14px; color: #666;">Se você não solicitou este acesso, não se preocupe, basta ignorar este e-mail. Sua conta está segura.</p>
+        
+        <hr style="border: none; border-top: 1px solid #eaeaea; margin: 30px 0;">
+        
+        <p style="font-size: 12px; color: #999; text-align: center;">
+            Feito com ❤️ pela equipe Lovyc<br>
+            Este é um e-mail automático, por favor não responda.
+        </p>
+        
+      </body>
+    </html>
+    """
+
+    # 2. Alteramos o MIMEText para dizer que agora é um HTML ('html', 'utf-8')
+    msg = MIMEText(html, 'html', 'utf-8')
+    msg['Subject'] = 'Seu código de acesso - Lovyc 💜'
     msg['From'] = email_remetente
     msg['To'] = email_destino
-
     try:
         # Usando a porta 587 com STARTTLS (melhor para Render/Hospedagens)
         server = smtplib.SMTP('smtp.gmail.com', 587)
@@ -123,8 +152,34 @@ def create_app():
             
         return jsonify({"erro": "Código inválido ou expirado"}), 400
 
+    # ==========================================
+    # ROTAS DE SESSÃO (STATUS E LOGOUT)
+    # ==========================================
+    @app.route('/api/auth/status', methods=['GET'])
+    def check_status():
+            # Verifica se o usuário tem uma sessão ativa
+        if 'user_id' in session:
+            return jsonify({
+                "logado": True, 
+                "email": session.get('user_email')
+            }), 200
+            
+        return jsonify({"logado": False}), 200
+
+    
+    @app.route('/api/auth/sair', methods=['POST'])
+    def fazer_logout():
+        session.clear() # Apaga o cookie e desloga o usuário
+        return jsonify({"mensagem": "Deslogado com sucesso!"}), 200
+    
     return app
 
+# ==========================================
+# INICIAR O SERVIDOR
+# ==========================================
 if __name__ == '__main__':
     app = create_app()
-    app.run(debug=True)
+    # O Render injeta a porta correta aqui. Se for local, usa 5000.
+    port = int(os.environ.get("PORT", 5000))
+    # O host="0.0.0.0" é obrigatório para a internet conseguir acessar sua API
+    app.run(host="0.0.0.0", port=port, debug=True)

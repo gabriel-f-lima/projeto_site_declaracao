@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Envie uma homenagem para quem você ama</title>
-    <!-- <link rel="stylesheet" href="/static/css/index.css"> -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
@@ -13,14 +12,37 @@
 <body>
 
     <header id="topo">
-    <div class="logo">
-        L<img src="{{ url_for('static', filename='img/coracao-lovyc.png') }}" alt="Coração" class="logo-img-icon">v<span>yc</span>
-    </div>
-    <div style="display: flex; gap: 15px;">
-        <button onclick="abrirModalLogin()" class="btn-outline"
-            style="padding: 8px 20px; font-size: 14px; border-radius: 8px;">Entrar</button>
-    </div>
-</header>
+        <div class="logo">
+            L<img src="{{ url_for('static', filename='img/coracao-lovyc.png') }}" alt="Coração" class="logo-img-icon">v<span>yc</span>
+        </div>
+
+        <div class="header-acoes" style="display: flex; gap: 15px; align-items: center;">
+            <button id="btn-entrar" onclick="abrirModalLogin()" class="btn-outline" style="display: none; opacity: 0; padding: 8px 20px; font-size: 14px; border-radius: 8px;">
+                Entrar
+            </button>
+
+            <div id="container-conta" class="perfil-usuario-container" style="display: none;">
+                <div class="perfil-avatar">
+                    <div class="polaroid-wrapper">
+                        <div class="polaroid-image">
+                            <span style="font-size: 20px;">💜</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="perfil-dropdown">
+                    <div class="perfil-info">
+                        <span class="perfil-saudacao">Olá!</span>
+                        <span id="texto-email" class="perfil-email"></span>
+                    </div>
+                    <hr>
+                    <button onclick="window.location.href='/presentes'" class="btn-dropdown">Meus Presentes</button>
+                    <button onclick="window.location.href='/homenagens'" class="btn-dropdown">Minhas Homenagens</button>
+                    <button onclick="deslogar()" class="btn-dropdown btn-sair">Sair da conta</button>
+                </div>
+            </div>
+        </div>
+    </header>
 
     <section class="hero" id="hero">
         <div class="hero-container">
@@ -28,12 +50,11 @@
                 <div class="tag-promessa">✨ O presente perfeito em 10 minutos</div>
 
                 <h1>
-                    Mais do que um presente:
+                    Mais do que um presente:<br>
                     <span>Uma prova de amor.</span>
                 </h1>
 
-                <p>Crie um site exclusivo com a história de vocês: contador de tempo, suas melhores fotos e a música que
-                    marcou a relação. O presente digital mais emocionante que existe.</p>
+                <p>Crie um site exclusivo com a história de vocês: contador de tempo, suas melhores fotos e a música que marcou a relação. O presente digital mais emocionante que existe.</p>
 
                 <div class="hero-buttons">
                     <a href="{{ url_for('criar_homenagem') }}" class="btn-verde">Criar Minha Página ➔</a>
@@ -47,16 +68,13 @@
                 <div class="mockup-celular">
                     <div class="app-musica-ui">
                         <div class="app-top-bar">
-                            <img src="{{ url_for('static', filename='img/baixo.png') }}"
-                                class="icone-fino icone-invertido" width="16" alt="Descer">
+                            <img src="{{ url_for('static', filename='img/baixo.png') }}" class="icone-fino icone-invertido" width="16" alt="Descer">
                             <span class="app-playlist-name">Para o amor da minha vida 💚</span>
-                            <img src="{{ url_for('static', filename='img/pontos.png') }}"
-                                class="icone-fino icone-invertido" width="16" alt="Opções">
+                            <img src="{{ url_for('static', filename='img/pontos.png') }}" class="icone-fino icone-invertido" width="16" alt="Opções">
                         </div>
 
                         <div class="app-capa-container">
-                            <img src="https://images.unsplash.com/photo-1518199266791-5375a83164ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
-                                class="app-capa-foto" alt="Foto Casal">
+                            <img src="https://images.unsplash.com/photo-1518199266791-5375a83164ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" class="app-capa-foto" alt="Foto Casal">
                         </div>
 
                         <div class="app-info-musica">
@@ -79,22 +97,13 @@
                         </div>
 
                         <div class="app-controles">
-                            <img src="{{ url_for('static', filename='img/shuffle.png') }}"
-                                class="icone-secundario icone-invertido" width="20" alt="Aleatório">
-
-                            <img src="{{ url_for('static', filename='img/retroceder.png') }}"
-                                class="icone-primario icone-invertido" width="24" alt="Anterior">
-
+                            <img src="{{ url_for('static', filename='img/shuffle.png') }}" class="icone-secundario icone-invertido" width="20" alt="Aleatório">
+                            <img src="{{ url_for('static', filename='img/retroceder.png') }}" class="icone-primario icone-invertido" width="24" alt="Anterior">
                             <div class="app-btn-play">
-                                <img src="{{ url_for('static', filename='img/pausa.png') }}"
-                                    class="icone-pause icone-transparente" width="20" alt="Pausar">
+                                <img src="{{ url_for('static', filename='img/pausa.png') }}" class="icone-pause icone-transparente" width="20" alt="Pausar">
                             </div>
-
-                            <img src="{{ url_for('static', filename='img/avancar.png') }}"
-                                class="icone-primario icone-invertido" width="24" alt="Próxima">
-
-                            <img src="{{ url_for('static', filename='img/repetir.png') }}"
-                                class="icone-secundario icone-invertido" width="20" alt="Repetir">
+                            <img src="{{ url_for('static', filename='img/avancar.png') }}" class="icone-primario icone-invertido" width="24" alt="Próxima">
+                            <img src="{{ url_for('static', filename='img/repetir.png') }}" class="icone-secundario icone-invertido" width="20" alt="Repetir">
                         </div>
                     </div>
                 </div>
@@ -107,49 +116,40 @@
             <div class="magia-header fade-element">
                 <span class="badge-magia">✨ A Experiência</span>
                 <h2>O que torna esse presente inesquecível?</h2>
-                <p>Esqueça presentes comuns. Nós criamos uma experiência interativa que vai arrancar sorrisos (e algumas
-                    lágrimas de alegria).</p>
+                <p>Esqueça presentes comuns. Nós criamos uma experiência interativa que vai arrancar sorrisos (e algumas lágrimas de alegria).</p>
             </div>
 
             <div class="magia-grid">
                 <div class="magia-card fade-element">
                     <div class="card-icon">
-                        <img src="{{ url_for('static', filename='img/filme.png') }}"
-                            class="icone-magia icone-roxo-grande" alt="Vídeo">
+                        <img src="{{ url_for('static', filename='img/filme.png') }}" class="icone-magia icone-roxo-grande" alt="Vídeo">
                     </div>
                     <h3>Retrospectiva Animada</h3>
-                    <p>Uma linha do tempo imersiva relembrando os melhores momentos de vocês, com animações suaves e
-                        muito estilo.</p>
+                    <p>Uma linha do tempo imersiva relembrando os melhores momentos de vocês, com animações suaves e muito estilo.</p>
                 </div>
 
                 <div class="magia-card fade-element delay-1">
                     <div class="card-icon">
-                        <img src="{{ url_for('static', filename='img/musica.png') }}"
-                            class="icone-magia icone-roxo-grande" alt="Música">
+                        <img src="{{ url_for('static', filename='img/musica.png') }}" class="icone-magia icone-roxo-grande" alt="Música">
                     </div>
                     <h3>A Música de Vocês</h3>
-                    <p>A trilha sonora perfeita tocando de fundo enquanto a pessoa rola a página e revive a história de
-                        vocês.</p>
+                    <p>A trilha sonora perfeita tocando de fundo enquanto a pessoa rola a página e revive a história de vocês.</p>
                 </div>
 
                 <div class="magia-card fade-element delay-2">
                     <div class="card-icon">
-                        <img src="{{ url_for('static', filename='img/jogos.png') }}"
-                            class="icone-magia icone-roxo-grande" alt="Jogos">
+                        <img src="{{ url_for('static', filename='img/jogos.png') }}" class="icone-magia icone-roxo-grande" alt="Jogos">
                     </div>
                     <h3>Jogos e Interação</h3>
-                    <p>Quizzes divertidos, raspadinhas virtuais e surpresas escondidas para deixar o presente ainda mais
-                        único.</p>
+                    <p>Quizzes divertidos, raspadinhas virtuais e surpresas escondidas para deixar o presente ainda mais único.</p>
                 </div>
 
                 <div class="magia-card fade-element delay-3">
                     <div class="card-icon">
-                        <img src="{{ url_for('static', filename='img/nuvem.png') }}"
-                            class="icone-magia icone-roxo-grande" alt="Nuvem">
+                        <img src="{{ url_for('static', filename='img/nuvem.png') }}" class="icone-magia icone-roxo-grande" alt="Nuvem">
                     </div>
                     <h3>Para Sempre no Ar</h3>
-                    <p>Seu presente guardado em nuvem. Um link especial que pode ser acessado de qualquer celular, a
-                        qualquer hora.</p>
+                    <p>Seu presente guardado em nuvem. Um link especial que pode ser acessado de qualquer celular, a qualquer hora.</p>
                 </div>
             </div>
         </div>
@@ -163,8 +163,7 @@
                     Rápido e Fácil
                 </span>
                 <h2>Seu presente pronto em 4 passos</h2>
-                <p>Não precisa saber programar nem editar vídeos. Nossa plataforma faz todo o trabalho duro para você em
-                    minutos.</p>
+                <p>Não precisa saber programar nem editar vídeos. Nossa plataforma faz todo o trabalho duro para você em minutos.</p>
             </div>
 
             <div class="passos-grid">
@@ -176,8 +175,7 @@
                 <div class="passo-card fade-element delay-1">
                     <div class="passo-numero">2</div>
                     <h3>Personalize Tudo</h3>
-                    <p>Faça o upload das melhores fotos de vocês e escolha aquela música que é a trilha sonora do casal.
-                    </p>
+                    <p>Faça o upload das melhores fotos de vocês e escolha aquela música que é a trilha sonora do casal.</p>
                 </div>
                 <div class="passo-card fade-element delay-2">
                     <div class="passo-numero">3</div>
@@ -198,28 +196,23 @@
             <div class="preview-text fade-element">
                 <span class="badge-magia">👀 Espiadinha</span>
                 <h2>Veja como fica na palma da mão</h2>
-                <p>O seu presente é otimizado para ficar perfeito no celular. A pessoa recebe um link mágico que abre
-                    uma experiência imersiva em tela cheia.</p>
+                <p>O seu presente é otimizado para ficar perfeito no celular. A pessoa recebe um link mágico que abre uma experiência imersiva em tela cheia.</p>
 
                 <ul class="preview-lista">
                     <li>
-                        <img src="{{ url_for('static', filename='img/estrelas.png') }}" alt="Design Premium"
-                            class="icone-lista icone-invertido">
+                        <img src="{{ url_for('static', filename='img/estrelas.png') }}" alt="Design Premium" class="icone-lista icone-invertido">
                         Design premium e moderno
                     </li>
                     <li>
-                        <img src="{{ url_for('static', filename='img/musica.png') }}" alt="Música"
-                            class="icone-lista icone-invertido">
+                        <img src="{{ url_for('static', filename='img/musica.png') }}" alt="Música" class="icone-lista icone-invertido">
                         Música tocando automaticamente
                     </li>
                     <li>
-                        <img src="{{ url_for('static', filename='img/camera.png') }}" alt="Fotos"
-                            class="icone-lista icone-invertido">
+                        <img src="{{ url_for('static', filename='img/camera.png') }}" alt="Fotos" class="icone-lista icone-invertido">
                         Fotos em alta resolução
                     </li>
                     <li>
-                        <img src="{{ url_for('static', filename='img/cadeado.png') }}" alt="Segurança"
-                            class="icone-lista icone-invertido">
+                        <img src="{{ url_for('static', filename='img/cadeado.png') }}" alt="Segurança" class="icone-lista icone-invertido">
                         Link seguro e privado
                     </li>
                 </ul>
@@ -246,14 +239,9 @@
                             </div>
 
                             <div class="player-controles">
-                                <img src="{{ url_for('static', filename='img/retroceder.png') }}" alt="Retroceder"
-                                    class="icone-player icone-invertido">
-
-                                <img src="{{ url_for('static', filename='img/play.png') }}" alt="Play"
-                                    class="icone-player icone-invertido ">
-
-                                <img src="{{ url_for('static', filename='img/avancar.png') }}" alt="Avançar"
-                                    class="icone-player icone-invertido">
+                                <img src="{{ url_for('static', filename='img/retroceder.png') }}" alt="Retroceder" class="icone-player icone-invertido">
+                                <img src="{{ url_for('static', filename='img/play.png') }}" alt="Play" class="icone-player icone-invertido ">
+                                <img src="{{ url_for('static', filename='img/avancar.png') }}" alt="Avançar" class="icone-player icone-invertido">
                             </div>
                         </div>
                     </div>
@@ -301,19 +289,18 @@
             </div>
         </div>
     </section>
+
     <section class="faq-secao-moderna">
         <div class="faq-grid">
             <aside class="faq-sidebar">
                 <span class="faq-tag">Dúvidas Comuns</span>
                 <h2 class="faq-principal-titulo">Central de <br>Atendimento</h2>
-                <p class="faq-descricao">Caso não encontre a resposta que procura, nossa equipe está disponível através
-                    dos canais oficiais abaixo.</p>
+                <p class="faq-descricao">Caso não encontre a resposta que procura, nossa equipe está disponível através dos canais oficiais abaixo.</p>
 
                 <div class="faq-contatos">
                     <a href="https://instagram.com/" target="_blank" class="faq-contato-link">
                         <div class="faq-icon-box">
-                            <img src="{{ url_for('static', filename='img/instagram.png') }}" alt="Instagram"
-                                class="faq-img-icon">
+                            <img src="{{ url_for('static', filename='img/instagram.png') }}" alt="Instagram" class="faq-img-icon">
                         </div>
                         <div class="faq-info">
                             <span>Instagram</span>
@@ -321,14 +308,13 @@
                         </div>
                     </a>
 
-                    <a href="mailto:suporte@email.com.br" class="faq-contato-link">
+                    <a href="mailto:contato.lovyc@gmail.com" class="faq-contato-link">
                         <div class="faq-icon-box">
-                            <img src="{{ url_for('static', filename='img/mail.png') }}" alt="E-mail"
-                                class="faq-img-icon">
+                            <img src="{{ url_for('static', filename='img/mail.png') }}" alt="E-mail" class="faq-img-icon">
                         </div>
                         <div class="faq-info">
                             <span>E-mail</span>
-                            <strong>suporte@email.com.br</strong>
+                            <strong>contato.lovyc@gmail.com</strong>
                         </div>
                     </a>
                 </div>
@@ -347,8 +333,7 @@
                             <li><strong>Métodos aceitos:</strong> Aceitamos somente transações via Pix.</li>
                             <li><strong>Segurança:</strong> Processamento realizado em ambiente criptografado SSL.</li>
                             <li><strong>Prazos de compensação:</strong> Aprovação imediata para meios digitais.</li>
-                            <li><strong>Política de estorno:</strong> Por ser um serviço digital, reembolsos sao aceitos
-                                apenas em casos específicos.</li>
+                            <li><strong>Política de estorno:</strong> Por ser um serviço digital, reembolsos sao aceitos apenas em casos específicos.</li>
                         </ul>
                     </div>
                 </div>
@@ -360,14 +345,10 @@
                     </div>
                     <div class="faq-resposta">
                         <ul>
-                            <li><strong>Capacidade de mídia:</strong> Suporte para até doze arquivos de imagem
-                                simultâneos.</li>
-                            <li><strong>Edição pós-compra:</strong> Período de carência de vinte e quatro horas para
-                                ajustes.</li>
-                            <li><strong>Sincronização:</strong> Integração direta com a base de dados de letras
-                                oficiais.</li>
-                            <li><strong>Paleta de cores:</strong> Seleção restrita a padrões pré-definidos para garantir
-                                a legibilidade.</li>
+                            <li><strong>Capacidade de mídia:</strong> Suporte para até doze arquivos de imagem simultâneos.</li>
+                            <li><strong>Edição pós-compra:</strong> Período de carência de vinte e quatro horas para ajustes.</li>
+                            <li><strong>Sincronização:</strong> Integração direta com a base de dados de letras oficiais.</li>
+                            <li><strong>Paleta de cores:</strong> Seleção restrita a padrões pré-definidos para garantir a legibilidade.</li>
                         </ul>
                     </div>
                 </div>
@@ -379,13 +360,10 @@
                     </div>
                     <div class="faq-resposta">
                         <ul>
-                            <li><strong>Meio de entrega:</strong> Envio de email com link e QR code.
-                            </li>
+                            <li><strong>Meio de entrega:</strong> Envio de email com link e QR code.</li>
                             <li><strong>Validade do link:</strong> Acesso varia de acordo com o plano escolhido.</li>
-                            <li><strong>Encaminhamento:</strong> Possibilidade de envio direto ao destinatário final.
-                            </li>
-                            <li><strong>Compatibilidade:</strong> Otimizado para visualização em sistemas operacionais
-                                móveis e desktop.</li>
+                            <li><strong>Encaminhamento:</strong> Possibilidade de envio direto ao destinatário final.</li>
+                            <li><strong>Compatibilidade:</strong> Otimizado para visualização em sistemas operacionais móveis e desktop.</li>
                         </ul>
                     </div>
                 </div>
@@ -397,12 +375,9 @@
                     </div>
                     <div class="faq-resposta">
                         <ul>
-                            <li><strong>Acesso restrito:</strong> Visualização permitida apenas via chave de acesso
-                                individual.</li>
-                            <li><strong>Conformidade:</strong> Operação estritamente alinhada com as diretrizes da LGPD.
-                            </li>
-                            <li><strong>Exclusão de dados:</strong> Opção de remoção definitiva de arquivos mediante
-                                solicitação.</li>
+                            <li><strong>Acesso restrito:</strong> Visualização permitida apenas via chave de acesso individual.</li>
+                            <li><strong>Conformidade:</strong> Operação estritamente alinhada com as diretrizes da LGPD.</li>
+                            <li><strong>Exclusão de dados:</strong> Opção de remoção definitiva de arquivos mediante solicitação.</li>
                             <li><strong>Hospedagem:</strong> Armazenamento em infraestrutura de alta segurança.</li>
                         </ul>
                     </div>
@@ -415,14 +390,10 @@
                     </div>
                     <div class="faq-resposta">
                         <ul>
-                            <li><strong>Disponibilidade:</strong> Atendimento em dias úteis durante horário comercial.
-                            </li>
-                            <li><strong>Resolução de falhas:</strong> Prazo de resposta prioritário para erros de
-                                carregamento.</li>
-                            <li><strong>Atualizações:</strong> Melhorias contínuas aplicadas automaticamente ao sistema.
-                            </li>
-                            <li><strong>Canais de contato:</strong> Interface direta integrada para suporte em tempo
-                                real.</li>
+                            <li><strong>Disponibilidade:</strong> Atendimento em dias úteis durante horário comercial.</li>
+                            <li><strong>Resolução de falhas:</strong> Prazo de resposta prioritário para erros de carregamento.</li>
+                            <li><strong>Atualizações:</strong> Melhorias contínuas aplicadas automaticamente ao sistema.</li>
+                            <li><strong>Canais de contato:</strong> Interface direta integrada para suporte em tempo real.</li>
                         </ul>
                     </div>
                 </div>
@@ -435,8 +406,7 @@
             <div class="footer-top">
                 <div class="footer-brand">
                     <h3>💌 Lov<span>yc</span></h3>
-                    <p>Surpreenda quem você ama com uma página exclusiva. A maneira mais moderna e criativa de eternizar
-                        seus momentos especiais.</p>
+                    <p>Surpreenda quem você ama com uma página exclusiva. A maneira mais moderna e criativa de eternizar seus momentos especiais.</p>
                 </div>
 
                 <div class="footer-columns">
@@ -470,65 +440,64 @@
                     <div class="footer-col">
                         <h4>Legal</h4>
                         <ul>
-                            <li><a href="javascript:void(0)" onclick="abrirModalOverlay('termos')">Termos de Uso</a>
-                            </li>
-                            <li><a href="javascript:void(0)" onclick="abrirModalOverlay('privacidade')">Política de
-                                    Privacidade</a></li>
+                            <li><a href="javascript:void(0)" onclick="abrirModalOverlay('termos')">Termos de Uso</a></li>
+                            <li><a href="javascript:void(0)" onclick="abrirModalOverlay('privacidade')">Política de Privacidade</a></li>
                         </ul>
                     </div>
-
-                    <div id="modal-overlay" class="modal-overlay-fundo">
-                        <div class="modal-box">
-                            <button class="modal-btn-fechar" onclick="fecharModalOverlay()">
-                                <img src="{{ url_for('static', filename='img/fechar.png') }}" alt="Fechar"
-                                    class="modal-img-fechar">
-                            </button>
-
-                            <h2 id="modal-overlay-titulo">Título Aqui</h2>
-                            <div id="modal-overlay-conteudo" class="modal-texto-interno">
-                            </div>
-                        </div>
-                    </div>
-                    <hr class="footer-divider">
-
-                    <div class="footer-bottom">
-                        <div class="footer-copy">
-                            <p>© 2026 Logo. Todos os direitos reservados.</p>
-                            <p>Desenvolvido de forma independente com 💡</p>
-                        </div>
-                        <div class="footer-social">
-                            <a href="#">Instagram</a>
-                            <a href="#">TikTok</a>
-                        </div>
-                        <div class="footer-made-in">
-                            <p>Feito no Brasil 💚</p>
-                        </div>
-                    </div>
                 </div>
-    </footer>
-    <div id="modal-login" class="modal-overlay" style="display: none;">
-    <div class="modal-content">
-        <button class="btn-fechar-modal" onclick="fecharModalLogin()">✕</button>
-        
-        <div id="login-passo-1">
-            <h3>Entrar ou Criar Conta</h3>
-            <p>Enviaremos um código de acesso para o seu e-mail.</p>
-            <input type="email" id="input-email-login" placeholder="seu@email.com" class="input-padrao">
-            <button class="btn-primario" onclick="enviarCodigoEmail()" id="btn-enviar-codigo">Enviar Código</button>
-            <p id="msg-erro-email" class="msg-erro"></p>
-        </div>
+            </div>
 
-        <div id="login-passo-2" style="display: none;">
-            <h3>Verifique seu E-mail</h3>
-            <p>Enviamos um código de 6 dígitos para <strong id="email-confirmacao"></strong></p>
-            <input type="text" id="input-codigo" placeholder="000000" maxlength="6" class="input-padrao" style="text-align: center; letter-spacing: 5px; font-size: 20px;">
-            <button class="btn-primario" onclick="verificarCodigo()" id="btn-verificar-codigo">Confirmar</button>
-            <p id="msg-erro-codigo" class="msg-erro"></p>
-            <button class="btn-link" onclick="voltarPassoLogin()">Voltar e editar e-mail</button>
+            <hr class="footer-divider">
+
+            <div class="footer-bottom">
+                <div class="footer-copy">
+                    <p>© 2026 Lovyc. Todos os direitos reservados.</p>
+                    <p>Desenvolvido de forma independente com 💡</p>
+                </div>
+                <div class="footer-social">
+                    <a href="#">Instagram</a>
+                    <a href="#">TikTok</a>
+                </div>
+                <div class="footer-made-in">
+                    <p>Feito no Brasil 💚</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div id="modal-overlay" class="modal-overlay-fundo" style="display: none;">
+        <div class="modal-box">
+            <button class="modal-btn-fechar" onclick="fecharModalOverlay()" aria-label="Fechar Modal">
+                <img src="{{ url_for('static', filename='img/fechar.png') }}" alt="Fechar" class="modal-img-fechar">
+            </button>
+            <h2 id="modal-overlay-titulo">Título Aqui</h2>
+            <div id="modal-overlay-conteudo" class="modal-texto-interno"></div>
         </div>
     </div>
-</div>
-    <!-- <script src="/static/js/index.js"></script> -->
+
+    <div id="modal-login" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <button class="btn-fechar-modal" onclick="fecharModalLogin()" aria-label="Fechar Login">✕</button>
+
+            <div id="login-passo-1">
+                <h3>Entrar ou Criar Conta</h3>
+                <p>Enviaremos um código de acesso para o seu e-mail.</p>
+                <input type="email" id="input-email-login" placeholder="seu@email.com" class="input-padrao" autocomplete="off">
+                <button class="btn-primario" onclick="enviarCodigoEmail()" id="btn-enviar-codigo">Enviar Código</button>
+                <p id="msg-erro-email" class="msg-erro"></p>
+            </div>
+
+            <div id="login-passo-2" style="display: none;">
+                <h3>Verifique seu E-mail</h3>
+                <p>Enviamos um código de 6 dígitos para <strong id="email-confirmacao"></strong></p>
+                <input type="text" id="input-codigo" placeholder="000000" maxlength="6" autocomplete="off" class="input-padrao" style="text-align: center; letter-spacing: 5px; font-size: 20px;">
+                <button class="btn-primario" onclick="verificarCodigo()" id="btn-verificar-codigo">Confirmar</button>
+                <p id="msg-erro-codigo" class="msg-erro"></p>
+                <button class="btn-link" onclick="voltarPassoLogin()">Voltar e editar e-mail</button>
+            </div>
+        </div>
+    </div>
+
     <script src="{{ url_for('static', filename='js/index.js') }}"></script>
 </body>
 
