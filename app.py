@@ -177,9 +177,12 @@ def create_app():
 # ==========================================
 # INICIAR O SERVIDOR
 # ==========================================
+# 1. Crie o app FORA do if __name__ == '__main__'
+app = create_app()
+
 if __name__ == '__main__':
-    app = create_app()
     # O Render injeta a porta correta aqui. Se for local, usa 5000.
     port = int(os.environ.get("PORT", 5000))
-    # O host="0.0.0.0" é obrigatório para a internet conseguir acessar sua API
-    app.run(host="0.0.0.0", port=port, debug=True)
+    
+    # 2. Tire o debug=True para produção (é mais seguro)
+    app.run(host="0.0.0.0", port=port)
