@@ -1,0 +1,15 @@
+# Ambiente Virtual (ignora a pasta inteira)
+.venv/
+
+# Arquivo de segredos (NUNCA suba isso)
+.env
+
+# Arquivos temporários do Python
+__pycache__/
+*.pyc
+
+# Configurações do editor (opcional, mas recomendado)
+.vscode/
+
+# Logs e arquivos de depuração
+*.log
